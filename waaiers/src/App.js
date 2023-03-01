@@ -1,4 +1,6 @@
 import './App.css';
+import './private/APIKey.js';
+import getMetServiceApiKey from './private/APIKey.js';
 
 
 
@@ -19,7 +21,7 @@ let options = {
   body: JSON.stringify(data),
   headers: {
     'Content-Type': 'application/json',
-    'x-api-key': 'Vd8kDiyri5oXfEC4dE7HgK'
+    'x-api-key': getMetServiceApiKey() //API is stored in private file so it cant be stolen and malsicsoly used
   }
 };
 
@@ -45,8 +47,6 @@ const fetchWeatherData = async ()=>
   
   let json = await response.json();
   console.log('API response JSON:', json.dimensions );
-
-
 }
 
 export default App;
