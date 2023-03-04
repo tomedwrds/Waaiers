@@ -1,115 +1,48 @@
 import './App.css';
 import './private/APIKey.js';
-import gpxdata from './racedata/omloophetnieuwsblad2023.js';
+import { useState } from 'react';
 
-import { MapContainer,TileLayer,Marker,Popup,Polyline } from 'react-leaflet'
+
+import setLineColor from './map/setLineColor';
+import { MapContainer,TileLayer,Polyline } from 'react-leaflet'
 
 import getMetServiceApiKey from './private/APIKey.js';
-
-const gpxParser = require('gpxparser');
-const gpx = new gpxParser(); //Create gpxParser Object
-gpx.parse(gpxdata); //parse gpx file from string data
+import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 
 
-function distanceBetweenGPXPoints(lat1,lat2,lon1,lon2)
-{
-  const R = 6371e3; // metres
-  const φ1 = lat1 * Math.PI/180; // φ, λ in radians
-  const φ2 = lat2 * Math.PI/180;
-  const Δφ = (lat2-lat1) * Math.PI/180;
-  const Δλ = (lon2-lon1) * Math.PI/180;
 
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-  const d = R * c; // in metres
 
-  return d;
-  
-}
 
-function bearingBetweenGPXPoints(lat1,lat2,lon1,lon2)
+
+
+const fetchWeatherData = async (gpxPoints,weatherAPIData)=>
 {
 
-  const y = Math.sin(lon2-lon1) * Math.cos(lat2);
-  const x = Math.cos(lat1)*Math.sin(lat2) -
-            Math.sin(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1);
-  const θ = Math.atan2(y, x);
-  const brng = (θ*180/Math.PI + 360) % 360; // in degrees
+  const raceTime = '2023-03-04T12:00:00Z'
 
-  return brng;
+  const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
-
-}
-
-
-//GPX data must be seralized into a format friendly to the leaflet react library
-//This is an array of lat, long cordinates
-const gpxPoints = gpx.tracks[0].points;
-const positions = gpxPoints.map(p => [p.lat, p.lon]);
-let distance = 0;
-
-//I am limited by the amount of metservice api calls I can make on the free metservice plan
-//Therefore only a cordinate is stored for every 15km and wind speed/ direction is retrieved at that point and given to all route cordinates within the 15km bounds
-const weatherAPIData =[];
-const kmInterval = 100;
+  const data = {
+    points: weatherAPIData,
+    variables: ['wind.direction.at-10m','wind.speed.at-10m','wind.speed.gust.at-10m'],
+    time: {
+      from: raceTime,
+      interval: '3h',
+      repeat: 0,
+    }
+  };
 
 
-//We also want to add a distance start value, distance end value for every gpx point and direction
-for(let i = 0; i < gpxPoints.length-1; i++)
-{
-  //Set the distance start value
-  gpxPoints[i].distance_start = distance;
-  
-  //Increment the distance travelled
-  distance += distanceBetweenGPXPoints(gpxPoints[i].lat, gpxPoints[i+1].lat,gpxPoints[i].lon, gpxPoints[i+1].lon);
+  let options = {
+    method: 'post',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': getMetServiceApiKey() //API is stored in private file so it cant be stolen and malsicsoly used
+    }
+  };
 
-  //Set the distance end value
-  gpxPoints[i].distance_end = distance;
-
-  //Set the direction travelled
-  gpxPoints[i].route_dir = bearingBetweenGPXPoints(gpxPoints[i].lat, gpxPoints[i+1].lat,gpxPoints[i].lon, gpxPoints[i+1].lon);
-  
-  //Save the lat and lon for every interval travelled to the weather api file
-  const distanceKm = distance/1000;
-  
-  if((Math.floor(distanceKm) % kmInterval === 0) && (Math.floor(distanceKm/kmInterval) === weatherAPIData.length))
-  {
-    weatherAPIData.push({lon: gpxPoints[i].lon, lat: gpxPoints[i].lat});
-  }
-} 
-
-
-
-const raceTime = '2023-03-04T12:00:00Z'
-
-const url = 'https://forecast-v2.metoceanapi.com/point/time';
-
-const data = {
-  points: weatherAPIData,
-  variables: ['wind.direction.at-10m','wind.speed.at-10m','wind.speed.gust.at-10m'],
-  time: {
-    from: raceTime,
-    interval: '3h',
-    repeat: 0,
-  }
-};
-
-
-let options = {
-  method: 'post',
-  body: JSON.stringify(data),
-  headers: {
-    'Content-Type': 'application/json',
-    'x-api-key': getMetServiceApiKey() //API is stored in private file so it cant be stolen and malsicsoly used
-  }
-};
-
-
-const fetchWeatherData = async ()=>
-{
   let response = await fetch(url, options);
   console.log('API response status:', response);
   
@@ -121,6 +54,8 @@ const fetchWeatherData = async ()=>
   const windSpeed = returnedData['wind.speed.at-10m'].data;
   const windSpeedGust = returnedData['wind.speed.gust.at-10m'].data;
 
+  const positions = [];
+  const kmInterval = 100;
   //With the returned wind data we now want to assign the value to the km region. As the api was only called for every x km. We also want
   for(let i = 0; i < gpxPoints.length-1; i++)
   {
@@ -131,9 +66,72 @@ const fetchWeatherData = async ()=>
     gpxPoints[i].wind_direction = windDirection[apiCallPoint];
     gpxPoints[i].wind_speed = windSpeed[apiCallPoint];
     gpxPoints[i].wind_speed_gust = windSpeedGust[apiCallPoint];
-  } 
 
+    //Get the relative wind direction ie the direcion of the wind from behind the rider 0deg tail wind 180deg headwind
+    //Wind direction is viewed as the direction the wind came from therefore it needs to be shifted by 180 to get a value of direction wind  came from
+    const invertedWindDirection = (gpxPoints[i].wind_direction + 180) % 360;
+    let windRouteRelativeDirection = gpxPoints[i].route_dir - invertedWindDirection;
+
+    //Modulos doesnt work for negative numbers so 360 must be added if less than 0
+    if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
+    gpxPoints[i].wind_route_realtive = windRouteRelativeDirection;
+
+    //We can then classify the wind direction based on this relative value
+    //330 - 30 tailwind
+    //30 - 90 & 270 - 330 cross tailwind
+    //150 - 210 head wind 
+    //90 - 150 & 210 - 270 cross head wind
+    if(windRouteRelativeDirection >= 330 || windRouteRelativeDirection < 30)
+    {
+      gpxPoints[i].wind_classifcation = "Tailwind";
+    }
+    else if(windRouteRelativeDirection >= 150 && windRouteRelativeDirection < 210)
+    {
+      gpxPoints[i].wind_classifcation = "Headwind";
+    }
+    else if((windRouteRelativeDirection >= 30 && windRouteRelativeDirection < 90) || (windRouteRelativeDirection >= 270 && windRouteRelativeDirection < 330))
+    {
+      gpxPoints[i].wind_classifcation = "Cross Tailwind";
+    }
+    else if((windRouteRelativeDirection >= 90 && windRouteRelativeDirection < 150) || (windRouteRelativeDirection >= 210 && windRouteRelativeDirection < 270))
+    {
+      gpxPoints[i].wind_classifcation = "Cross Headwind";
+    }
+
+    //On the map polylines are rendered to display the route
+    //This function breaks up the route into smaller segments depdent on the wind classifcation 
+    //This allows diffrent styling to be applied to the broken up polyline segment
+    //Interactive data can also be added ie popups.
+    
+    if(positions.length == 0)
+    {
+      //In case of first segment an inital item must be added
+      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]]})
+
+    } 
+    else
+    {
+      //Get the current line segment 
+      const currentLineSegment = positions[positions.length-1];
+      
+      //Check if the classifcation of wind has changed if so a new segment should be rendered
+      //Incases where the classifcation is the same we cant to add the cords to the prior segment
+      if(currentLineSegment.class != gpxPoints[i].wind_classifcation)
+      {
+        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]]})
+      }
+      else
+      {
+        currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+      }
+    }
+
+  } 
+  console.log(positions);
+  console.log(gpxPoints);
+  return positions;
   
+
 }
 
 
@@ -143,27 +141,43 @@ const fetchWeatherData = async ()=>
 
 
 
-function App() {
+
+
+
+function App() 
+{
+  //GPXIntalizeFile returns array 0 - gpxPoints, 1- weatherAPIData
+  const intalizedGPXData = GPXIntalizeFile();
   
+  const gpxPoints = intalizedGPXData[0];
+  const weatherAPIData = intalizedGPXData[1];
+  
+  const [positions,setPositions] = useState([1,2,3]);
   return (
     <div className="App">
       <input type="file"/>
-      <button onClick={fetchWeatherData}>Call Api</button>
+      <button onClick={()=>fetchWeatherData(gpxPoints,weatherAPIData)}>Call Api</button>
       <div id="map">
-      <MapContainer center={positions[0]} zoom={10} scrollWheelZoom={false}>
+      <MapContainer center={[51.505, -0.09]} zoom={10} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Polyline
-	            pathOptions={{ fillColor: 'red', color: 'blue' }}
-	            positions={positions}
-              eventHandlers={{
-                mouseover: ()=>(console.log("fff"))
-              }}
-              
-            />
+        
+        
       </MapContainer>
+      {positions.map((item)=> 
+        <p>sas</p>
+      //     <Polyline
+      //     pathOptions={{ fillColor: 'red', color: item.linecolor }}
+      //     positions={item.latlon}
+      //     eventHandlers={{
+      //       mouseover: ()=>(console.log("fff"))
+      //     }}
+        
+      // />
+        
+        )}
       </div>
     </div>
   );
