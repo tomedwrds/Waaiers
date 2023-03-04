@@ -16,7 +16,7 @@ import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 
 
 
-const fetchWeatherData = async (gpxPoints,weatherAPIData)=>
+const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 {
 
   const raceTime = '2023-03-04T12:00:00Z'
@@ -127,9 +127,8 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData)=>
     }
 
   } 
-  console.log(positions);
-  console.log(gpxPoints);
-  return positions;
+
+  setPositions(positions);
   
 
 }
@@ -137,7 +136,20 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData)=>
 
 
 
+const LineSegment = (props)=>
+{
+  return(
+    <Polyline
+      pathOptions={{ fillColor: 'red', color: props.linecolor }}
+      positions={props.latlon}
+      eventHandlers={{
+        mouseover: ()=>(console.log("fff"))
+      }}
+    />
+  )
+  
 
+}
 
 
 
@@ -152,32 +164,30 @@ function App()
   const gpxPoints = intalizedGPXData[0];
   const weatherAPIData = intalizedGPXData[1];
   
-  const [positions,setPositions] = useState([1,2,3]);
+  const [positions,setPositions] = useState();
+  
   return (
     <div className="App">
       <input type="file"/>
-      <button onClick={()=>fetchWeatherData(gpxPoints,weatherAPIData)}>Call Api</button>
+      <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
+      <button onClick={()=>console.log(positions)}> Api</button>
       <div id="map">
       <MapContainer center={[51.505, -0.09]} zoom={10} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <Polyline
+      pathOptions={{ fillColor: 'red', color: 'red' }}
+      positions={[[51.505, -0.09],[51.505, -0.09]]}
+      eventHandlers={{
+        mouseover: ()=>(console.log("fff"))
+      }}
+    />
         
-        
+        {/* {positions.map((item)=> <LineSegment key = {item.id} linecolor = {item.linecolor} latlon = {item.latlon}/>)} */}
       </MapContainer>
-      {positions.map((item)=> 
-        <p>sas</p>
-      //     <Polyline
-      //     pathOptions={{ fillColor: 'red', color: item.linecolor }}
-      //     positions={item.latlon}
-      //     eventHandlers={{
-      //       mouseover: ()=>(console.log("fff"))
-      //     }}
-        
-      // />
-        
-        )}
+      
       </div>
     </div>
   );
