@@ -1,2 +1,2 @@
-# ignore ALL files in ANY directory named temp
+# private folder contains all api keys and data I dont want to publish to a public repo
 waaiers/src/private
