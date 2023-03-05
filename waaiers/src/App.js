@@ -10,6 +10,7 @@ import getMetServiceApiKey from './private/APIKey.js';
 import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 import RouteWindMap from './map/RouteWindMap';
 
+import { MapContainer,TileLayer } from 'react-leaflet';
 
 
 
@@ -107,7 +108,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     if(positions.length == 0)
     {
       //In case of first segment an inital item must be added
-      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]]})
+      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0})
 
     } 
     else
@@ -119,7 +120,20 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
       //Incases where the classifcation is the same we cant to add the cords to the prior segment
       if(currentLineSegment.class != gpxPoints[i].wind_classifcation)
       {
-        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]]})
+        //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
+        //If the prior polyline was only a single point it an be removed
+        if(currentLineSegment.latlon.length == 1)
+        {
+          positions.pop();
+        }
+        else
+        {
+          currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+          currentLineSegment.kmEnd = gpxPoints[i].distance_end;
+        }
+       
+
+        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0})
       }
       else
       {
@@ -129,6 +143,11 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 
   } 
 
+
+
+
+
+
   setPositions(positions);
   
 
@@ -137,6 +156,50 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 
 
 
+
+const IntrestSegmentContainer = (props) =>
+{
+  if(props.data != null)
+  {
+    console.log(props)
+    return(
+      <div className='intrestSegmentContainer'>
+        <IntrestSegment data = {props.data[0]}/>
+        <IntrestSegment data = {props.data[1]}/>
+        <IntrestSegment data = {props.data[1]}/>
+        <IntrestSegment data = {props.data[1]}/>
+      </div>
+    )
+  }
+}
+
+const IntrestSegment = (props) =>
+{
+    const segmentData = props.data
+    const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
+    const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
+    console.log(props.data)
+    return(
+      <div className = "intrestSegment">
+        <p>{kmStart}km - {kmEnd}km</p>
+        <p>Difficulty: ⭐⭐⭐</p>
+        <p>Wind Direction: lorem</p>
+        <p>Wind Speed: Ipsum</p>
+        <div className='mapContainer'>
+          <div id="map" >
+          <MapContainer style = {{width:"60%"}}doubleClickZoom = {false}  zoomControl = {false} center={segmentData.latlon[0]} zoom={16} scrollWheelZoom={false} dragging = {false}>
+              <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+          
+          </MapContainer>
+          </div>
+        </div>
+      </div>
+    )
+  
+}
 
 
 
@@ -163,7 +226,11 @@ function App()
         <RouteWindMap data = {positions} />
       
       </div>
+      <IntrestSegmentContainer data = {positions}/>
     </div>
+
+
+
   );
 }
 
