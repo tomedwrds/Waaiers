@@ -4,10 +4,11 @@ import { useState } from 'react';
 
 
 import setLineColor from './map/setLineColor';
-import { MapContainer,TileLayer,Polyline } from 'react-leaflet'
+
 
 import getMetServiceApiKey from './private/APIKey.js';
 import GPXIntalizeFile from './gpx/GPXIntalizeFile';
+import RouteWindMap from './map/RouteWindMap';
 
 
 
@@ -19,7 +20,7 @@ import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 {
 
-  const raceTime = '2023-03-04T12:00:00Z'
+  const raceTime = '2023-03-05T12:00:00Z'
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
@@ -136,20 +137,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 
 
 
-const LineSegment = (props)=>
-{
-  return(
-    <Polyline
-      pathOptions={{ fillColor: 'red', color: props.linecolor }}
-      positions={props.latlon}
-      eventHandlers={{
-        mouseover: ()=>(console.log("fff"))
-      }}
-    />
-  )
-  
 
-}
 
 
 
@@ -164,7 +152,7 @@ function App()
   const gpxPoints = intalizedGPXData[0];
   const weatherAPIData = intalizedGPXData[1];
   
-  const [positions,setPositions] = useState();
+  const [positions,setPositions] = useState(null);
   
   return (
     <div className="App">
@@ -172,21 +160,7 @@ function App()
       <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
       <button onClick={()=>console.log(positions)}> Api</button>
       <div id="map">
-      <MapContainer center={[51.505, -0.09]} zoom={10} scrollWheelZoom={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Polyline
-      pathOptions={{ fillColor: 'red', color: 'red' }}
-      positions={[[51.505, -0.09],[51.505, -0.09]]}
-      eventHandlers={{
-        mouseover: ()=>(console.log("fff"))
-      }}
-    />
-        
-        {/* {positions.map((item)=> <LineSegment key = {item.id} linecolor = {item.linecolor} latlon = {item.latlon}/>)} */}
-      </MapContainer>
+        <RouteWindMap data = {positions} />
       
       </div>
     </div>
