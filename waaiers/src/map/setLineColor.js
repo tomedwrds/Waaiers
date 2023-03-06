@@ -1,8 +1,9 @@
 function setLineColor(classifcation)
 {
+  return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
   if(classifcation == "Tailwind")
   {
-    return 'red';
+    return 'black';
   } else if(classifcation == "Headwind")
   {
     return 'green';
@@ -11,7 +12,7 @@ function setLineColor(classifcation)
     return 'blue';
   } else if(classifcation == "Cross Headwind")
   {
-    return 'yellow';
+    return 'black';
   } else
   {
     return 'black';

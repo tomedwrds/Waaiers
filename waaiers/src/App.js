@@ -123,7 +123,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
       {
         //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
         //If the prior polyline was only a single point it an be removed
-        if(currentLineSegment.latlon.length == 1)
+        if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].lat,gpxPoints[i].lon])
         {
           positions.pop();
         }
@@ -234,9 +234,6 @@ function App()
         <IntrestSegmentContainer data = {positions}/>
       </div>
     </div>
-
-
-
   );
 }
 
