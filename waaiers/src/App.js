@@ -11,6 +11,7 @@ import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 import RouteWindMap from './map/RouteWindMap';
 
 import { MapContainer,TileLayer,Polyline } from 'react-leaflet';
+import Navbar from './navbar/Navbar.js';
 
 
 
@@ -223,6 +224,7 @@ function App()
   
   return (
     <div className="App">
+      <Navbar/>
       <div className = "body">
         <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
         <button onClick={()=>console.log(positions)}> Api</button>
