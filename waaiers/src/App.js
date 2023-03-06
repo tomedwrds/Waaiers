@@ -17,7 +17,9 @@ import Navbar from './navbar/Navbar.js';
 
 
 
-
+function inRange(x, min, max) {
+  return ((x-min)*(x-max) <= 0);
+}
 
 const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 {
@@ -109,7 +111,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     if(positions.length == 0)
     {
       //In case of first segment an inital item must be added
-      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0})
+      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: windRouteRelativeDirection})
 
     } 
     else
@@ -119,22 +121,45 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
       
       //Check if the classifcation of wind has changed if so a new segment should be rendered
       //Incases where the classifcation is the same we cant to add the cords to the prior segment
-      if(currentLineSegment.class != gpxPoints[i].wind_classifcation)
+      const segmentSensitivity = 60;
+      const upperBound = (currentLineSegment.segmentWindAngle + segmentSensitivity) % 360;
+      let lowerBound = currentLineSegment.segmentWindAngle - segmentSensitivity;
+      if(lowerBound < 0) lowerBound += 360;
+      let inRange = false;
+      
+      if(lowerBound < upperBound)
+      {
+        if(windRouteRelativeDirection > lowerBound && windRouteRelativeDirection < upperBound )
+        {
+          inRange = true
+        }
+      }
+      else
+      {
+        if(windRouteRelativeDirection < lowerBound && windRouteRelativeDirection > upperBound )
+        {
+          inRange = true
+        }
+      }
+
+
+
+      if(inRange) /*currentLineSegment.class != gpxPoints[i].wind_classifcation*/
       {
         //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
         //If the prior polyline was only a single point it an be removed
         if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].lat,gpxPoints[i].lon])
         {
-          positions.pop();
+         // positions.pop();
         }
         else
         {
-          currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
-          currentLineSegment.kmEnd = gpxPoints[i].distance_end;
+          
         }
-       
+        currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+        currentLineSegment.kmEnd = gpxPoints[i].distance_end;
 
-        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0})
+        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0,segmentWindAngle: windRouteRelativeDirection})
       }
       else
       {
