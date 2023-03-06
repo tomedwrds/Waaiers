@@ -10,7 +10,7 @@ import getMetServiceApiKey from './private/APIKey.js';
 import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 import RouteWindMap from './map/RouteWindMap';
 
-import { MapContainer,TileLayer } from 'react-leaflet';
+import { MapContainer,TileLayer,Polyline } from 'react-leaflet';
 
 
 
@@ -185,17 +185,21 @@ const IntrestSegment = (props) =>
        
         <p>Wind Direction: lorem | Wind Speed: Ipsum</p>
       
-        <div className='mapContainer'>
+        
           <div id="map" >
-          <MapContainer doubleClickZoom = {false}  zoomControl = {false} center={segmentData.latlon[0]} zoom={16} scrollWheelZoom={false} dragging = {false}>
+          <MapContainer style={{width:'100%',height:'100%'}} doubleClickZoom = {false}  zoomControl = {false} center={segmentData.latlon[0]} zoom={16} scrollWheelZoom={false} dragging = {false}>
               <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              <Polyline
+                pathOptions={{ fillColor: 'red', color: segmentData.linecolor }}
+                positions={segmentData.latlon}
+               />
           
           </MapContainer>
           </div>
-        </div>
+      
       </div>
     )
   
@@ -219,14 +223,14 @@ function App()
   
   return (
     <div className="App">
-      <input type="file"/>
-      <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
-      <button onClick={()=>console.log(positions)}> Api</button>
-     
+      <div className = "body">
+        <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
+        <button onClick={()=>console.log(positions)}> Api</button>
+        <h1>Omlopop Het Nieuwsblad</h1>
         <RouteWindMap data = {positions} />
-      
-  
-      <IntrestSegmentContainer data = {positions}/>
+        <h2>Segments of Intrest</h2>
+        <IntrestSegmentContainer data = {positions}/>
+      </div>
     </div>
 
 
