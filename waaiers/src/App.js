@@ -181,13 +181,13 @@ const IntrestSegment = (props) =>
     console.log(props.data)
     return(
       <div className = "intrestSegment">
-        <p>{kmStart}km - {kmEnd}km</p>
-        <p>Difficulty: ⭐⭐⭐</p>
-        <p>Wind Direction: lorem</p>
-        <p>Wind Speed: Ipsum</p>
+        <p>{kmStart}km - {kmEnd}km | Difficulty: ⭐⭐⭐</p>
+       
+        <p>Wind Direction: lorem | Wind Speed: Ipsum</p>
+      
         <div className='mapContainer'>
           <div id="map" >
-          <MapContainer style = {{width:"60%"}}doubleClickZoom = {false}  zoomControl = {false} center={segmentData.latlon[0]} zoom={16} scrollWheelZoom={false} dragging = {false}>
+          <MapContainer doubleClickZoom = {false}  zoomControl = {false} center={segmentData.latlon[0]} zoom={16} scrollWheelZoom={false} dragging = {false}>
               <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -222,10 +222,10 @@ function App()
       <input type="file"/>
       <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
       <button onClick={()=>console.log(positions)}> Api</button>
-      <div id="map">
+     
         <RouteWindMap data = {positions} />
       
-      </div>
+  
       <IntrestSegmentContainer data = {positions}/>
     </div>
 
