@@ -20,7 +20,7 @@ function GPXIntalizeFile ()
     //I am limited by the amount of metservice api calls I can make on the free metservice plan
     //Therefore only a cordinate is stored for every 15km and wind speed/ direction is retrieved at that point and given to all route cordinates within the 15km bounds
     const weatherAPIData =[];
-    const kmInterval = 100;
+    const kmInterval = 15;
 
 
     //We also want to add a distance start value, distance end value for every gpx point and direction

@@ -13,6 +13,7 @@ import RouteWindMap from './map/RouteWindMap';
 import { MapContainer,TileLayer,Polyline } from 'react-leaflet';
 import Navbar from './navbar/Navbar.js';
 
+const average = array => array.reduce((a, b) => a + b) / array.length;
 
 
 
@@ -52,6 +53,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
   console.log('API response status:', response);
   
   let json = await response.json();
+  console.log('API response status:', json);
 
   //Retrieve the data from the API call
   const returnedData = json.variables;
@@ -60,7 +62,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
   const windSpeedGust = returnedData['wind.speed.gust.at-10m'].data;
 
   const positions = [];
-  const kmInterval = 100;
+  const kmInterval = 15;
   //With the returned wind data we now want to assign the value to the km region. As the api was only called for every x km. We also want
   for(let i = 0; i < gpxPoints.length-1; i++)
   {
@@ -78,7 +80,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     let windRouteRelativeDirection = gpxPoints[i].route_dir - invertedWindDirection;
 
     //Modulos doesnt work for negative numbers so 360 must be added if less than 0
-    if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
+   //if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
     gpxPoints[i].wind_route_realtive = windRouteRelativeDirection;
 
     //We can then classify the wind direction based on this relative value
@@ -111,7 +113,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     if(positions.length == 0)
     {
       //In case of first segment an inital item must be added
-      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: windRouteRelativeDirection})
+      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection]})
 
     } 
     else
@@ -121,30 +123,23 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
       
       //Check if the classifcation of wind has changed if so a new segment should be rendered
       //Incases where the classifcation is the same we cant to add the cords to the prior segment
-      const segmentSensitivity = 60;
-      const upperBound = (currentLineSegment.segmentWindAngle + segmentSensitivity) % 360;
-      let lowerBound = currentLineSegment.segmentWindAngle - segmentSensitivity;
-      if(lowerBound < 0) lowerBound += 360;
+      const segmentSensitivity = 45;
+      const averageSectorWind = average(currentLineSegment.segmentWindAngle);
+      const upperBound = (averageSectorWind + segmentSensitivity) ;
+      let lowerBound = averageSectorWind - segmentSensitivity;
+     
       let inRange = false;
+
+      //console.log("Lower " + lowerBound +" Upper " + upperBound + "Wind route direction" + windRouteRelativeDirection) 
       
-      if(lowerBound < upperBound)
-      {
-        if(windRouteRelativeDirection > lowerBound && windRouteRelativeDirection < upperBound )
+        if(windRouteRelativeDirection >= lowerBound && windRouteRelativeDirection <= upperBound )
         {
           inRange = true
         }
-      }
-      else
-      {
-        if(windRouteRelativeDirection < lowerBound && windRouteRelativeDirection > upperBound )
-        {
-          inRange = true
-        }
-      }
+      
 
 
-
-      if(inRange) /*currentLineSegment.class != gpxPoints[i].wind_classifcation*/
+      if(!inRange) /*currentLineSegment.class != gpxPoints[i].wind_classifcation*/
       {
         //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
         //If the prior polyline was only a single point it an be removed
@@ -159,11 +154,12 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
         currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
         currentLineSegment.kmEnd = gpxPoints[i].distance_end;
 
-        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0,segmentWindAngle: windRouteRelativeDirection})
+        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection]})
       }
       else
       {
         currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+        currentLineSegment.segmentWindAngle.push(windRouteRelativeDirection);
       }
     }
 
