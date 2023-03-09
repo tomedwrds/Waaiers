@@ -25,7 +25,7 @@ function inRange(x, min, max) {
 const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
 {
 
-  const raceTime = '2023-03-05T12:00:00Z'
+  const raceTime = '2023-03-10T12:00:00Z'
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
@@ -68,7 +68,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
   {
     //API call is made for every km of a set interval.
     //This function gets the data from the nearest km interval and attaches it to the gpx point
-    const apiCallPoint = Math.round(gpxPoints[i].distance_start/kmInterval/1000);
+    const apiCallPoint = Math.floor(gpxPoints[i].distance_start/kmInterval/1000);
     
     gpxPoints[i].wind_direction = windDirection[apiCallPoint];
     gpxPoints[i].wind_speed = windSpeed[apiCallPoint];
@@ -78,7 +78,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     //Wind direction is viewed as the direction the wind came from therefore it needs to be shifted by 180 to get a value of direction wind  came from
     const invertedWindDirection = (gpxPoints[i].wind_direction + 180) % 360;
     let windRouteRelativeDirection = gpxPoints[i].route_dir - invertedWindDirection;
-
+    console.log(gpxPoints[i].wind_direction)
     //Modulos doesnt work for negative numbers so 360 must be added if less than 0
    //if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
     gpxPoints[i].wind_route_realtive = windRouteRelativeDirection;
