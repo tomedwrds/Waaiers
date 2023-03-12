@@ -74,7 +74,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
   //Range of angle around the golden angle that would cause splits
   const windAngleZone = 30;
   const minWindSpeed = 0;
-  const minSegmentLength = 0;
+  const minSegmentLength = 0 ;
 
 
 
@@ -95,30 +95,16 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
     let windRouteRelativeDirection = gpxPoints[i].route_dir - invertedWindDirection;
   
     //Modulos doesnt work for negative numbers so 360 must be added if less than 0
-   //if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
+   if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
     gpxPoints[i].wind_route_realtive = windRouteRelativeDirection;
 
+    console.log("Wind rela " +windRouteRelativeDirection + "route " + gpxPoints[i].route_dir )
     //We can then classify the wind direction based on this relative value
     //330 - 30 tailwind
     //30 - 90 & 270 - 330 cross tailwind
     //150 - 210 head wind 
     //90 - 150 & 210 - 270 cross head wind
-    if(windRouteRelativeDirection >= 330 || windRouteRelativeDirection < 30)
-    {
-      gpxPoints[i].wind_classifcation = "Tailwind";
-    }
-    else if(windRouteRelativeDirection >= 150 && windRouteRelativeDirection < 210)
-    {
-      gpxPoints[i].wind_classifcation = "Headwind";
-    }
-    else if((windRouteRelativeDirection >= 30 && windRouteRelativeDirection < 90) || (windRouteRelativeDirection >= 270 && windRouteRelativeDirection < 330))
-    {
-      gpxPoints[i].wind_classifcation = "Cross Tailwind";
-    }
-    else if((windRouteRelativeDirection >= 90 && windRouteRelativeDirection < 150) || (windRouteRelativeDirection >= 210 && windRouteRelativeDirection < 270))
-    {
-      gpxPoints[i].wind_classifcation = "Cross Headwind";
-    }
+
 
     //On the map polylines are rendered to display the route
     //This function breaks up the route into smaller segments depdent on the wind classifcation 
@@ -134,10 +120,10 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
     else
     {
       //Get the current line segment 
-      const currentLineSegment = positions[positions.length-1];
+      let currentLineSegment = positions[positions.length-1];
       
       //Check if the direction of wind relative to the rider has changed enough to warrant the creatio of a new segment
-      const segmentSensitivity = 45;
+      const segmentSensitivity = 60;
       //The wind relatie to the rider is averaged from all points on the line
       const averageSectorWind = average(currentLineSegment.segmentWindAngle);
       const upperBound = (averageSectorWind + segmentSensitivity) ;
@@ -148,17 +134,22 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
       if(windRouteRelativeDirection >= lowerBound && windRouteRelativeDirection <= upperBound )
       {
         inRange = true
+        
       }
       
 
 
       if(!inRange) 
       {
+        console.log("Avg " + averageSectorWind + "Wind " + windRouteRelativeDirection)
         //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
         //If the prior polyline was only a single point it an be removed
         if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].lat,gpxPoints[i].lon])
         {
          positions.pop();
+         currentLineSegment = positions[positions.length-1];
+         currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+        
         }
         else
         {
@@ -195,15 +186,15 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
 
 
          
-         // currentLineSegment.linecolor = setLineColor(currentLineSegment)
+          currentLineSegment.linecolor = "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
 
-           if(segmentWorthy)
-           {
-            currentLineSegment.linecolor = 'red'
-           }
-           else{
-            currentLineSegment.linecolor = 'black'
-           }
+          //  if(segmentWorthy)
+          //  {
+          //   currentLineSegment.linecolor = 'red'
+          //  }
+          //  else{
+          //   currentLineSegment.linecolor = 'black'
+          //  }
          
         }
         
@@ -225,7 +216,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
 
   
 
-  console.log(segments)
+  console.log(positions)
 
   //setSegments(segments)
   setPositions(positions);
