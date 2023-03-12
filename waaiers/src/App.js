@@ -22,10 +22,10 @@ function inRange(x, min, max) {
   return ((x-min)*(x-max) <= 0);
 }
 
-const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
+const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegments)=>
 {
 
-  const raceTime = '2023-03-10T12:00:00Z'
+  const raceTime = '2023-03-12T12:00:00Z'
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
@@ -61,8 +61,23 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
   const windSpeed = returnedData['wind.speed.at-10m'].data;
   const windSpeedGust = returnedData['wind.speed.gust.at-10m'].data;
 
-  const positions = [];
+  let positions = [];
+ 
   const kmInterval = 15;
+
+
+  //Segment related constants and data
+  let segments = [];
+  //The golden angle is the ideal angle for causing cross wind splits
+  //An angle of 0 is a tail wind
+  const windAngleGolden = 75;
+  //Range of angle around the golden angle that would cause splits
+  const windAngleZone = 30;
+  const minWindSpeed = 0;
+  const minSegmentLength = 0;
+
+
+
   //With the returned wind data we now want to assign the value to the km region. As the api was only called for every x km. We also want
   for(let i = 0; i < gpxPoints.length-1; i++)
   {
@@ -78,7 +93,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     //Wind direction is viewed as the direction the wind came from therefore it needs to be shifted by 180 to get a value of direction wind  came from
     const invertedWindDirection = (gpxPoints[i].wind_direction + 180) % 360;
     let windRouteRelativeDirection = gpxPoints[i].route_dir - invertedWindDirection;
-    console.log(gpxPoints[i].wind_direction)
+  
     //Modulos doesnt work for negative numbers so 360 must be added if less than 0
    //if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
     gpxPoints[i].wind_route_realtive = windRouteRelativeDirection;
@@ -113,7 +128,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
     if(positions.length == 0)
     {
       //In case of first segment an inital item must be added
-      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection]})
+      positions.push({id: 0, class:gpxPoints[i].wind_classifcation, latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection]})
 
     } 
     else
@@ -121,40 +136,79 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
       //Get the current line segment 
       const currentLineSegment = positions[positions.length-1];
       
-      //Check if the classifcation of wind has changed if so a new segment should be rendered
-      //Incases where the classifcation is the same we cant to add the cords to the prior segment
+      //Check if the direction of wind relative to the rider has changed enough to warrant the creatio of a new segment
       const segmentSensitivity = 45;
+      //The wind relatie to the rider is averaged from all points on the line
       const averageSectorWind = average(currentLineSegment.segmentWindAngle);
       const upperBound = (averageSectorWind + segmentSensitivity) ;
       let lowerBound = averageSectorWind - segmentSensitivity;
-     
       let inRange = false;
 
-      //console.log("Lower " + lowerBound +" Upper " + upperBound + "Wind route direction" + windRouteRelativeDirection) 
-      
-        if(windRouteRelativeDirection >= lowerBound && windRouteRelativeDirection <= upperBound )
-        {
-          inRange = true
-        }
+      //Check if outside range
+      if(windRouteRelativeDirection >= lowerBound && windRouteRelativeDirection <= upperBound )
+      {
+        inRange = true
+      }
       
 
 
-      if(!inRange) /*currentLineSegment.class != gpxPoints[i].wind_classifcation*/
+      if(!inRange) 
       {
         //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
         //If the prior polyline was only a single point it an be removed
         if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].lat,gpxPoints[i].lon])
         {
-         // positions.pop();
+         positions.pop();
         }
         else
         {
-          
-        }
-        currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
-        currentLineSegment.kmEnd = gpxPoints[i].distance_end;
+          currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+          currentLineSegment.kmEnd = gpxPoints[i].distance_end;
 
-        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation, linecolor: setLineColor(gpxPoints[i].wind_classifcation), latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection]})
+          //The difficulty of this segment and its likelihood to cause crosswinds is determined here
+          let segmentWorthy = true;
+
+          //First length is evalutated
+          console.log(currentLineSegment.kmStart)
+          const segmentLength = currentLineSegment.kmEnd - currentLineSegment.kmStart;
+          
+          if(segmentLength  > minSegmentLength)
+          {
+            //Calculate difficulty score
+          }
+          else
+          {
+            segmentWorthy = false;
+          }
+
+           //Next wind direction
+           const segmentWindDir = (average(currentLineSegment.segmentWindAngle) + 360) % 360
+          
+           if((segmentWindDir < (windAngleGolden+windAngleZone) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210)))
+           {
+             //Calculate difficulty score
+           }
+           else
+           {
+             segmentWorthy = false;
+           }
+
+
+         
+         // currentLineSegment.linecolor = setLineColor(currentLineSegment)
+
+           if(segmentWorthy)
+           {
+            currentLineSegment.linecolor = 'red'
+           }
+           else{
+            currentLineSegment.linecolor = 'black'
+           }
+         
+        }
+        
+
+        positions.push({id: positions.length, class:gpxPoints[i].wind_classifcation,  latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: gpxPoints[i].distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection]})
       }
       else
       {
@@ -166,10 +220,14 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions)=>
   } 
 
 
+  //Generate the segments of intrest 
+  
 
+  
 
+  console.log(segments)
 
-
+  //setSegments(segments)
   setPositions(positions);
   
 
@@ -183,7 +241,7 @@ const IntrestSegmentContainer = (props) =>
 {
   if(props.data != null)
   {
-    console.log(props)
+   
     return(
       <div className='intrestSegmentContainer'>
         <IntrestSegment data = {props.data[0]}/>
@@ -200,7 +258,7 @@ const IntrestSegment = (props) =>
     const segmentData = props.data
     const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
-    console.log(props.data)
+  
     return(
       <div className = "intrestSegment">
         <p>{kmStart}km - {kmEnd}km | Difficulty: ⭐⭐⭐</p>
@@ -242,17 +300,18 @@ function App()
   const weatherAPIData = intalizedGPXData[1];
   
   const [positions,setPositions] = useState(null);
+  const [segments,setSegments] = useState(null);
   
   return (
     <div className="App">
       <Navbar/>
       <div className = "body">
-        <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions)}}>Call Api</button>
+        <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions,setSegments)}}>Call Api</button>
         <button onClick={()=>console.log(positions)}> Api</button>
         <h1>Omlopop Het Nieuwsblad</h1>
         <RouteWindMap data = {positions} />
         <h2>Segments of Intrest</h2>
-        <IntrestSegmentContainer data = {positions}/>
+        <IntrestSegmentContainer data = {segments}/>
       </div>
     </div>
   );
