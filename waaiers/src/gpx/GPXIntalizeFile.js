@@ -13,7 +13,9 @@ function GPXIntalizeFile ()
 
     //GPX data must be seralized into a format friendly to the leaflet react library
     //This is an array of lat, long cordinates
-    const gpxPoints = gpx.tracks[0].points;
+
+    let gpxPoints = [];
+    const parsedPoints = gpx.tracks[0].points;
 
     let distance = 0;
 
@@ -24,27 +26,39 @@ function GPXIntalizeFile ()
 
 
     //We also want to add a distance start value, distance end value for every gpx point and direction
-    for(let i = 0; i < gpxPoints.length-1; i++)
+    for(let i = 0; i < parsedPoints.length-1; i++)
     {
+        //First check if any overlap exists between lat/lon.
+        //If so these points should be removed as the break the bearing calculations
+        if(!(parsedPoints[i].lat == parsedPoints[i+1].lat || parsedPoints[i].lon == parsedPoints[i+1].lon))
+        {
+            
+        let gpxPoint = {lat: parsedPoints[i].lat,lon: parsedPoints[i].lon}
+
         //Set the distance start value
-        gpxPoints[i].distance_start = distance;
+        gpxPoint.distance_start = distance;
         
         //Increment the distance travelled
-        distance += distanceBetweenGPXPoints(gpxPoints[i].lat, gpxPoints[i+1].lat,gpxPoints[i].lon, gpxPoints[i+1].lon);
+        distance += distanceBetweenGPXPoints(parsedPoints[i].lat, parsedPoints[i+1].lat,parsedPoints[i].lon, parsedPoints[i+1].lon);
 
         //Set the distance end value
-        gpxPoints[i].distance_end = distance;
+        gpxPoint.distance_end = distance;
 
         //Set the direction travelled
-        gpxPoints[i].route_dir = bearingBetweenGPXPoints(gpxPoints[i].lat, gpxPoints[i+1].lat,gpxPoints[i].lon, gpxPoints[i+1].lon);
+        gpxPoint.route_dir = bearingBetweenGPXPoints(parsedPoints[i].lat, parsedPoints[i+1].lat,parsedPoints[i].lon, parsedPoints[i+1].lon);
         
         //Save the lat and lon for every interval travelled to the weather api file
         const distanceKm = distance/1000;
         
         if((Math.floor(distanceKm) % kmInterval === 0) && (Math.floor(distanceKm/kmInterval) === weatherAPIData.length))
         {
-            weatherAPIData.push({lon: gpxPoints[i].lon, lat: gpxPoints[i].lat});
+            weatherAPIData.push({lon: parsedPoints[i].lon, lat: parsedPoints[i].lat});
         }
+    
+        gpxPoints.push(gpxPoint)
+        }
+        
+    
     } 
 
     return [gpxPoints,weatherAPIData]

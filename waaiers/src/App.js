@@ -98,7 +98,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
    if(windRouteRelativeDirection < 0) windRouteRelativeDirection += 360;
     gpxPoints[i].wind_route_realtive = windRouteRelativeDirection;
 
-    console.log("Wind rela " +windRouteRelativeDirection + "route " + gpxPoints[i].route_dir )
+
     //We can then classify the wind direction based on this relative value
     //330 - 30 tailwind
     //30 - 90 & 270 - 330 cross tailwind
@@ -123,7 +123,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
       let currentLineSegment = positions[positions.length-1];
       
       //Check if the direction of wind relative to the rider has changed enough to warrant the creatio of a new segment
-      const segmentSensitivity = 60;
+      const segmentSensitivity = 40;
       //The wind relatie to the rider is averaged from all points on the line
       const averageSectorWind = average(currentLineSegment.segmentWindAngle);
       const upperBound = (averageSectorWind + segmentSensitivity) ;
@@ -141,14 +141,13 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
 
       if(!inRange) 
       {
-        console.log("Avg " + averageSectorWind + "Wind " + windRouteRelativeDirection)
+      
         //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
         //If the prior polyline was only a single point it an be removed
         if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].lat,gpxPoints[i].lon])
         {
          positions.pop();
-         currentLineSegment = positions[positions.length-1];
-         currentLineSegment.latlon.push([gpxPoints[i].lat,gpxPoints[i].lon]);
+        
         
         }
         else
@@ -160,7 +159,6 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
           let segmentWorthy = true;
 
           //First length is evalutated
-          console.log(currentLineSegment.kmStart)
           const segmentLength = currentLineSegment.kmEnd - currentLineSegment.kmStart;
           
           if(segmentLength  > minSegmentLength)
