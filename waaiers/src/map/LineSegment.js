@@ -25,9 +25,9 @@ const LineSegment = (props)=>
         pathOptions={{ fillColor: 'red', color: props.linecolor }}
         positions={props.latlon}
         eventHandlers={{
-            mouseover: ()=>(displayPopUp(true)),
+            mouseover: ()=>(console.log(props)),
             moveend: ()=>(displayPopUp(false)),
-           
+            
         }}
         
         
