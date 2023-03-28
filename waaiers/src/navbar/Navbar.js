@@ -43,7 +43,7 @@ function Navbar() {
               <a href="/home">Home</a>
             </li>
             <li>
-              <a href="/about">About</a>
+              <a href="/load.js">Load</a>
             </li>
             <li>
               <a href="/contact">Contact</a>

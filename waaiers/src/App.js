@@ -25,7 +25,7 @@ function inRange(x, min, max) {
 const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegments)=>
 {
 
-  const raceTime = '2023-03-27T12:00:00Z'
+  const raceTime = '2023-03-28T12:00:00Z'
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
