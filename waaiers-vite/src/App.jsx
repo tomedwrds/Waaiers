@@ -16,7 +16,7 @@ const average = array => array.reduce((a, b) => a + b) / array.length;
 const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegments)=>
 {
 
-  const raceTime = '2023-03-28T12:00:00Z'
+  const raceTime = '2023-04-09T12:00:00Z'
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
