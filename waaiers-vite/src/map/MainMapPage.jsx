@@ -6,17 +6,14 @@ import RouteWindMap from './RouteWindMap';
 import fetchWeatherData from '../weatherAPI/fetchWeatherData';
 import IntrestSegmentContainer from '../segments of intrest/IntrestSegmentContainer';
 
-//GPXIntalizeFile returns array 0 - gpxPoints, 1- weatherAPIData
-const intalizedGPXData = GPXIntalizeFile();
+
 
 
 
 
 const MainMapPage = () => {
     
-    //Get the GPX points and the associated weather data
-    const gpxPoints = intalizedGPXData[0];
-    const weatherAPIData = intalizedGPXData[1];
+    
 
     //Create the postion and segments state hook
     const [positions,setPositions] = useState(null);
@@ -24,6 +21,13 @@ const MainMapPage = () => {
 
 
     useEffect(() => {
+        //GPXIntalizeFile returns array 0 - gpxPoints, 1- weatherAPIData
+        const intalizedGPXData = GPXIntalizeFile();
+
+        //Get the GPX points and the associated weather data
+        const gpxPoints = intalizedGPXData[0];
+        const weatherAPIData = intalizedGPXData[1];
+
         //Fetches the weather data on page load
         fetchWeatherData(gpxPoints,weatherAPIData,setPositions,setSegments);
     }, [])

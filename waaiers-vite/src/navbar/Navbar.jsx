@@ -41,14 +41,15 @@ function Navbar() {
         }
       >
           <ul>
+            {/* Link makes use of client side routing, meaning a full document request is not done */}
             <li>
-              <Link to="/home">Home</Link>
+              <Link to="home">Home</Link>
             </li>
             <li>
-            <Link to="/load">Load</Link>
+              <Link to="load">Load</Link>
             </li>
             <li>
-            <Link to="/contact">Contact</Link>
+              <Link to="contact">Contact</Link>
             </li>
           </ul>
         </div>

@@ -10,7 +10,8 @@ import {
   RouterProvider
 } from "react-router-dom"
 import MainMapPage from './map/MainMapPage.jsx'
-import UploadGPX from './gpx/UploadGpx.jsx'
+
+import FileUploader from './FileUploader.jsx'
 
 
 const router = createBrowserRouter([
@@ -20,14 +21,14 @@ const router = createBrowserRouter([
     errorElement: <p>error error</p>,
     children: [
       {
-        path: "/home",
-        index: true,
-        element: <MainMapPage/>,
+        path: "load",
+        element: <FileUploader/>,
       },
       {
-        path: "/load",
-        element: <UploadGPX/>
+        path: "home",
+        element: <MainMapPage/>,
       }
+      
     ]
   },
 ]);

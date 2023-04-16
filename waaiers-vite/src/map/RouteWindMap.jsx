@@ -8,6 +8,7 @@ const RouteWindMap = (props) => {
     {
         return(
             <div id="mainMap">
+             
             <MapContainer style={{width:'100%',height:'100%'}} center={props.data[0].latlon[0]} zoom={10} scrollWheelZoom={false}>
             <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
