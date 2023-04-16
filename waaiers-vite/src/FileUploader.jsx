@@ -5,18 +5,7 @@ import supabase from './supabase/supabase';
 
 function FileUploader() 
 {
-    const [countries, setCountries] = useState([]);
-
-    useEffect(() => {
-      getCountries();
-    }, []);
-
-    async function getCountries() {
-      const { data } = await supabase.from("Routes").select();
-      setCountries(data);
-      console.log(data)
-        
-    }
+    
 
     const [file, setFile] = useState(null);
     const [gpxData, setGPXData] = useState(null);
@@ -47,18 +36,38 @@ function FileUploader()
 
     },[file])
 
-    console.log(countries)
+   
 
+    async function addRoute() {
+        const { error } = await supabase.from('Routes').insert({ route_name: 'Denmark' })
+        console.log(error)
+        
+    }
+
+    //An empty route data object is defined that is 
+    const[routeData,setRouteData] = useState({route_date:null,route_time:null,route_length:null,route_location:null})
+    console.log(routeData)
+
+    
     return (
         <div>
-    <input
-        type="file"
-        accept='.gpx'
-        onChange={changeHandler}
-    />
-  
-       
+        <button onClick={()=>addRoute()}>asfasf</button>
+
+        <form onSubmit={()=>{addRoute(); return false}}>
+        <div>
+            <input type ="text" onChange={(e)=>setRouteData({...routeData, route_name: e.target.value})}  />
+            <input type ="date" />
+            <input type ="time" />
+            <input type ="number" step="0.01" />
+            <input
+                type="file"
+                accept='.gpx'
+                onChange={changeHandler}
+            />
+            <input type="submit" value = "Submit"/>
         </div>
+    </form>
+    </div>
     
      
   );
