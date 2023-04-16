@@ -39,34 +39,44 @@ function FileUploader()
    
 
     async function addRoute() {
-        const { error } = await supabase.from('Routes').insert({ route_name: 'Denmark' })
-        console.log(error)
+        //Checks wether the user has filled out all aspects of the form
+        if(routeData.route_date && routeData.route_name &&  routeData.route_time &&  routeData.route_length &&  routeData.route_location)
+        {
+            const { error } = await supabase.from('Routes').insert(routeData)
+            console.log(error)
+        }
+        else
+        {
+            console.log("form not complete")
+        }
         
     }
 
-    //An empty route data object is defined that is 
-    const[routeData,setRouteData] = useState({route_date:null,route_time:null,route_length:null,route_location:null})
+     //An empty route data object is defined that is immutability updated to add all propeties of the route
+    //This object is in the format of that required for the insert of route query
+    const[routeData,setRouteData] = useState({route_name:null,route_date:null,route_time:null,route_length:null,route_location:null})
     console.log(routeData)
 
     
     return (
         <div>
-        <button onClick={()=>addRoute()}>asfasf</button>
+        
 
-        <form onSubmit={()=>{addRoute(); return false}}>
+    
         <div>
             <input type ="text" onChange={(e)=>setRouteData({...routeData, route_name: e.target.value})}  />
-            <input type ="date" />
-            <input type ="time" />
-            <input type ="number" step="0.01" />
+            <input type ="date" onChange={(e)=>setRouteData({...routeData, route_date: e.target.value})}/>
+            <input type ="time" onChange={(e)=>setRouteData({...routeData, route_time: e.target.value})}/>
+            <input type ="number" step="0.01" onChange={(e)=>setRouteData({...routeData, route_length: e.target.value})}/>
+            <input type ="text" onChange={(e)=>setRouteData({...routeData, route_location: e.target.value})}/>
             <input
                 type="file"
                 accept='.gpx'
                 onChange={changeHandler}
             />
-            <input type="submit" value = "Submit"/>
+           <button onClick={()=>addRoute()}>Submit</button>
         </div>
-    </form>
+    
     </div>
     
      
