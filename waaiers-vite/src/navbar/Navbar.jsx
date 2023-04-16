@@ -1,5 +1,7 @@
+
 import './navbar.css'
 import { useState } from "react";
+import { Link } from 'react-router-dom';
 
 
 function Navbar() {
@@ -40,13 +42,13 @@ function Navbar() {
       >
           <ul>
             <li>
-              <a href="/home">Home</a>
+              <Link to="/home">Home</Link>
             </li>
             <li>
-              <a href="/load.js">Load</a>
+            <Link to="/load">Load</Link>
             </li>
             <li>
-              <a href="/contact">Contact</a>
+            <Link to="/contact">Contact</Link>
             </li>
           </ul>
         </div>

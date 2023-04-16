@@ -5,7 +5,7 @@ import average from "../generalpurposefunctions/average";
 const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegments)=>
 {
 
-  const raceTime = '2023-04-09T12:00:00Z'
+  const raceTime = '2023-04-16T12:00:00Z'
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 

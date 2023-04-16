@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 import GPXIntalizeFile from '../gpx/GPXIntalizeFile';
@@ -21,10 +21,15 @@ const MainMapPage = () => {
     //Create the postion and segments state hook
     const [positions,setPositions] = useState(null);
     const [segments,setSegments] = useState(null);
+
+
+    useEffect(() => {
+        //Fetches the weather data on page load
+        fetchWeatherData(gpxPoints,weatherAPIData,setPositions,setSegments);
+    }, [])
+
     return(
-        <div className = "body">
-            <button onClick={()=> {fetchWeatherData(gpxPoints,weatherAPIData,setPositions,setSegments)}}>Call Api</button>
-            <button onClick={()=>console.log(positions)}> Api</button>
+        <div className = "body">  
             <h1>Omlopop Het Nieuwsblad</h1>
             <RouteWindMap data = {positions} />
             <h2>Segments of Intrest</h2>
