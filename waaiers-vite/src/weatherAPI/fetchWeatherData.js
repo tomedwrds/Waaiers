@@ -1,4 +1,3 @@
-import getMetServiceApiKey from "../private/APIKey";
 import average from "../generalpurposefunctions/average";
 
 
@@ -25,7 +24,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': getMetServiceApiKey() //API is stored in private file so it cant be stolen and malsicsoly used
+      'x-api-key': import.meta.env.VITE_metservice_api_key //API is stored in private file so it cant be stolen and malsicsoly used
     }
   };
 

@@ -1,12 +1,22 @@
 
-
-
 import { useEffect, useState } from 'react';
-
+import supabase from './supabase/supabase';
 
 
 function FileUploader() 
 {
+    const [countries, setCountries] = useState([]);
+
+    useEffect(() => {
+      getCountries();
+    }, []);
+
+    async function getCountries() {
+      const { data } = await supabase.from("Routes").select();
+      setCountries(data);
+      console.log(data)
+        
+    }
 
     const [file, setFile] = useState(null);
     const [gpxData, setGPXData] = useState(null);
@@ -23,9 +33,11 @@ function FileUploader()
         //Checks that file is set as useEffect runs on first render
         if (file) 
         {
-
+            //Read the file
             const fileReader = new FileReader();
             fileReader.readAsText(file);
+
+            //Wait till the read is finished
             fileReader.onload = (e) => {
                 const { result } = e.target;
                 setGPXData(result)
@@ -35,14 +47,21 @@ function FileUploader()
 
     },[file])
 
-  console.log(gpxData)
-  return (
+    console.log(countries)
+
+    return (
+        <div>
     <input
         type="file"
         accept='.gpx'
         onChange={changeHandler}
     />
+  
+       
+        </div>
+    
      
   );
 }
+
 export default FileUploader;

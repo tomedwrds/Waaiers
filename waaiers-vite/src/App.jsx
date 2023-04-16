@@ -1,5 +1,5 @@
 import './App.css';
-import './private/APIKey.js';
+
 import { Outlet } from 'react-router-dom';
 
 import Navbar from './navbar/Navbar.jsx';

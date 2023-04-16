@@ -1,2 +1,2 @@
 # private folder contains all api keys and data I dont want to publish to a public repo
-waaiers/src/private
+.env
