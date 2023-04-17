@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import supabase from './supabase/supabase';
+import GPXIntalizeFile from './gpx/GPXIntalizeFile';
 
 
 function FileUploader() 
@@ -8,7 +9,7 @@ function FileUploader()
     
 
     const [file, setFile] = useState(null);
-    const [gpxData, setGPXData] = useState(null);
+    const [routeGpxData, setRouteGPXData] = useState(null);
 
     const changeHandler = (e) => {
         const file = e.target.files[0];
@@ -29,7 +30,7 @@ function FileUploader()
             //Wait till the read is finished
             fileReader.onload = (e) => {
                 const { result } = e.target;
-                setGPXData(result)
+                setRouteGPXData(result)
             }
             
       }
@@ -40,10 +41,34 @@ function FileUploader()
 
     async function addRoute() {
         //Checks wether the user has filled out all aspects of the form
-        if(routeData.route_date && routeData.route_name &&  routeData.route_time &&  routeData.route_length &&  routeData.route_location)
+        if(routeData.route_date && routeData.route_name &&  routeData.route_time &&  routeData.route_length &&  routeData.route_location && routeGpxData)
         {
-            const { error } = await supabase.from('Routes').insert(routeData)
-            console.log(error)
+            //Insert the route data into the database
+            const routeInsertQuery = await supabase.from('Routes').insert(routeData).select();
+             
+            //The inserted row is returned and from that we can retrieve the id of the route which can then be used as a common key
+            const route_id = routeInsertQuery.data[0].id
+           
+            //This functions returns an array. Index 0 is all gpx points. Index 1 is all points to check weather on
+            const [pointData, weatherData] = GPXIntalizeFile(routeGpxData)
+            
+            //Next the weather data is inserted we first need to add in the id of the route to function as a forgein key
+            weatherData.map((data)=>{data.route_id = route_id})
+            
+            //Finally insert the route weather data
+            const weatherInsertQuery = await supabase.from('Weather').insert(weatherData).select();
+
+            //The data from the query is retruned we want to get the id of the first weather point to use as common key for route points
+            const weather_id = weatherInsertQuery.data[0].id
+
+            //Add the offset of the id to all points
+            pointData.map((data)=>{data.weather_id += weather_id})
+
+            //Finally insert the route point data
+            const pointInsertQuery = await supabase.from('Points').insert(pointData);
+
+
+           
         }
         else
         {
@@ -60,10 +85,6 @@ function FileUploader()
     
     return (
         <div>
-        
-
-    
-        <div>
             <input type ="text" onChange={(e)=>setRouteData({...routeData, route_name: e.target.value})}  />
             <input type ="date" onChange={(e)=>setRouteData({...routeData, route_date: e.target.value})}/>
             <input type ="time" onChange={(e)=>setRouteData({...routeData, route_time: e.target.value})}/>
@@ -75,9 +96,9 @@ function FileUploader()
                 onChange={changeHandler}
             />
            <button onClick={()=>addRoute()}>Submit</button>
-        </div>
+      
     
-    </div>
+        </div>
     
      
   );

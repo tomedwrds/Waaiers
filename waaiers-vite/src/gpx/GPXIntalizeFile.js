@@ -6,7 +6,7 @@ import gpxdata from '../racedata/omloophetnieuwsblad2023.js';
 import { XMLParser } from 'fast-xml-parser';
 
 
-function GPXIntalizeFile ()
+function GPXIntalizeFile (gpxData)
 {
 
     //This XML parser ignores attribuites unless told to consider them
@@ -17,9 +17,8 @@ function GPXIntalizeFile ()
     };
     
     const gpxParser = new XMLParser(options);
-    const gpx = gpxParser.parse(gpxdata);
+    const gpx = gpxParser.parse(gpxData);
     
-    console.log(gpx)
 
 
     //GPX data must be seralized into a format friendly to the leaflet react library
@@ -27,7 +26,7 @@ function GPXIntalizeFile ()
 
     let gpxPoints = [];
     const parsedPoints = gpx.gpx.trk.trkseg.trkpt;
-    console.log(parsedPoints)
+    
     let distance = 0;
 
     //I am limited by the amount of metservice api calls I can make on the free metservice plan
@@ -43,35 +42,38 @@ function GPXIntalizeFile ()
         //If so these points should be removed as the break the bearing calculations
         if(!(parsedPoints[i].lat == parsedPoints[i+1].lat || parsedPoints[i].lon == parsedPoints[i+1].lon))
         {
+                
+            let gpxPoint = {point_lat: parsedPoints[i].lat,point_lon: parsedPoints[i].lon, point_elev: parsedPoints[i].ele}
+
+            //Set the distance start value
+            gpxPoint.point_distance_start = distance;
             
-        let gpxPoint = {lat: parsedPoints[i].lat,lon: parsedPoints[i].lon}
+            //Increment the distance travelled
+            distance += distanceBetweenGPXPoints(parsedPoints[i].lat, parsedPoints[i+1].lat,parsedPoints[i].lon, parsedPoints[i+1].lon);
 
-        //Set the distance start value
-        gpxPoint.distance_start = distance;
-        
-        //Increment the distance travelled
-        distance += distanceBetweenGPXPoints(parsedPoints[i].lat, parsedPoints[i+1].lat,parsedPoints[i].lon, parsedPoints[i+1].lon);
+            //Set the distance end value
+            gpxPoint.point_distance_end = distance;
 
-        //Set the distance end value
-        gpxPoint.distance_end = distance;
-
-        //Set the direction travelled
-        gpxPoint.route_dir = bearingBetweenGPXPoints(parsedPoints[i].lat, parsedPoints[i+1].lat,parsedPoints[i].lon, parsedPoints[i+1].lon);
-        
-        //Save the lat and lon for every interval travelled to the weather api file
-        const distanceKm = distance/1000;
-        
-        if((Math.floor(distanceKm) % kmInterval === 0) && (Math.floor(distanceKm/kmInterval) === weatherAPIData.length))
-        {
-            weatherAPIData.push({lon: parsedPoints[i].lon, lat: parsedPoints[i].lat});
-        }
-    
-        gpxPoints.push(gpxPoint)
+            //Set the direction travelled
+            gpxPoint.point_dir = bearingBetweenGPXPoints(parsedPoints[i].lat, parsedPoints[i+1].lat,parsedPoints[i].lon, parsedPoints[i+1].lon);
+            
+            //Save the lat and lon for every interval travelled to the weather api file
+            const distanceKm = distance/1000;
+            
+            //The first part checks if distance is an interval and the second that its the only point saved at that interval
+            if((Math.floor(distanceKm) % kmInterval === 0) && (Math.floor(distanceKm/kmInterval) === weatherAPIData.length))
+            {
+                weatherAPIData.push({weather_lon: parsedPoints[i].lon, weather_lat: parsedPoints[i].lat});
+            }
+            
+            //the gpx point object then has the id of the corresponding weather point added to it
+            gpxPoints.push({...gpxPoint,weather_id: weatherAPIData.length-1})
         }
         
     
     } 
-    console.log(weatherAPIData)
+    console.log(gpxPoints)
+    
     return [gpxPoints,weatherAPIData]
 }
 
