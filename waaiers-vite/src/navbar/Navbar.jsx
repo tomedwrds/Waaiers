@@ -49,7 +49,10 @@ function Navbar() {
               <Link to="load">Load</Link>
             </li>
             <li>
-              <Link to="contact">Contact</Link>
+              <Link to="races">Races</Link>
+            </li>
+            <li>
+              <Link to="login">Login</Link>
             </li>
           </ul>
         </div>

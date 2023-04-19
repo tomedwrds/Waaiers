@@ -62,7 +62,7 @@ function FileUploader()
             const weather_id = weatherInsertQuery.data[0].id
 
             //Add the offset of the id to all points
-            pointData.map((data)=>{data.weather_id += weather_id})
+            pointData.map((data)=>{data.weather_id += weather_id,data.route_id = route_id})
 
             //Finally insert the route point data
             const pointInsertQuery = await supabase.from('Points').insert(pointData);

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import Navbar from './navbar/Navbar.jsx'
 import './index.css'
-
+import UpcomingRaces from './UpcomingRaces.jsx'
 
 
 import {
@@ -14,6 +14,7 @@ import {
 import MainMapPage from './map/MainMapPage.jsx'
 
 import FileUploader from './FileUploader.jsx'
+import Login from './Login.jsx'
 
 
 const router = createBrowserRouter([
@@ -29,6 +30,14 @@ const router = createBrowserRouter([
       {
         path: "home",
         element: <MainMapPage/>,
+      },
+      {
+        path: "races",
+        element: <UpcomingRaces/>,
+      },
+      {
+        path: "login",
+        element: <Login/>,
       }
       
     ]
