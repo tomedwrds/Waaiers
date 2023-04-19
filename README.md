@@ -14,6 +14,12 @@ Waaiers will generate wind analysis for all races in the UCI World Tour and Pro 
   </p>
 </div>
 
+## Tech Stack
+- React
+- Vite
+- Supabase
+- PostgreSQL
+
 ## Current Progress
 - Setup external APIs to access weather data
 - Added segment classifier that breaks the extended route in segments that are in the same direction.
