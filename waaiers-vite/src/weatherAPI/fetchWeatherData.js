@@ -1,15 +1,18 @@
 import average from "../generalpurposefunctions/average";
 
 
-const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegments)=>
+const fetchWeatherData = async (gpxPoints,weatherAPIData,routeTime,routeDate)=>
 {
 
-  const raceTime = '2023-04-16T12:00:00Z'
+  //The data has to be first parsed from its format in the database to the format for the api call
+  const weatherAPIDataParsed =weatherAPIData.map((item)=>{return{lat:item.weather_lat,lon:item.weather_lon}})
+  
+  const raceTime = routeDate+'T'+routeTime+':00Z';
 
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
   const data = {
-    points: weatherAPIData,
+    points: weatherAPIDataParsed,
     variables: ['wind.direction.at-10m','wind.speed.at-10m','wind.speed.gust.at-10m'],
     time: {
       from: raceTime,
@@ -36,10 +39,8 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
 
   //Retrieve the data from the API call
   const returnedData = json.variables;
-  const windDirection = returnedData['wind.direction.at-10m'].data;
-  const windSpeed = returnedData['wind.speed.at-10m'].data;
-  const windSpeedGust = returnedData['wind.speed.gust.at-10m'].data;
 
+  return returnedData;
   let positions = [];
  
   const kmInterval = 15;
@@ -85,7 +86,7 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
     if(positions.length == 0)
     {
       //In case of first segment an inital item must be added
-      positions.push({id: 0, latlon: [[gpxPoints[i].lat,gpxPoints[i].lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].wind_speed_gust]})
+      positions.push({id: 0, latlon: [[gpxPoints[i].weather_lat,gpxPoints[i].weather_lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].wind_speed_gust]})
 
     } 
     else
@@ -162,10 +163,6 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,setPositions,setSegment
 
   } 
 
-
-  //Set the segments of intrest
-  setSegments(segments)
-  setPositions(positions);
   
 
 }

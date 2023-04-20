@@ -13,7 +13,7 @@ import IntrestSegmentContainer from '../segments of intrest/IntrestSegmentContai
 
 const MainMapPage = () => {
     
-    
+    console.log('f')
 
     //Create the postion and segments state hook
     const [positions,setPositions] = useState(null);
@@ -23,7 +23,7 @@ const MainMapPage = () => {
     useEffect(() => {
         //GPXIntalizeFile returns array 0 - gpxPoints, 1- weatherAPIData
         const intalizedGPXData = GPXIntalizeFile();
-
+        console.log(intalizedGPXData)
         //Get the GPX points and the associated weather data
         const gpxPoints = intalizedGPXData[0];
         const weatherAPIData = intalizedGPXData[1];
