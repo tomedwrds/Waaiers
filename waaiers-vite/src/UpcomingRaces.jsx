@@ -11,7 +11,7 @@ const UpcomingRaces = () =>
     useEffect(()=>{
         async function loadRouteData()
         {
-            const {data} = await supabase.from('Routes').select("*");
+            const {data} = await supabase.from('Routes').select('*');
             setAllRouteData(data);
         }
         loadRouteData();
