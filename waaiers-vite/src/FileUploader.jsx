@@ -65,7 +65,7 @@ function FileUploader()
 
     },[file])
 
-
+    
     const navigate = useNavigate();
    
 

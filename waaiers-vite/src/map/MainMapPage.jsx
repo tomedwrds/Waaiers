@@ -23,6 +23,7 @@ const MainMapPage = () => {
     
     useEffect(() => {
         //Fetches the weather data on page load
+        console.log(state.pointData)
         generateMapData(state.pointData,setPositions,setSegments);
     }, [])
     
