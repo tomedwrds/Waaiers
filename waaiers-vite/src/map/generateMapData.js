@@ -68,7 +68,7 @@ function generateMapData(gpxPoints,setPositions,setSegments)
           //If the prior polyline was only a single point it an be removed
           if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].point_lat,gpxPoints[i].point_lon])
           {
-           positions.pop();      
+            positions.pop();      
           }
           else
           {
@@ -93,7 +93,7 @@ function generateMapData(gpxPoints,setPositions,setSegments)
            
             if(segmentLongEnough && segmentWindDirCorrect && segmentWindSpeed)
             {
-              currentLineSegment.linecolor = '#' +  Math.floor(Math.random()*16777215).toString(16);
+              currentLineSegment.linecolor = 'red'//'#' +  Math.floor(Math.random()*16777215).toString(16);
               segments.push(currentLineSegment)
             }
             else

@@ -5,8 +5,9 @@ const IntrestSegment = (props) =>
     const segmentData = props.data
     const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
-  
+
     return(
+     
       <div className = "intrestSegment">
         <p>{kmStart}km - {kmEnd}km | Difficulty: ⭐⭐⭐</p>
        
@@ -20,7 +21,7 @@ const IntrestSegment = (props) =>
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <Polyline
-                pathOptions={{ fillColor: 'red', color: 'red' }}
+                pathOptions={{ fillColor: segmentData.linecolor, color: segmentData.linecolor }}
                 positions={segmentData.latlon}
                />
           
