@@ -56,7 +56,7 @@ const UpcomingRacesTab = (props)=>
 
 
     return(
-        <div style={{display: 'flex',margin:20}}>
+        <div style={{display: 'flex'}}>
             <p>Race: {routeData.route_name}</p>
             <button onClick={()=>loadRoutePointData()}>Load</button>
 
