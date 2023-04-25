@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import Navbar from './navbar/Navbar.jsx'
 import './index.css'
 import UpcomingRaces from './UpcomingRaces.jsx'
 
@@ -13,8 +12,8 @@ import {
 } from "react-router-dom"
 import MainMapPage from './map/MainMapPage.jsx'
 
-import FileUploader from './FileUploader.jsx'
 import Login from './Login.jsx'
+import UploadRoute from './upload route/UploadRoute.jsx'
 
 
 const router = createBrowserRouter([
@@ -25,7 +24,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "load",
-        element: <FileUploader/>,
+        element: <UploadRoute/>,
       },
       {
         path: "home",
