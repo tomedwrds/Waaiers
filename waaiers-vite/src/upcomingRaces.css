@@ -1,0 +1,40 @@
+.race-tab{
+    display: flex;
+ 
+    border-top: 2px solid;
+    border-color: black;
+    margin: 0px 20px;
+    align-items: center;
+
+  
+}
+
+.race-name {
+    flex:1;
+    justify-content: left;
+    text-align: left;
+    font-size: 20px;
+   
+   
+}
+
+.race-tab button{
+    margin: 20px;
+    background-color: white;
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+h3 {
+    justify-content: left;
+}
+
+.race-date {
+    
+ 
+
+}

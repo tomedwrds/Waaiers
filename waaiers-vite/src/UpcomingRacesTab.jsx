@@ -1,6 +1,6 @@
 import supabase from "./supabase/supabase";
 import { useNavigate } from "react-router-dom";
-
+import './upcomingRaces.css'
 const UpcomingRacesTab = (props)=>
 {
     const navigate = useNavigate();
@@ -54,11 +54,15 @@ const UpcomingRacesTab = (props)=>
         navigate('/home', { state: {pointData} });
     }
 
-
+    console.log(routeData.route_date)
     return(
-        <div style={{display: 'flex'}}>
-            <p>Race: {routeData.route_name}</p>
-            <button onClick={()=>loadRoutePointData()}>Load</button>
+        <div className="race-tab">
+            
+            <p className = "race-name">{routeData.route_name}</p>
+            <p className="race-date">{routeData.route_date[2]}/{routeData.route_date[1]}</p>
+          
+
+            <button onClick={()=>loadRoutePointData()}>Wind Map</button>
 
         </div>
     )
