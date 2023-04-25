@@ -1,14 +1,80 @@
 
 import './navbar.css'
-import { useState } from "react";
 import { Link } from 'react-router-dom';
 import logo from './logo.jpg'
 
+import { useEffect, useState } from "react";
+import supabase from "../supabase/supabase"
 
 function Navbar() {
     //State hook stores wether the popdown menu is expanded
     const [isNavExpanded, setIsNavExpanded] = useState(false);
+    const [userSignedIn,setUserSignedIn] = useState(null);
+
     
+
+    //USER LOGIN / OUT
+    //Below are a range of async functions that handle session getting login and sign out
+    async function getSession()
+    {
+        const { data, error } = await supabase.auth.getSession();
+
+        if(data.session)
+        {
+            setUserSignedIn(true)
+        }
+        else
+        {
+            setUserSignedIn(false)
+        }
+    }
+
+    async function googleLogin()
+    {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google'
+        })
+
+       
+    }
+
+    async function signOutUser()
+    {
+        const { data, error } = await supabase.auth.signOut()
+        //Update sign out status if user succesfully signed out
+        if(!error)
+        {
+          setUserSignedIn(false);
+        }
+        
+    }
+
+    //This function is called by the navbar and then is used too update log in out status
+    function handleLogInOut()
+    {
+      if(userSignedIn)
+      {
+        signOutUser();
+      }
+      else
+      {
+        googleLogin();
+      }
+      
+    }
+
+
+    //On page load check if there is an active session
+    useEffect(()=>{
+        getSession();
+
+    },[])
+
+   
+    
+
+
+
     return (
       <nav className="navigation">
         <div className='top-navbar'>
@@ -55,7 +121,7 @@ function Navbar() {
                 <Link className = "links-text" to="load">Try Yourself</Link>
               </li>
               <li>
-                <Link className = "links-text" to="login">Login</Link>
+                <Link  onClick = {()=>handleLogInOut()}className = "links-text" >{userSignedIn ? 'Log Out':'Sign In'}</Link>
               </li>
             </ul>
 
@@ -73,7 +139,7 @@ function Navbar() {
                 <Link className = "popup-links-text" to="load">Try Yourself</Link>
               </li>
               <li>
-                <Link className = "popup-links-text" to="login">Login</Link>
+                <Link onClick = {()=>handleLogInOut()} className = "popup-links-text" >{userSignedIn ? 'Log Out':'Sign In'}</Link>
               </li>
             </ul>
             </div>

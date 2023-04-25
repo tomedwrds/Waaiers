@@ -54,7 +54,7 @@ const UpcomingRacesTab = (props)=>
         navigate('/home', { state: {pointData} });
     }
 
-    console.log(routeData.route_date)
+   
     return(
         <div className="race-tab">
             
