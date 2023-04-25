@@ -76,14 +76,16 @@ function UploadRoute()
                     <label>Route File (.gpx)</label>
                     <input type="file" accept='.gpx' onChange={changeHandler}/>
                 </div>
+                <button onClick={()=>addRoute(routeData,routeGpxData,userAdmin,navigate)}>View Route</button>
             </div>
+            
            
             
             
             
           
             
-           <button onClick={()=>addRoute(routeData,routeGpxData,userAdmin,navigate)}>Submit</button>
+           
       
     
         </div>

@@ -1,27 +1,32 @@
 .input-container{
     flex:1;
     flex-direction: column;
-    background-color: aqua;
+   
     justify-content: center;
     display: flex;
     
 }
 .input-item label {
-  background-color: red;
+
   display: table-cell;
+  text-align: left;
+  font-size: 16px;
+  padding-right: 40px;
+
 
 }
 
 .input-item input {
-    background-color: blue;
+ 
     display: table-cell;
+    margin-bottom: 20px;
+   
     
 }
 
 .input-item {
-    background-color: pink;
-    margin: 20px;
    
+ 
     display: table-row;
 }
 
@@ -30,7 +35,8 @@
 
 .input-form{
  
-    background-color: red;
+
     justify-content: center;
+    align-self: center;
 
 }

@@ -69,7 +69,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
     }
     else
     {
-        console.log("form not complete")
+        alert("Submission error - form not complete")
     }
     
 }
