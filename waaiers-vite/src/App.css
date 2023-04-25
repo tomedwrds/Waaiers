@@ -49,47 +49,8 @@
 
 
 
-.intrestSegment {
-  border: 1px solid black;
-  padding-left: 5px;
-  padding-right: 5px;
-  
- 
-}
-.intrestSegmentContainer
-{
 
-   /* We first create a flex layout context */
-   display: flex;
 
-   /* Then we define the flow direction 
-      and if we allow the items to wrap 
-    * Remember this is the same as:
-    * flex-direction: row;
-    * flex-wrap: wrap;
-    */
-   flex-flow: row wrap;
- 
-   /* Then we define how is distributed the remaining space */
-   justify-content: space-around;
-  
-}
-
-#map {
-  position: relative;
-  border: 1px solid black;
-  border-radius: 8px;
- 
-  display: flex;
-  flex:1;
-  height: 240px;
-  overflow: hidden;
-
- 
-  margin: 5px;
- 
-  
-}
 
 #mainMap
 {

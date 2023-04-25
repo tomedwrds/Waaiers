@@ -1,0 +1,45 @@
+.intrestSegment {
+    border: 2px solid #00121c;
+    border-radius: 8px;
+    color: white;
+    background-color: #00121c;
+    margin: 20px;
+    padding: 4px;
+   
+  }
+  .intrestSegmentContainer
+  {
+  
+     /* We first create a flex layout context */
+     display: flex;
+  
+     /* Then we define the flow direction 
+        and if we allow the items to wrap 
+      * Remember this is the same as:
+      * flex-direction: row;
+      * flex-wrap: wrap;
+      */
+     flex-flow: row wrap;
+   
+     /* Then we define how is distributed the remaining space */
+     justify-content: space-around;
+    
+  }
+
+  #map {
+    position: relative;
+    
+    border-radius: 8px;
+   
+    display: flex;
+    flex:1;
+    height: 240px;
+    overflow: hidden;
+   
+    
+  }
+  .intrestSegment-header
+  {
+    flex: 1;
+    
+  }

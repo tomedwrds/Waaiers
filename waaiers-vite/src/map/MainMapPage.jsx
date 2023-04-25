@@ -30,9 +30,10 @@ const MainMapPage = () => {
 
     return(
         <div className = "body">  
-            <h1>Omlopop Het Nieuwsblad</h1>
+             <h1 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>Omloop heit Neuwsiblad</h1>
             <RouteWindMap data = {positions} />
-            <h2>Segments of Intrest</h2>
+            <h1 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>Segments of Intrest</h1>
+        
             <IntrestSegmentContainer data = {segments}/>
       </div>
     )

@@ -1,5 +1,5 @@
 import IntrestSegment from "./IntrestSegment"
-
+import './IntrestSegment.css';
 
 const IntrestSegmentContainer = (props) =>
 {
