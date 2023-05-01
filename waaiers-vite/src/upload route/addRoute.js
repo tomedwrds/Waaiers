@@ -7,7 +7,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
 
     
     //Checks wether the user has filled out all aspects of the form
-    if(routeData.route_date && routeData.route_name &&  routeData.route_time &&  routeData.route_length &&  routeData.route_location && routeGpxData)
+    if(routeData.route_date && routeData.route_name &&  routeData.route_time  && routeGpxData)
     {
         //This functions returns an array. Index 0 is all gpx points. Index 1 is all points to check weather on
         const [pointData, weatherData] = GPXIntalizeFile(routeGpxData)
@@ -59,7 +59,13 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
                                     item.weather_windgust = windSpeedGust[item.weather_id]});
            
             //Next we should route to the main map page and send the data
-            navigate('/home', { state: {pointData} });
+            
+            //Also we must send the route specific data
+            //These are just default values for displaying the route
+            routeData.route_center_point = 0;
+            routeData.route_zoom = 10;
+
+            navigate('/home', { state: {pointData,routeData} });
 
         }
         

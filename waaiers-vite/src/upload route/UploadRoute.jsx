@@ -52,7 +52,7 @@ function UploadRoute()
 
     //An empty route data object is defined that is immutability updated to add all propeties of the route
     //This object is in the format of that required for the insert of route query
-    const[routeData,setRouteData] = useState({route_name:null,route_date:null,route_time:null,route_length:null,route_location:null})
+    const[routeData,setRouteData] = useState({route_name:null,route_date:null,route_time:null})
     
    
     return (

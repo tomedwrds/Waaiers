@@ -15,11 +15,6 @@ const UpcomingRaces = () =>
 
 
             //I want the list of upcoming races to be sorted by date so I will split the date format into an array or year / month / day
-            //
-
-
-
-            //Then I will do a sort 
 
          
             {data.map((item,id)=>{
@@ -31,15 +26,6 @@ const UpcomingRaces = () =>
                 return Number(a.route_date[1]) - Number(b.route_date[1]) || Number(a.route_date[2]) - Number(b.route_date[2]);
             });
            
-
-
-            // //Then a header item is added for each month 
-            // months.forEach((month)=>{
-            //     if(month != 0)
-            //     {
-            //         data.push()
-            //     }
-            // })
             
 
 
@@ -61,9 +47,13 @@ const UpcomingRaces = () =>
             <h1>Upcoming Races</h1>
             
             {allRouteData.map((item,id)=>{
-                return(
-                    <UpcomingRacesTab key = {id} routeData={item} />
-                )
+                if(item.route_visible)
+                {
+                    return(
+                        <UpcomingRacesTab key = {id} routeData={item} />
+                    )
+                }
+                
             })}
         </div>
     )

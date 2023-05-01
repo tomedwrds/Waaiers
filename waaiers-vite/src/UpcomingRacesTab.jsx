@@ -51,7 +51,7 @@ const UpcomingRacesTab = (props)=>
         } while(pointData.length % 1000 == 0 && pointData.length != 0)
 
         //Finally navigate to the page to display it
-        navigate('/home', { state: {pointData} });
+        navigate('/home', { state: {pointData,routeData} });
     }
 
    
