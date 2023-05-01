@@ -7,8 +7,9 @@ const fetchWeatherData = async (gpxPoints,weatherAPIData,routeTime,routeDate)=>
   //The data has to be first parsed from its format in the database to the format for the api call
   const weatherAPIDataParsed =weatherAPIData.map((item)=>{return{lat:item.weather_lat,lon:item.weather_lon}})
   
+  console.log(weatherAPIDataParsed)
   const raceTime = routeDate+'T'+routeTime+':00Z';
-
+  console.log(raceTime)
   const url = 'https://forecast-v2.metoceanapi.com/point/time';
 
   const data = {

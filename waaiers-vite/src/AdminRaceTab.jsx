@@ -5,7 +5,7 @@ const AdminRaceTab = (props) =>{
     return(
         <div style = {{display:"flex"}}>
             <p>{props.data.route_name}</p>
-            <button onClick={()=>RefreshWeatherData(props.data.id)}>Update Weather</button>
+            <button onClick={()=>RefreshWeatherData(props.data)}>Update Weather</button>
         </div>
     )
 }
