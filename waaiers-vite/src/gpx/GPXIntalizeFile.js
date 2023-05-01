@@ -1,8 +1,5 @@
 import distanceBetweenGPXPoints from './distanceBetweenGPXPoints';
 import bearingBetweenGPXPoints from './bearingBetweenGPXPoints';
-import gpxdata from '../racedata/omloophetnieuwsblad2023.js';
-
-
 import { XMLParser } from 'fast-xml-parser';
 
 
@@ -59,9 +56,12 @@ function GPXIntalizeFile (gpxData)
             
             //Save the lat and lon for every interval travelled to the weather api file
             const distanceKm = distance/1000;
+            const distanceKmStart = gpxPoint.point_distance_start/1000;
+            const distanceKmEnd = gpxPoint.point_distance_end/1000;
+            
             
             //The first part checks if distance is an interval and the second that its the only point saved at that interval
-            if((Math.floor(distanceKm) % kmInterval === 0) && (Math.floor(distanceKm/kmInterval) === weatherAPIData.length))
+            if((distanceKmStart <= kmInterval*weatherAPIData.length && distanceKmEnd >= kmInterval*weatherAPIData.length) && (Math.floor(distanceKm/kmInterval) === weatherAPIData.length))
             {
                 weatherAPIData.push({weather_lon: parsedPoints[i].lon, weather_lat: parsedPoints[i].lat});
             }

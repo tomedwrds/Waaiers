@@ -14,6 +14,7 @@ import MainMapPage from './map/MainMapPage.jsx'
 
 import Login from './Login.jsx'
 import UploadRoute from './upload route/UploadRoute.jsx'
+import AdminPanel from './AdminPanel.jsx'
 
 
 const router = createBrowserRouter([
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login/>,
+      },
+      {
+        path: "admin",
+        element: <AdminPanel/>,
       }
       
     ]

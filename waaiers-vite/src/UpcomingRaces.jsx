@@ -15,8 +15,6 @@ const UpcomingRaces = () =>
 
 
             //I want the list of upcoming races to be sorted by date so I will split the date format into an array or year / month / day
-
-         
             {data.map((item,id)=>{
                 item.route_date = item.route_date.split('-')
         
@@ -26,13 +24,7 @@ const UpcomingRaces = () =>
                 return Number(a.route_date[1]) - Number(b.route_date[1]) || Number(a.route_date[2]) - Number(b.route_date[2]);
             });
            
-            
-
-
             setAllRouteData(data);
-
-
-
         }
         loadRouteData();
     },[])
