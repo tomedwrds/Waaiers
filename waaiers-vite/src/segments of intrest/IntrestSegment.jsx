@@ -1,8 +1,12 @@
 import { MapContainer,TileLayer,Polyline } from 'react-leaflet';
+import average from "../generalpurposefunctions/average";
+
 import './IntrestSegment.css';
 const IntrestSegment = (props) =>
 {
     const segmentData = props.data
+    const avgWindSpeed = average(segmentData.segmentWindSpeed)
+    const avgWindDir = average(segmentData.segmentWindAngle)
     const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
 
@@ -12,7 +16,7 @@ const IntrestSegment = (props) =>
         <div className='intrestSegment-header'>
           <p>{kmStart}km - {kmEnd}km | Difficulty: ⭐⭐⭐</p>
         
-          <p>Wind Direction: lorem | Wind Speed: Ipsum</p>
+          <p>Wind Direction: {Math.round(avgWindDir)}° | Wind Speed: {Math.round(avgWindSpeed*100)/100 }</p>
         </div>
         
           <div id="map" >
