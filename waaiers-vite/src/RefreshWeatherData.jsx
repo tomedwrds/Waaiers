@@ -12,6 +12,9 @@ async function RefreshWeatherData (route_data)
     
     //Then requery the weather api
     const updatedWeatherData = await fetchWeatherData(null,weatherPoints.data,route_time,route_date)
+
+
+    
     
     //Finally reformat the data to be updated on the databse
     const windDirection = updatedWeatherData['wind.direction.at-10m'].data;

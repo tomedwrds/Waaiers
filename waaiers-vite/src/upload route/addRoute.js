@@ -14,15 +14,15 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
         
 
         //The wind direction / speech gets fetched from the api
-        const apiWeatherData = await fetchWeatherData(pointData,weatherData,routeData.route_time,routeData.route_date);
-        
-        const windDirection = apiWeatherData['wind.direction.at-10m'].data;
-        const windSpeed = apiWeatherData['wind.speed.at-10m'].data;
-        const windSpeedGust = apiWeatherData['wind.speed.gust.at-10m'].data;
+        const apiWeatherData = await fetchWeatherData(weatherData,routeData.route_time,routeData.route_date);
+        console.log(apiWeatherData[0])
+
+
 
         //CASE 1: User is an admin and is uploading the gpx file to be viewed by the public in this case it has to be stored in a database 
         if(userAdmin)
         {
+            
             //Insert the route data into the database
             const routeInsertQuery = await supabase.from('Routes').insert(routeData).select();
             
@@ -53,10 +53,16 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
         //In this case the user is routed to main map page, however the data must be formatted for the route generation algorithm in the same way the data will be when quereid from the database
         else
         {
+            
             //The weather data must be added to every point. in the case of the sql query a join would be used instead a map is used here
-            pointData.map((item)=>{ item.weather_windspeed = windSpeed[item.weather_id]
-                                    item.weather_winddir = windDirection[item.weather_id],
-                                    item.weather_windgust = windSpeedGust[item.weather_id]});
+            pointData.map((data)=>{{
+                data.weather_windspeed = apiWeatherData[data.weather_id].weather_windspeed,
+                data.weather_winddir   = apiWeatherData[data.weather_id].weather_winddir,
+                data.weather_windgust = apiWeatherData[data.weather_id].weather_windgust}})
+        
+            console.log(pointData)
+
+            
            
             //Next we should route to the main map page and send the data
             
