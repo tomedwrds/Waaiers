@@ -15,11 +15,12 @@ import MainMapPage from './map/MainMapPage.jsx'
 import Login from './Login.jsx'
 import UploadRoute from './upload route/UploadRoute.jsx'
 import AdminPanel from './AdminPanel.jsx'
+import Home from './Home.jsx'
 
 
 const router = createBrowserRouter([
   {
-    path: "/",
+
     element: <App/>,
     errorElement: <p>error error</p>,
     children: [
@@ -42,7 +43,8 @@ const router = createBrowserRouter([
       {
         path: "admin",
         element: <AdminPanel/>,
-      }
+      },
+      { path: "*", element: <Home/> },
       
     ]
   },

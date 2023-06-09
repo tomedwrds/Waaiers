@@ -1,6 +1,12 @@
 .App {
  
   text-align: center;
+  background-color: blue;
+  display: flex;
+  flex-direction: column;
+  flex:1;
+  flex-grow: 1;
+  height: 100%;
 
 
 }
