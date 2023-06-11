@@ -14,7 +14,7 @@ function generateMapData(gpxPoints,setPositions,setSegments)
     const windAngleGolden = 75;
     //Range of angle around the golden angle that would cause splits
     const windAngleZone = 30;
-    const minWindSpeed = 0;
+    const minWindSpeed = 5;
     const minSegmentLength = 1000;
   
   

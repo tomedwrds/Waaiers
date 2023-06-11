@@ -1,3 +1,5 @@
+import './home.css'
+
 const Home = () =>{
     return(
       <div style={{ 
@@ -6,13 +8,18 @@ const Home = () =>{
         height:"100%",
         backgroundRepeat:"no-repeat",
         backgroundPosition:"center",
-        width:"100%"
+        width:"100%",
+        display:"flex",
+        alignItems:"center",
+        justifyContent:"center"
       }}>
-        <div style={{height:'100%',justifyContent:'center',verticalAlign:'center'}}>
-          <div style={{alignItems:'center',display:'flex',justifyContent:'center'}}>
-          <p style={{textAlign:"center"}}>afsf</p>
+        <div className ='button-container'>
+          <div className='buttons'>
+            <p>Upcoming Races</p>
           </div>
-        
+          <div className='buttons'>
+            <p>Try Yourself</p>
+          </div>
         </div>
       </div>
     )
