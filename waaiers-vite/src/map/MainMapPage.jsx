@@ -74,8 +74,10 @@ const MainMapPage = () => {
     async function generateMap()
     {
         //Get the route id from the url
-        const route_id = window.location.pathname.split('/')[2];
+        //If its home page and its showing latest race then dont split
+        const route_id =  (window.location.pathname == '/' ? 60 : window.location.pathname.split('/')[2]);
         const database_data = await fetchRouteData(route_id);
+        
         console.log(database_data)
         const point_data = database_data.point_data
         const route_data = database_data.route_data
