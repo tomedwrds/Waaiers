@@ -98,9 +98,9 @@ const MainMapPage = () => {
     {
         return(
         <div className = "body">  
-            <h1 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>{routeData.route_name}</h1>
+            <h2 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>{routeData.route_name}</h2>
             <RouteWindMap pointData = {positions} routeData = {routeData} />
-            <h1 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>Segments of Intrest</h1>
+            <h2 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>Segments of Intrest</h2>
             <IntrestSegmentContainer data = {segments}/>
         </div>
         )

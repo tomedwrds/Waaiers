@@ -14,7 +14,7 @@ const UpcomingRacesTab = (props)=>
         
 
         //Finally navigate to the page to display it
-        navigate('/home/'+routeData.id );
+        navigate('/race/'+routeData.id );
     }
 
    

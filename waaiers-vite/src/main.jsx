@@ -29,7 +29,7 @@ const router = createBrowserRouter([
         element: <UploadRoute/>,
       },
       {
-        path: "home",
+        path: "race/*",
         element: <MainMapPage/>,
       },
       {

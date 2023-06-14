@@ -1,18 +1,30 @@
-.buttons {
-    background-color: #00121c;
-    color:white;
-    padding: 10px;
-    margin-bottom: 30px;
-    font-size: 24px;
-    color: white;
-    font-weight: 600;
-    border-radius: 6px;
-    width: 300px
+.container{
+    display: flex;
+    flex-direction: column;
 }
 
-.button-container {
-    background-color: ;
-    
-   
+.nextRaceContainer{
+    flex:3;
+}
+
+.upcomingRacesContainer{
+    flex:1;
+}
+
+.mainContentContainer{
+    flex:1;
+    display: flex;
+    flex-direction: row;
+}
+
+.titleContainer{
     
 }
+
+@media screen and (max-width: 768px) {
+    
+    .mainContentContainer {
+      flex-direction: column;
+    }
+    
+  }
