@@ -60,7 +60,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
                 data.weather_winddir   = apiWeatherData[data.weather_id].weather_winddir,
                 data.weather_windgust = apiWeatherData[data.weather_id].weather_windgust}})
         
-            console.log(pointData)
+    
 
             
            
@@ -71,7 +71,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
             routeData.route_center_point = 0;
             routeData.route_zoom = 10;
 
-            navigate('/home', { state: {pointData,routeData} });
+            navigate('/race', { state: {pointData,routeData} });
 
         }
         

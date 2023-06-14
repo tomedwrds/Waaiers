@@ -3,7 +3,7 @@ import './navbar.css'
 import { Link } from 'react-router-dom';
 import logo from './logo.jpg'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import supabase from "../supabase/supabase"
 
 function Navbar() {
@@ -11,7 +11,7 @@ function Navbar() {
     const [isNavExpanded, setIsNavExpanded] = useState(false);
     const [userSignedIn,setUserSignedIn] = useState(null);
 
-    
+  
 
     //USER LOGIN / OUT
     //Below are a range of async functions that handle session getting login and sign out
@@ -71,6 +71,23 @@ function Navbar() {
     },[])
 
    
+    // call useFfect adding an event listener. The return ensures it is cleared up
+    useEffect(() => {
+      window.addEventListener('resize', handleWindowSizeChange);
+      return () => {
+          window.removeEventListener('resize', handleWindowSizeChange);
+      };
+  }, []);
+  
+    //Code that triggeres on every resize, to check that navbar isnt rendering when it shouldnt
+    const handleWindowSizeChange = () => {
+        if(window.innerWidth > 768) setIsNavExpanded(false)
+       
+    };
+
+    
+    
+    
     
 
 
