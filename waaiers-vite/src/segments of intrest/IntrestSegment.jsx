@@ -6,17 +6,19 @@ const IntrestSegment = (props) =>
 {
     const segmentData = props.data
     const avgWindSpeed = average(segmentData.segmentWindSpeed)
+    const avgWindGust = average(segmentData.segmentWindGust)
     const avgWindDir = average(segmentData.segmentWindAngle)
     const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
-
+    const segmentDifficulty = segmentData.segmentDifficulty;
+   
     return(
      
       <div className = "intrestSegment">
         <div className='intrestSegment-header'>
-          <p>{kmStart}km - {kmEnd}km | Difficulty: ⭐⭐⭐</p>
+          <p>{kmStart}km - {kmEnd}km ⭐⭐⭐</p>
         
-          <p>Wind Direction: {Math.round(avgWindDir)}° | Wind Speed: {Math.round(avgWindSpeed*100)/100 }</p>
+          <p className ="intrestSegment-header-windspeed">Wind Speed: {Math.round(avgWindSpeed*100)/100}kmph | Wind Gusts: {Math.round(avgWindGust)}kmph | Wind Di: {Math.round(avgWindDir)}| Segment Difficulty: {segmentDifficulty}</p>
         </div>
         
           <div id="map" >

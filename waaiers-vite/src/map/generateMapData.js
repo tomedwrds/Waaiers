@@ -1,6 +1,6 @@
 import average from "../generalpurposefunctions/average";
 
-function generateMapData(gpxPoints,setPositions,setSegments)
+function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
 {
     let positions = [];
  
@@ -9,14 +9,18 @@ function generateMapData(gpxPoints,setPositions,setSegments)
   
     //Segment related constants and data
     let segments = [];
+
     //The golden angle is the ideal angle for causing cross wind splits
     //An angle of 0 is a tail wind
-    const windAngleGolden = 75;
+    const windAngleGolden = segmentParameters.windAngleGolden;
     //Range of angle around the golden angle that would cause splits
-    const windAngleZone = 30;
-    const minWindSpeed = 5;
-    const minSegmentLength = 1000;
-  
+    const windAngleZone = segmentParameters.windAngleZone;
+    
+    const minWindSpeed = segmentParameters.minWindSpeed;
+    const maxWindSpeed = segmentParameters.maxWindSpeed;
+
+    const minSegmentLength = segmentParameters.minSegmentLength;
+    const maxSegmentLength = segmentParameters.maxSegmentLength;
   
   
     //Calculate the wind data for all gpxPoints
@@ -39,7 +43,7 @@ function generateMapData(gpxPoints,setPositions,setSegments)
       if(positions.length == 0)
       {
         //In case of first segment an inital item must be added
-        positions.push({id: 0, latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed]})
+        positions.push({id: 0, latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
   
       } 
       else
@@ -76,9 +80,10 @@ function generateMapData(gpxPoints,setPositions,setSegments)
             //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
             currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon]);
             currentLineSegment.segmentWindSpeed.push(gpxPoints[i].weather_windspeed)
+            currentLineSegment.segmentWindGust.push(gpxPoints[i].weather_windgust)
             currentLineSegment.kmEnd = gpxPoints[i].point_distance_end;
   
-            //Each segment is evalutated to check if it meets minimun criteria to be a segment of intrest
+            //Each segment is evalutated to check if it meets minimun criteria to be a segment of intrest if not just rendered as a generic gray segment
             
             //First length is evalutated
             const segmentLength = currentLineSegment.kmEnd - currentLineSegment.kmStart;
@@ -91,10 +96,26 @@ function generateMapData(gpxPoints,setPositions,setSegments)
             //Finally wind speed
             const segmentWindSpeed = average(currentLineSegment.segmentWindSpeed) > minWindSpeed;
            
+
             if(segmentLongEnough && segmentWindDirCorrect && segmentWindSpeed)
             {
-              currentLineSegment.linecolor = 'red'//'#' +  Math.floor(Math.random()*16777215).toString(16);
-              segments.push(currentLineSegment)
+              //Set red so obvious map
+              currentLineSegment.linecolor = 'red'
+
+              //Generate difficulty of segment
+              let segmentDifficulty = 0;
+
+              //1 point is avalaible for each of length, wind speed and wind direction, it is taken based on how well it does in comparison to mind and max values
+              segmentDifficulty += Math.min((currentLineSegment.kmEnd-currentLineSegment.kmStart)/maxSegmentLength,1)
+              segmentDifficulty += Math.min((average(currentLineSegment.segmentWindSpeed))/maxWindSpeed,1)
+
+              //Finding how far of the wind angle is a bit harder
+              //We first find distance betwee avg angle of segment and ideal angle. Then we divide by size of zone to determine how much it fills then -1. Repeated for other side
+              segmentDifficulty += Math.max( 1-Math.abs(average(currentLineSegment.segmentWindAngle)-windAngleGolden)/windAngleZone,1-Math.abs(average(currentLineSegment.segmentWindAngle)-(windAngleGolden+210))/windAngleZone)
+              
+
+
+              segments.push({...currentLineSegment,segmentDifficulty:segmentDifficulty});
             }
             else
             {
@@ -104,13 +125,14 @@ function generateMapData(gpxPoints,setPositions,setSegments)
           }
           
   
-          positions.push({id: positions.length,  latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon]],kmStart: gpxPoints[i].point_distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed]})
+          positions.push({id: positions.length,  latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon]],kmStart: gpxPoints[i].point_distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
         }
         else
         {
           currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon]);
           currentLineSegment.segmentWindSpeed.push(gpxPoints[i].weather_windspeed)
           currentLineSegment.segmentWindAngle.push(windRouteRelativeDirection);
+          currentLineSegment.segmentWindGust.push(gpxPoints[i].weather_windgust)
         }
       }
     }
