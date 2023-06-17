@@ -21,6 +21,9 @@ const MainMapPage = () => {
     //Create the segemtn store hook
     const [segmentsSort,setSegmentSort] = useState("stars")
 
+    //Create the wind direction hook
+    const [windDir,setWindDir] = useState("cross")
+
     //Set up the map paramters for the generation of Segments
     const [segmentParameters,setSegmentParameters] = useState({
         minWindSpeed: 5,
@@ -125,8 +128,19 @@ const MainMapPage = () => {
     {
         return(
         <div className = "body">  
-            <h2 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>{routeData.route_name}</h2>
-            <RouteWindMap pointData = {positions} routeData = {routeData} />
+            <div className='mainMapHeader'>
+                <h2>{routeData.route_name}</h2>
+                    <div className='segmentIntrestSort'>
+                        <p>Wind Direction:</p>
+                        <select className='segmentIntrestSelect' onChange={(e)=>setWindDir(e.target.value)}>
+                            <option value="cross">Cross</option>
+                            <option value="head">Head</option>
+                            <option value="tail">Tail</option>
+                        </select>
+                    </div>
+            </div>
+           
+            <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} />
             <div className='segmentIntrestHeader'>
                 <h2>Segments of Intrest</h2>
                 <div className='segmentIntrestSort'>
@@ -139,7 +153,7 @@ const MainMapPage = () => {
                 
             </div>
             
-            <IntrestSegmentContainer data = {segments} sortOrder = {segmentsSort}/>
+            <IntrestSegmentContainer data = {segments} sortOrder = {segmentsSort} windDirection = {windDir} />
         </div>
         )
     }

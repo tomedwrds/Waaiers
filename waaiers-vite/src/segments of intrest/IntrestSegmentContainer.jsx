@@ -11,14 +11,12 @@ const IntrestSegmentContainer = (props) =>
         //Sort the segmetns by difficulty if user selects it, otherwise sort by start point
         if(props.sortOrder == "stars")
         {
-            console.log(props.sortOrder)
             segments.sort(function(a, b) {
                 return a.segmentDifficulty - b.segmentDifficulty;
             }).reverse();
         }
         else
         {
-            console.log(props.sortOrder)
             segments.sort(function(a, b) {
                 return a.kmEnd - b.kmEnd;
             });
@@ -28,9 +26,12 @@ const IntrestSegmentContainer = (props) =>
             <div  className='intrestSegmentContainer'>
                 
                 {segments.map((item,id)=> {
-                    return(
-                        <IntrestSegment key = {id} data = {item}/>
-                )
+                    if(item.classification == props.windDirection )
+                    {
+                        return(
+                            <IntrestSegment key = {id} data = {item}/>
+                    )
+                    }
             }
         )}</div>)
         

@@ -18,7 +18,7 @@ const RouteWindMap = (props) => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {item.linecolor} latlon = {item.latlon}/>)}
+            {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon}/>)}
         </MapContainer>
       
         </div>

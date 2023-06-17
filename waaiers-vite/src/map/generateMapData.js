@@ -91,16 +91,19 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
   
             //Next wind direction
             const segmentWindDir = (average(currentLineSegment.segmentWindAngle) + 360) % 360 
-            const segmentWindDirCorrect = (segmentWindDir < (windAngleGolden+windAngleZone) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210));
-  
+            const segmentWindDCross = (segmentWindDir < (windAngleGolden+windAngleZone) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210));
+            const segmentWindHead = (segmentWindDir >= windAngleGolden+windAngleZone && segmentWindDir <= (windAngleGolden-windAngleZone+210));
+            const segmentWindTail =  (segmentWindDir <= (windAngleGolden-windAngleZone) || segmentWindDir >= (windAngleGolden+windAngleZone+210))
+            
             //Finally wind speed
             const segmentWindSpeed = average(currentLineSegment.segmentWindSpeed) > minWindSpeed;
            
+            //Determine if the wind dir is correct
+            const segmentWindDirCorrect = segmentWindDCross || segmentWindHead || segmentWindTail;
 
             if(segmentLongEnough && segmentWindDirCorrect && segmentWindSpeed)
             {
-              //Set red so obvious map
-              currentLineSegment.linecolor = 'red'
+             
 
               //Generate difficulty of segment
               let segmentDifficulty = 0;
@@ -109,18 +112,37 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
               segmentDifficulty += Math.min((currentLineSegment.kmEnd-currentLineSegment.kmStart)/maxSegmentLength,1)
               segmentDifficulty += Math.min((average(currentLineSegment.segmentWindSpeed))/maxWindSpeed,1)
 
-              //Finding how far of the wind angle is a bit harder
-              //We first find distance betwee avg angle of segment and ideal angle. Then we divide by size of zone to determine how much it fills then -1. Repeated for other side
-              segmentDifficulty += Math.max( 1-Math.abs(average(currentLineSegment.segmentWindAngle)-windAngleGolden)/windAngleZone,1-Math.abs(average(currentLineSegment.segmentWindAngle)-(windAngleGolden+210))/windAngleZone)
+              //Finding how far of the wind angle is a bit harder this is depedent on the direction
+              //We first find distance betwee avg angle of segment and ideal angle. Then we divide by size of zone to determine how much it fills then -1. Repeated for other side in the case of cross wind
+              if(segmentWindDCross)
+              {
+                segmentDifficulty += Math.max( 1-Math.abs(average(currentLineSegment.segmentWindAngle)-windAngleGolden)/windAngleZone,1-Math.abs(average(currentLineSegment.segmentWindAngle)-(windAngleGolden+210))/windAngleZone)
+                
+                //Also set color and classification
+                currentLineSegment.classification = 'cross';
+              }
+              else if(segmentWindHead)
+              {
+                //Some variables are hardcoded here and should be changed in the future
+                segmentDifficulty +=  1-Math.abs(average(currentLineSegment.segmentWindAngle)-180)/75
+                
+                //Also set color and classification
+                currentLineSegment.classification = 'head';
+              }
+              else if(segmentWindTail)
+              {
+                //Some variables are hardcoded here and should be changed in the future
+                segmentDifficulty +=  Math.max( 1-Math.abs(average(currentLineSegment.segmentWindAngle))/45,1-Math.abs(average(currentLineSegment.segmentWindAngle)-360)/45)
+                
+                //Also set color and classification
+                currentLineSegment.classification = 'tail';
+              }
               
 
 
               segments.push({...currentLineSegment,segmentDifficulty:segmentDifficulty});
             }
-            else
-            {
-              currentLineSegment.linecolor = 'grey'
-            }
+           
              
           }
           
