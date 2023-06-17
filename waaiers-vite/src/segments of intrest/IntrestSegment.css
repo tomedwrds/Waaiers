@@ -47,3 +47,15 @@
   .intrestSegment-header-windspeed{
     font-size: 12px;
   }
+
+  .stars{
+    color: yellow;
+    margin-left: 10px
+  }
+
+  .intrestSegment-lengthstar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }

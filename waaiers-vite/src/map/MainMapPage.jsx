@@ -6,7 +6,7 @@ import generateMapData from './generateMapData';
 import getUserAccessStatus from '../upload route/getUserData';
 import supabase from '../supabase/supabase';
 
-
+import './MainMapPage.css'
 
 
 const MainMapPage = () => {
@@ -17,6 +17,9 @@ const MainMapPage = () => {
     const [positions,setPositions] = useState(null);
     const [segments,setSegments] = useState(null);
     const [routeData, setRouteData] = useState(null);
+
+    //Create the segemtn store hook
+    const [segmentsSort,setSegmentSort] = useState("stars")
 
     //Set up the map paramters for the generation of Segments
     const [segmentParameters,setSegmentParameters] = useState({
@@ -124,8 +127,19 @@ const MainMapPage = () => {
         <div className = "body">  
             <h2 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>{routeData.route_name}</h2>
             <RouteWindMap pointData = {positions} routeData = {routeData} />
-            <h2 style = {{borderTop: '2px solid black',borderBottom: '2px solid black',paddingTop: '10px',paddingBottom: '10px'}}>Segments of Intrest</h2>
-            <IntrestSegmentContainer data = {segments}/>
+            <div className='segmentIntrestHeader'>
+                <h2>Segments of Intrest</h2>
+                <div className='segmentIntrestSort'>
+                    <p>Sort by:</p>
+                    <select className='segmentIntrestSelect' onChange={(e)=>setSegmentSort(e.target.value)}>
+                        <option value="stars">Stars</option>
+                        <option value="order">Order</option>
+                    </select>
+                </div>
+                
+            </div>
+            
+            <IntrestSegmentContainer data = {segments} sortOrder = {segmentsSort}/>
         </div>
         )
     }

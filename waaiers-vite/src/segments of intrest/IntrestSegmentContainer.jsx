@@ -6,10 +6,28 @@ const IntrestSegmentContainer = (props) =>
     // Checks if there is any segments to dispaly and if so maps each one to the intrest segment compoennt 
     if(props.data != null)
     {
-   
+      
+        let segments = props.data;
+        //Sort the segmetns by difficulty if user selects it, otherwise sort by start point
+        if(props.sortOrder == "stars")
+        {
+            console.log(props.sortOrder)
+            segments.sort(function(a, b) {
+                return a.segmentDifficulty - b.segmentDifficulty;
+            }).reverse();
+        }
+        else
+        {
+            console.log(props.sortOrder)
+            segments.sort(function(a, b) {
+                return a.kmEnd - b.kmEnd;
+            });
+        }
+        
         return(
             <div  className='intrestSegmentContainer'>
-                {props.data.map((item,id)=> {
+                
+                {segments.map((item,id)=> {
                     return(
                         <IntrestSegment key = {id} data = {item}/>
                 )
