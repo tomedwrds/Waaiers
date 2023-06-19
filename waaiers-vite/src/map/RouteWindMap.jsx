@@ -8,7 +8,7 @@ const RouteWindMap = (props) => {
     {
         const routeCentre = props.pointData[0].latlon[props.routeData.route_center_point]
         const routeZoom = props.routeData.route_zoom
-        console.log(props.routeData)
+        
         return(
             <div id="mainMap">
              
@@ -18,7 +18,7 @@ const RouteWindMap = (props) => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon}/>)}
+            {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
         </MapContainer>
       
         </div>

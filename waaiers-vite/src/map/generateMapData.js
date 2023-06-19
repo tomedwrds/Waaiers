@@ -139,7 +139,8 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
               }
               
 
-
+              //Also set the current line segment difficulty to store difficulty
+              currentLineSegment.segmentDifficulty = segmentDifficulty;
               segments.push({...currentLineSegment,segmentDifficulty:segmentDifficulty});
             }
            

@@ -36,7 +36,7 @@ const IntrestSegment = (props) =>
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <Polyline
-                pathOptions={{ fillColor: segmentData.linecolor, color: segmentData.linecolor }}
+                pathOptions={{ fillColor: 'red', color: 'red' }}
                 positions={segmentData.latlon}
                />
           

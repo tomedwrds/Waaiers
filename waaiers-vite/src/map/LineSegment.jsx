@@ -1,38 +1,28 @@
 import { useState } from "react";
 import { Marker, Polyline,Popup } from "react-leaflet";
+import SegmentInfo from "./SegmentInfo";
 
 
-const SegmentInfo = (props) =>
-{
-    // if(props.display)
-    // {
-    //     return(
-    //         <Marker  opacity={0.5} position={props.position}>
-    //             <Popup>
-    //                 A pretty CSS3 popup. <br /> Easily customizable.
-    //             </Popup>
-    //         </Marker>
-    //     )
-    // }
-}
 
 const LineSegment = (props)=>
 {
-    const [popUp,displayPopUp] = useState(false);
     return(
         <div>
         <Polyline
+        
         pathOptions={{ fillColor: 'red', color: props.linecolor }}
         positions={props.latlon}
+        children={<Popup style = {{backgroundColor:'blue'}} ><SegmentInfo segmentData={props.segmentData}/></Popup>}   
+        weight={4}   
         eventHandlers={{
-            mouseover: ()=>(console.log(props)),
-            moveend: ()=>(displayPopUp(false)),
-            
+          click: (e) => {
+            if(props.segmentData.segmentDifficulty != undefined) e.target.openPopup()
+        },
+       
         }}
         
-        
         />
-        <SegmentInfo display = {popUp} position = {props.latlon[0]}/>
+       
         
     
         
