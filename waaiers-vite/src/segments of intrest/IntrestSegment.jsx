@@ -26,7 +26,7 @@ const IntrestSegment = (props) =>
           </div>
           
         
-          <p className ="intrestSegment-header-windspeed">Wind Speed: {Math.round(avgWindSpeed*100)/100}kmph | Wind Gusts: {Math.round(avgWindGust)}kmph</p>
+          <p className ="intrestSegment-header-windspeed">Wind Speed: {Math.round(avgWindSpeed)}kmph | Wind Gusts: {Math.round(avgWindGust)}kmph</p>
         </div>
         
           <div id="map" >

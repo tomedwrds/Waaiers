@@ -50,7 +50,7 @@
 
   .stars{
     color: yellow;
-    margin-left: 10px
+    padding: 0 5px 0 5px;
   }
 
   .intrestSegment-lengthstar {

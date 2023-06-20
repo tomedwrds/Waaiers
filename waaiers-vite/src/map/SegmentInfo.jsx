@@ -12,13 +12,23 @@ const SegmentInfo = (props) =>
     const segmentDifficulty = segmentData.segmentDifficulty;
 
     return(
-    <div style = {{backgroundColor: '#00121c',color:'white'}}>
+    <div style = {{color:'#00121c',textAlign:"center"}}>
    
      
-        <IntrestSegmentStars difficulty = {segmentDifficulty}/>
-        <p>{kmStart}km - {kmEnd}km </p>
-        <p className ="intrestSegment-header-windspeed">Wind Speed: {Math.round(avgWindSpeed*100)/100}kmph</p>
-        <p>Wind Gusts: {Math.round(avgWindGust)}kmph</p>
+        
+        <h3>{kmStart}km - {kmEnd}km </h3>
+        <h5 >Wind Speed: {Math.round(avgWindSpeed)}kmph</h5>
+        <h5>Wind Gusts: {Math.round(avgWindGust)}kmph</h5>
+        <div style={{flexDirection:'row',display:'flex'}}>
+            <p style = {{flex:1}}></p>
+            <div style = {{backgroundColor:'#00121c',padding:10,borderRadius:10}}>
+            <IntrestSegmentStars difficulty = {segmentDifficulty}/>
+            </div>
+            <p style = {{flex:1}}></p>
+        
+        </div>
+       
+        
   </div>
     )
   

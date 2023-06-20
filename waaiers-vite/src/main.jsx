@@ -20,6 +20,7 @@ import Home from './Home/Home.jsx'
 
 const router = createBrowserRouter([
   {
+    
 
     element: <App/>,
     errorElement: <p>error error</p>,
