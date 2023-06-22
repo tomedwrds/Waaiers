@@ -12,16 +12,6 @@ const RouteWindMap = (props) => {
         const [map, setMap] = useState(null);
 
 
-        useEffect(()=>{
-            if(map!= null)
-            {
-                let hg = L.control.heightgraph();
-                hg.addTo(map);
-                hg.addData(props.pointData);
-                L.geoJson(props.pointData).addTo(map);
-            }
-        },[map])
-       
         return(
             
             <div id="mainMap">
