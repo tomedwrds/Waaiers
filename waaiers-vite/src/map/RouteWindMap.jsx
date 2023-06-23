@@ -1,6 +1,8 @@
 import { MapContainer,TileLayer } from 'react-leaflet'
 import LineSegment from './LineSegment'
 import { useEffect,useState } from 'react'
+import 'leaflet.heightgraph';
+
 
 
 
@@ -10,8 +12,18 @@ const RouteWindMap = (props) => {
         const routeCentre = props.pointData[0].latlon[props.routeData.route_center_point]
         const routeZoom = props.routeData.route_zoom
         const [map, setMap] = useState(null);
-
-
+        useEffect(()=>{
+            if(map!= null)
+           {
+            // console.log(map)
+            // let hg = L.control.heightgraph();
+            // console.log(hg)
+            // hg.addTo(map);
+            // hg.addData(props.pointData);
+            // L.geoJson(props.pointData).addTo(map);
+           }
+            
+        },[map])
         return(
             
             <div id="mainMap">
