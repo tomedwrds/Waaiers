@@ -22,18 +22,30 @@ const IntrestSegmentContainer = (props) =>
             });
         }
         
-        return(
-            <div  className='intrestSegmentContainer'>
-                
-                {segments.map((item,id)=> {
-                    if(item.classification == props.windDirection )
-                    {
-                        return(
-                            <IntrestSegment key = {id} data = {item}/>
-                    )
-                    }
-            }
-        )}</div>)
+        if(segments.length != 0)
+        {
+            return(
+                <div  className='intrestSegmentContainer'>
+                    
+                    {segments.map((item,id)=> {
+                        if(item.classification == props.windDirection )
+                        {
+                            return(
+                                <IntrestSegment key = {id} data = {item}/>
+                        )
+                        }
+                }
+            )}</div>)
+        }
+        else
+        {
+            return(
+                <div style={{marginTop:'120px',marginBottom:'120px'}}>  
+                    <h2 style={{marginBottom:'0px'}}> The Wind is Calm </h2>
+                    <p style={{marginTop:'5px',color:'grey'}}>No {props.windDirection }wind segments of intrest for this race</p>
+                </div>
+            )
+        }
         
     }
 }

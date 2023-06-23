@@ -1,7 +1,6 @@
-import { MapContainer,TileLayer } from 'react-leaflet'
+import { MapContainer,TileLayer,Marker } from 'react-leaflet'
 import LineSegment from './LineSegment'
-import { useEffect,useState } from 'react'
-import 'leaflet.heightgraph';
+import './MapPage.css'
 
 
 
@@ -11,31 +10,37 @@ const RouteWindMap = (props) => {
     {
         const routeCentre = props.pointData[0].latlon[props.routeData.route_center_point]
         const routeZoom = props.routeData.route_zoom
-        const [map, setMap] = useState(null);
-        useEffect(()=>{
-            if(map!= null)
-           {
-            // console.log(map)
-            // let hg = L.control.heightgraph();
-            // console.log(hg)
-            // hg.addTo(map);
-            // hg.addData(props.pointData);
-            // L.geoJson(props.pointData).addTo(map);
-           }
-            
-        },[map])
+        console.log(props.pointData[0])
+
+        //
+        const iconStart = L.divIcon({
+            html: ' <i class="fa-solid fa-play"></i>',
+            iconSize: [20, 20],
+            className: 'startIcon'
+        });
+
+        const iconFinish = L.divIcon({
+            html: ' <i class="fa-solid fa-flag-checkered"></i>',
+            iconSize: [20, 20],
+            className: 'finishIcon'
+        });
+       
+
         return(
             
             <div id="mainMap">
                 
              
-            <MapContainer whenReady={setMap} style={{width:'100%',height:'100%'}} center={routeCentre} zoom={routeZoom} scrollWheelZoom={false}>
-            <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            
-            {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
+            <MapContainer style={{width:'100%',height:'100%'}} center={routeCentre} zoom={routeZoom} scrollWheelZoom={false}>
+                <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+
+                    <Marker position={props.pointData[0].latlon[0]} icon={iconStart}/>
+                    <Marker position={props.pointData[props.pointData.length-1].latlon[props.pointData[props.pointData.length-1].latlon.length-1]} icon={iconFinish}/>
+                                
+                    {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
         </MapContainer>
       
         </div>
