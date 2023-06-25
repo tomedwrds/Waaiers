@@ -1,4 +1,4 @@
-import { MapContainer,TileLayer,Marker } from 'react-leaflet'
+import { MapContainer,TileLayer,Marker,Popup } from 'react-leaflet'
 import LineSegment from './LineSegment'
 import './MapPage.css'
 
@@ -34,7 +34,14 @@ const RouteWindMap = (props) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-
+                (
+                    <Marker position={props.selectedDataPoint}>
+                    <Popup>
+                        A pretty CSS3 popup. <br /> Easily customizable.
+                    </Popup>
+                    </Marker>
+                )
+                    
                     {/* <Marker position={props.pointData[0].latlon[0]} icon={iconStart}/>
                     <Marker position={props.pointData[props.pointData.length-1].latlon[props.pointData[props.pointData.length-1].latlon.length-1]} icon={iconFinish}/> */}
                                 

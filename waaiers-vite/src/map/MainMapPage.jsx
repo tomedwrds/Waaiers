@@ -20,6 +20,7 @@ const MainMapPage = () => {
     const [positions,setPositions] = useState(null);
     const [segments,setSegments] = useState(null);
     const [routeData, setRouteData] = useState(null);
+    const [selectedDataPoint,setSelectedDatapoint] = useState([0,0])
 
     //Create the segemtn store hook
     const [segmentsSort,setSegmentSort] = useState("stars")
@@ -129,7 +130,6 @@ const MainMapPage = () => {
     //Dont attempt to render anything until the route data has loaded
     if(routeData != null)
     {
-        
         return(
         <div className = "body">  
             <div className='mainMapHeader'>
@@ -144,9 +144,9 @@ const MainMapPage = () => {
                     </div>
             </div>
            
-            <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} />
+            <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} selectedDataPoint ={selectedDataPoint} />
             
-            <MapProfile pointData = {positions}/>
+            <MapProfile pointData = {positions} setSelectedDatapoint = {setSelectedDatapoint}/>
            
             <div className='segmentIntrestHeader'>
                 <h2>Segments of Intrest</h2>

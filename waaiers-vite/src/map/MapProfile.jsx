@@ -1,6 +1,6 @@
 import Chart from "react-apexcharts";
 
-const MulticolorAreaChart = ({ data, extractColor }) => {
+const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint }) => {
     const kmEnd = Math.round(data[data.length-1].x/1000)*1000
     
     const dataSets = [];
@@ -47,6 +47,11 @@ const MulticolorAreaChart = ({ data, extractColor }) => {
         zoom: {
             enabled:false
           },
+        events: {
+            mouseMove: function(event, chartContext, config) {
+                setSelectedDatapoint([pointData[config.dataPointIndex][0],pointData[config.dataPointIndex][1]])
+            // The last parameter config contains additional information like `seriesIndex` and `dataPointIndex` for cartesian charts.
+            }}
       },
       
       tooltip: {
@@ -120,11 +125,12 @@ const MapProfile = (props) => {
 
     //Point data is retrieved
     let pointData = [];
-    segmentData.forEach((segment,id)=>pointData.push(...segment.latlon.map(((point)=>[point[2],point[3],segmentData[id].classification]))))
+    segmentData.forEach((segment,id)=>pointData.push(...segment.latlon.map(((point)=>[...point,segmentData[id].classification]))))
 
+ 
     //Then is is formatted for the graph
     //On the x adxis is the distance y is elevation
-    const profileData = pointData.map((item)=> ({x:item[1],y:item[0],classification: item[2]}))
+    const profileData = pointData.map((item)=> ({x:item[3],y:item[2],classification: item[5]}))
    
 
     //We next want to destructure this data to create a stage profile
@@ -145,6 +151,8 @@ const MapProfile = (props) => {
                 return "black";
             }
           }}
+          pointData={pointData}
+          setSelectedDatapoint={props.setSelectedDatapoint}
         />
       );
 }
