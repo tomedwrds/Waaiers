@@ -1,6 +1,8 @@
 import { MapContainer,TileLayer,Marker,Popup } from 'react-leaflet'
 import LineSegment from './LineSegment'
 import './MapPage.css'
+import { useState } from 'react'
+import Legend from './Legend'
 
 
 
@@ -23,17 +25,19 @@ const RouteWindMap = (props) => {
             className: 'finishIcon'
         });
        
-
+        const [map, setMap] = useState(null);
+        console.log(map)
         return(
             
             <div id="mainMap">
                 
              
-            <MapContainer style={{width:'100%',height:'100%'}} center={[routeCentre[0],routeCentre[1]]} zoom={routeZoom} scrollWheelZoom={false}>
+            <MapContainer whenReady={setMap}  style={{width:'100%',height:'100%'}} center={[routeCentre[0],routeCentre[1]]} zoom={routeZoom} scrollWheelZoom={false}>
                 <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+                <Legend map={map} />
                 (
                     <Marker position={props.selectedDataPoint}>
                     <Popup>
@@ -46,6 +50,8 @@ const RouteWindMap = (props) => {
                     <Marker position={props.pointData[props.pointData.length-1].latlon[props.pointData[props.pointData.length-1].latlon.length-1]} icon={iconFinish}/> */}
                                 
                     {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
+        
+                    
         </MapContainer>
       
         </div>

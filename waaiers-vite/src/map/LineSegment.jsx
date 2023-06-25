@@ -6,6 +6,7 @@ import SegmentInfo from "./SegmentInfo";
 
 const LineSegment = (props)=>
 {
+  
     const lineLatLonData = props.latlon.map((item)=>[item[0],item[1]])
     return(
         <div>
@@ -17,7 +18,7 @@ const LineSegment = (props)=>
         weight={4}   
         eventHandlers={{
           click: (e) => {
-            if(props.segmentData.segmentDifficulty != undefined) e.target.openPopup()
+            if(props.segmentData.hasOwnProperty('segmentDifficulty')) e.target.openPopup()
         },
        
         }}

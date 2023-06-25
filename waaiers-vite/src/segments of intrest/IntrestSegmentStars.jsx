@@ -7,8 +7,7 @@ const IntrestSegmentStars = (props) =>{
     
     //Round to nearest .5
     const stars = Math.round(props.difficulty*2)/2
-
-
+  
    
     //Returns a star based on difficultiy given. If over 1 give full star, around half give half near empty give none
     function GetStar(props)

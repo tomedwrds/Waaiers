@@ -146,6 +146,13 @@ const MainMapPage = () => {
            
             <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} selectedDataPoint ={selectedDataPoint} />
             
+
+            <div className='segmentIntrestHeader'>
+                <h2>Route Wind Profile</h2>
+                
+                
+            </div>
+
             <MapProfile pointData = {positions} setSelectedDatapoint = {setSelectedDatapoint}/>
            
             <div className='segmentIntrestHeader'>
