@@ -43,7 +43,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
       if(positions.length == 0)
       {
         //In case of first segment an inital item must be added
-        positions.push({id: 0, latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
+        positions.push({id: 0, latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
   
       } 
       else
@@ -70,7 +70,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
         {
         
           //If the prior polyline was only a single point it an be removed
-          if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].point_lat,gpxPoints[i].point_lon])
+          if(currentLineSegment.latlon.length == 1 && currentLineSegment.latlon[0] != [gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end])
           {
             positions.pop();      
           }
@@ -78,7 +78,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
           {
   
             //Prior to adding a new polyline in a final point is added to the prior polyline to join them togehter
-            currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon]);
+            currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]);
             currentLineSegment.segmentWindSpeed.push(gpxPoints[i].weather_windspeed)
             currentLineSegment.segmentWindGust.push(gpxPoints[i].weather_windgust)
             currentLineSegment.kmEnd = gpxPoints[i].point_distance_end;
@@ -148,17 +148,18 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
           }
           
   
-          positions.push({id: positions.length,  latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon]],kmStart: gpxPoints[i].point_distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
+          positions.push({id: positions.length,  latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]],kmStart: gpxPoints[i].point_distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
         }
         else
         {
-          currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon]);
+          currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]);
           currentLineSegment.segmentWindSpeed.push(gpxPoints[i].weather_windspeed)
           currentLineSegment.segmentWindAngle.push(windRouteRelativeDirection);
           currentLineSegment.segmentWindGust.push(gpxPoints[i].weather_windgust)
         }
       }
     }
+
     //Update the state hooks
     setPositions(positions);
     setSegments(segments)

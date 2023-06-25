@@ -6,12 +6,13 @@ import SegmentInfo from "./SegmentInfo";
 
 const LineSegment = (props)=>
 {
+    const lineLatLonData = props.latlon.map((item)=>[item[0],item[1]])
     return(
         <div>
         <Polyline
         
         pathOptions={{ fillColor: 'red', color: props.linecolor }}
-        positions={props.latlon}
+        positions={lineLatLonData}
         children={<Popup style = {{backgroundColor:'blue'}} ><SegmentInfo segmentData={props.segmentData}/></Popup>}   
         weight={4}   
         eventHandlers={{

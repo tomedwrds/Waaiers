@@ -15,7 +15,8 @@ const IntrestSegment = (props) =>
     const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
     const segmentDifficulty = segmentData.segmentDifficulty;
-   
+    const lineLatLonData = segmentData.latlon.map((item)=>[item[0],item[1]])
+  
     return(
      
       <div className = "intrestSegment">
@@ -30,14 +31,14 @@ const IntrestSegment = (props) =>
         </div>
         
           <div id="map" >
-          <MapContainer  style={{width:'100%',height:'100%'}} doubleClickZoom = {false}  zoomControl = {false} center={segmentData.latlon[Math.round(segmentData.latlon.length/2)]} zoom={12} scrollWheelZoom={false} dragging = {false}>
+          <MapContainer  style={{width:'100%',height:'100%'}} doubleClickZoom = {false}  zoomControl = {false} center={lineLatLonData[Math.round(lineLatLonData.length/2)]} zoom={12} scrollWheelZoom={false} dragging = {false}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <Polyline
                 pathOptions={{ fillColor: 'red', color: 'red' }}
-                positions={segmentData.latlon}
+                positions={lineLatLonData}
                />
           
           </MapContainer>

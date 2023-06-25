@@ -6,12 +6,15 @@ import generateMapData from './generateMapData';
 import getUserAccessStatus from '../upload route/getUserData';
 import supabase from '../supabase/supabase';
 
+
+
 import './MainMapPage.css'
+import MapProfile from './MapProfile';
 
 
 const MainMapPage = () => {
     
-   
+  
 
     //Create the postion and segments state hook
     const [positions,setPositions] = useState(null);
@@ -122,10 +125,11 @@ const MainMapPage = () => {
     useEffect(() => {
         intalizeMap()
     }, [])
-
+   
     //Dont attempt to render anything until the route data has loaded
     if(routeData != null)
     {
+        
         return(
         <div className = "body">  
             <div className='mainMapHeader'>
@@ -141,6 +145,9 @@ const MainMapPage = () => {
             </div>
            
             <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} />
+            
+            <MapProfile pointData = {positions}/>
+           
             <div className='segmentIntrestHeader'>
                 <h2>Segments of Intrest</h2>
                 <div className='segmentIntrestSort'>
@@ -152,6 +159,8 @@ const MainMapPage = () => {
                 </div>
                 
             </div>
+
+
             
             <IntrestSegmentContainer data = {segments} sortOrder = {segmentsSort} windDirection = {windDir} />
         </div>
