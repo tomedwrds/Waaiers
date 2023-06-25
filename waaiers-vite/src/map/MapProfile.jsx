@@ -1,6 +1,8 @@
 import Chart from "react-apexcharts";
 
 const MulticolorAreaChart = ({ data, extractColor }) => {
+    const kmEnd = Math.round(data[data.length-1].x/1000)*1000
+    
     const dataSets = [];
   
     let previousColor = null;
@@ -12,7 +14,7 @@ const MulticolorAreaChart = ({ data, extractColor }) => {
         const previousDataSet =
           dataSets.length !== 0 ? dataSets[dataSets.length - 1] : null;
         dataSet = {
-          name: `${element.veracity} veracity`,
+          name: `Elevation`,
           color: color,
           // copy ending point from previous dataset
           data:
@@ -31,7 +33,8 @@ const MulticolorAreaChart = ({ data, extractColor }) => {
       // update previous element's color
       previousColor = color;
     }
-  
+
+   
     const options = {
       chart: {
         type: "area",
@@ -40,15 +43,27 @@ const MulticolorAreaChart = ({ data, extractColor }) => {
         },
         animations: {
           enabled: false
-        }
+        },
+        zoom: {
+            enabled:false
+          },
       },
-      title: {
-        text: "Dynamic Area Chart Color Fill",
-        align: "center"
-      },
+      
       tooltip: {
-        shared: true
+        // custom: function({series, seriesIndex, dataPointIndex, w}) {
+        //     return '<div class="arrow_box">' +
+        //       '<span>' + series[seriesIndex][dataPointIndex] + '</span>' +
+        //       '</div>'
+        //   },
+         
+        //   shared:false,
+        //   intersect:false,
+          
+       
+       
       },
+     
+      
       legend: {
         show: false
       },
@@ -69,10 +84,18 @@ const MulticolorAreaChart = ({ data, extractColor }) => {
         }
       },
       xaxis: {
+        
         type: "numeric",
+        min: 0,
+        max:kmEnd,
         labels: {
-          formatter: (val) => val
+          formatter: (val) => {if (val == kmEnd) {return kmEnd/1000 +'km'} else  return Math.ceil(val/20000)*20 + 'km'}
+        },
+        tooltip: {
+            enabled: false
         }
+      
+        
       },
       yaxis: {
         labels: {
@@ -80,7 +103,8 @@ const MulticolorAreaChart = ({ data, extractColor }) => {
         },
         axisBorder: {
           show: true
-        }
+        },
+        
       }
     };
   
@@ -101,7 +125,7 @@ const MapProfile = (props) => {
     //Then is is formatted for the graph
     //On the x adxis is the distance y is elevation
     const profileData = pointData.map((item)=> ({x:item[1],y:item[0],classification: item[2]}))
-   console.log(profileData)
+   
 
     //We next want to destructure this data to create a stage profile
     
