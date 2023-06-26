@@ -7,6 +7,15 @@
     padding: 4px;
    
   }
+  
+
+  .intrestSegment-header-windir
+  {
+    padding: 0px;
+    margin: 0px;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
   .intrestSegmentContainer
   {
   
@@ -46,11 +55,13 @@
 
   .intrestSegment-header-windspeed{
     font-size: 12px;
+    margin-top: 0px;
   }
 
   .stars{
     color: yellow;
     padding: 0 5px 0 5px;
+   
   }
 
   .intrestSegment-lengthstar {
@@ -58,4 +69,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin: 0px;
+    padding: 0px;
+
   }

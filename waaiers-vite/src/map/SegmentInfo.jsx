@@ -17,6 +17,7 @@ const SegmentInfo = (props) =>
      
         
         <h3>{kmStart}km - {kmEnd}km </h3>
+        
         <h5 >Wind Speed: {Math.round(avgWindSpeed)}kmph</h5>
         <h5>Wind Gusts: {Math.round(avgWindGust)}kmph</h5>
         <div style={{flexDirection:'row',display:'flex'}}>

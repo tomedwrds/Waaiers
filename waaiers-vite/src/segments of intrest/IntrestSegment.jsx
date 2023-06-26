@@ -16,18 +16,22 @@ const IntrestSegment = (props) =>
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
     const segmentDifficulty = segmentData.segmentDifficulty;
     const lineLatLonData = segmentData.latlon.map((item)=>[item[0],item[1]])
-  
+    const windDir = segmentData.classification== undefined ? 'No wind' : segmentData.classification.charAt(0).toUpperCase() + segmentData.classification.slice(1) + 'wind'
+
     return(
      
       <div className = "intrestSegment">
         <div className='intrestSegment-header'>
           <div className='intrestSegment-lengthstar'>
             <p>{kmStart}km - {kmEnd}km </p>
+           
             <IntrestSegmentStars difficulty = {segmentDifficulty}/>
           </div>
-          
+         
+         
         
           <p className ="intrestSegment-header-windspeed">Wind Speed: {Math.round(avgWindSpeed)}kmph | Wind Gusts: {Math.round(avgWindGust)}kmph</p>
+          <p className ="intrestSegment-header-windir" >Wind Direction: {windDir}</p>
         </div>
         
           <div id="map" >
@@ -43,6 +47,7 @@ const IntrestSegment = (props) =>
           
           </MapContainer>
           </div>
+         
       
       </div>
     ) 
