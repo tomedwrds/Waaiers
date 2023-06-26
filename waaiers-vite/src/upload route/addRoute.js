@@ -15,8 +15,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
 
         //The wind direction / speech gets fetched from the api
         const apiWeatherData = await fetchWeatherData(weatherData,routeData.route_time,routeData.route_date);
-        console.log(apiWeatherData[0])
-
+    
 
 
         //CASE 1: User is an admin and is uploading the gpx file to be viewed by the public in this case it has to be stored in a database 

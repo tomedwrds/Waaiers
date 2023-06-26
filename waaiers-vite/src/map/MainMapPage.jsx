@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import RouteWindMap from './RouteWindMap';
 import IntrestSegmentContainer from '../segments of intrest/IntrestSegmentContainer';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import generateMapData from './generateMapData';
 import getUserAccessStatus from '../upload route/getUserData';
 import supabase from '../supabase/supabase';
@@ -9,7 +9,9 @@ import supabase from '../supabase/supabase';
 
 
 import './MainMapPage.css'
+
 import MapProfile from './MapProfile';
+import Loading from './Loading';
 
 
 const MainMapPage = () => {
@@ -39,6 +41,10 @@ const MainMapPage = () => {
     })
     //Get the data passed through react router
     const {state} = useLocation()
+
+
+    //Navigation hooks
+    const navigate = useNavigate();
 
     
     async function getRoutePointData(i,routeData)
@@ -109,11 +115,23 @@ const MainMapPage = () => {
         {
             //Get the route id from the url
             //If its home page and its showing latest race then dont split
-            const route_id =  (window.location.pathname == '/' ? 60 : window.location.pathname.split('/')[2]);
-            const database_data = await fetchRouteData(route_id);
             
-            point_data = database_data.point_data
-            route_data = database_data.route_data
+
+            //Redirect the user if the end up on invalid page
+            if(window.location.pathname == '/race')
+            {
+                console.log('as')
+                navigate('/races');
+            }
+            else
+            {
+                const route_id =  (window.location.pathname == '/'  ? 60 : window.location.pathname.split('/')[2]);
+                const database_data = await fetchRouteData(route_id);
+                
+                point_data = database_data.point_data
+                route_data = database_data.route_data
+            }
+           
         }
         
         //Fetches the weather data on page load
@@ -126,6 +144,8 @@ const MainMapPage = () => {
     useEffect(() => {
         intalizeMap()
     }, [])
+
+    
    
     //Dont attempt to render anything until the route data has loaded
     if(routeData != null)
@@ -174,6 +194,12 @@ const MainMapPage = () => {
         </div>
         )
     }
+    else{
+        return(
+            <Loading/>
+        )
+    }
 }
+
 
 export default MainMapPage

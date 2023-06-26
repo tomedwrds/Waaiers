@@ -1,0 +1,13 @@
+.loadingBody {
+  
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+
+.loadingText{
+    color:#808080;
+    font-size: 20px;
+}

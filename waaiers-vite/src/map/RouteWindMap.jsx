@@ -1,7 +1,7 @@
 import { MapContainer,TileLayer,Marker,Popup } from 'react-leaflet'
 import LineSegment from './LineSegment'
 import './MapPage.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Legend from './Legend'
 
 
@@ -12,11 +12,11 @@ function setLineColor(displayedWindDir,segmentWindDir)
         if(segmentWindDir == 'cross') return 'yellow'
         if(segmentWindDir == 'tail') return 'red'
         if(segmentWindDir == 'head') return 'blue'
-        return 'grey'
+        return '#808080'
     }
     else
     {
-        return 'grey'
+        return '#808080'
     }
 }
 
@@ -40,13 +40,14 @@ const RouteWindMap = (props) => {
             className: 'finishIcon'
         });
        
-      
+
+  
         return(
             
             <div id="mainMap">
                 
              
-            <MapContainer  style={{width:'100%',height:'100%'}} center={[routeCentre[0],routeCentre[1]]} zoom={routeZoom} scrollWheelZoom={false}>
+            <MapContainer style={{width:'100%',height:'100%'}} center={[routeCentre[0],routeCentre[1]]} zoom={routeZoom} scrollWheelZoom={false}>
                 <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
