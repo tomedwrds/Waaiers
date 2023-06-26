@@ -1,5 +1,8 @@
 import Chart from "react-apexcharts";
-import IntrestSegmentStars from "../segments of intrest/IntrestSegmentStars";
+
+import { renderToString } from 'react-dom/server';
+import MapProfileToolTip from "./MapProfileToolTip";
+
 
 const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint }) => {
     
@@ -13,9 +16,9 @@ const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint
   let previousColor = null;
   for (const element of data.sort((a, b) => a.x - b.x)) {
     const color = extractColor(element);
-
+    const name = element.name;
     let dataSet;
-    if (dataSets.length === 0 || previousColor !== color) {
+    if (dataSets.length === 0 || previousColor !== name) {
       const previousDataSet =
         dataSets.length !== 0 ? dataSets[dataSets.length - 1] : null;
       dataSet = {
@@ -38,8 +41,10 @@ const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint
     dataSet.data.push([element.x, element.y]);
 
     // update previous element's color
-    previousColor = color;
+    previousColor = name;
   }
+  
+
 
 
   
@@ -64,8 +69,11 @@ const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint
             const seriesIndex = config.seriesIndex;
             let seriesOffset = 0;
             dataSets.forEach((item,index)=>{ if (index < seriesIndex) {seriesOffset += item.data.length}})
-          
-            //Store the points
+
+            //Extra datapoints are added to the areagraph which we need to remove to get same value as data points
+            seriesOffset -= seriesIndex-1;
+            //Store the points but first check if point is in valid range for map as users can drag slider out of range
+            if(config.dataPointIndex+seriesOffset >= 0 && config.dataPointIndex+seriesOffset < pointData.length)
             setSelectedDatapoint([pointData[config.dataPointIndex+seriesOffset][0],pointData[config.dataPointIndex+seriesOffset][1]])
           
           }}
@@ -73,12 +81,8 @@ const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint
     
     tooltip: {
       custom: function({series, seriesIndex, dataPointIndex, w}) {
-        
-          return '<div class="arrow_box">' +
-            '<h4>' + dataSets[seriesIndex].name + '</h4>' + 
-            '<p>' + (dataSets[seriesIndex].windir == undefined ? 'No' : dataSets[seriesIndex].windir.charAt(0).toUpperCase() + dataSets[seriesIndex].windir.slice(1)) + ' Wind' + '</p>' +
-             '<IntrestSegmentStars difficulty={1}/>'+
-            '</div>'
+       
+          return renderToString(<MapProfileToolTip name ={dataSets[seriesIndex].name} winddir = {dataSets[seriesIndex].windir} difficulty= {dataSets[seriesIndex].difficulty}/>)
         },
         
    
@@ -146,27 +150,25 @@ const MapProfile = (props) => {
 
   //Point data is retrieved
   let pointData = [];
-  segmentData.forEach((segment,id)=>pointData.push(...segment.latlon.map(((point)=>[...point,segmentData[id].classification,segmentData[id].segmentDifficulty, (segmentData[id].kmStart/1000).toFixed(1) + ' - ' + (segmentData[id].kmEnd/1000).toFixed(1) +'km']))))
+  segmentData.forEach((segment,id)=>pointData.push(...segment.latlon.map(((point)=>[...point,segmentData[id].classification,segmentData[id].segmentDifficulty, (segmentData[id].kmStart/1000).toFixed(1) + 'km - ' + (segmentData[id].kmEnd/1000).toFixed(1) +'km']))))
  
  
   //Then is is formatted for the graph
   //On the x adxis is the distance y is elevation
-  const profileData = pointData.map((item)=> ({x:item[3],y:item[2],classification: item[5],difficulty: item[6], name: item[7]}))
+  const profileData = pointData.map((item)=> ({x:item[3],y:item[2],classification: item[5],difficulty: Math.round(item[6]*2)/2, name: item[7]}))
   
   //We next want to destructure this data to create a stage profile
-  
-
     return (
       <MulticolorAreaChart
         data={profileData}
         extractColor={(element) => {
           switch (element.classification) {
             case "cross":
-              return "red";
+              return "yellow";
             case "head":
               return "blue";
             case "tail":
-              return "green";
+              return "red";
             default:
               return "grey";
           }

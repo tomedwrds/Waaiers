@@ -28,7 +28,7 @@ const IntrestSegmentContainer = (props) =>
                 <div  className='intrestSegmentContainer'>
                     
                     {segments.map((item,id)=> {
-                        if(item.classification == props.windDirection )
+                        if(item.classification == props.windDirection || props.windDirection == 'all')
                         {
                             return(
                                 <IntrestSegment key = {id} data = {item}/>

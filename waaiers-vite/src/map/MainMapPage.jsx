@@ -26,7 +26,7 @@ const MainMapPage = () => {
     const [segmentsSort,setSegmentSort] = useState("stars")
 
     //Create the wind direction hook
-    const [windDir,setWindDir] = useState("cross")
+    const [windDir,setWindDir] = useState("all")
 
     //Set up the map paramters for the generation of Segments
     const [segmentParameters,setSegmentParameters] = useState({
@@ -137,6 +137,7 @@ const MainMapPage = () => {
                     <div className='segmentIntrestSort'>
                         <p>Wind Direction:</p>
                         <select className='segmentIntrestSelect' onChange={(e)=>setWindDir(e.target.value)}>
+                            <option value="all">All</option>
                             <option value="cross">Cross</option>
                             <option value="head">Head</option>
                             <option value="tail">Tail</option>

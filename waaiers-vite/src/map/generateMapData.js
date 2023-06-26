@@ -163,6 +163,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
     //Update the state hooks
     setPositions(positions);
     setSegments(segments)
+   
 }
 
 export default generateMapData

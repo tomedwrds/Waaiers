@@ -23,7 +23,7 @@ function Legend({ map }) {
   return (
     <div className="legend">
       <div className="legend-item">
-        <span className="legend-color" style={{ backgroundColor: 'red' }}></span>
+        <span className="legend-color" style={{ backgroundColor: 'yellow' }}></span>
         <span className="legend-label">Cross Wind</span>
       </div>
       <div className="legend-item">
@@ -31,7 +31,7 @@ function Legend({ map }) {
         <span className="legend-label">Head Wind</span>
       </div>
       <div className="legend-item">
-        <span className="legend-color" style={{ backgroundColor: 'green' }}></span>
+        <span className="legend-color" style={{ backgroundColor: 'red' }}></span>
         <span className="legend-label">Tail Wind</span>
       </div>
       <div className="legend-item">

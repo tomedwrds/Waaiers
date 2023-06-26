@@ -5,6 +5,21 @@ import { useState } from 'react'
 import Legend from './Legend'
 
 
+function setLineColor(displayedWindDir,segmentWindDir)
+{
+    if(displayedWindDir == segmentWindDir || displayedWindDir == 'all')
+    {
+        if(segmentWindDir == 'cross') return 'yellow'
+        if(segmentWindDir == 'tail') return 'red'
+        if(segmentWindDir == 'head') return 'blue'
+        return 'grey'
+    }
+    else
+    {
+        return 'grey'
+    }
+}
+
 
 
 const RouteWindMap = (props) => {
@@ -14,8 +29,8 @@ const RouteWindMap = (props) => {
         const routeZoom = props.routeData.route_zoom
     
         const iconStart = L.divIcon({
-            html: ' <i class="fa-solid fa-play"></i>',
-            iconSize: [20, 20],
+            html: '<i class="fa-solid fa-circle"></i>',
+            iconSize: [16, 16],
             className: 'startIcon'
         });
 
@@ -25,31 +40,28 @@ const RouteWindMap = (props) => {
             className: 'finishIcon'
         });
        
-        const [map, setMap] = useState(null);
-        console.log(map)
+      
         return(
             
             <div id="mainMap">
                 
              
-            <MapContainer whenReady={setMap}  style={{width:'100%',height:'100%'}} center={[routeCentre[0],routeCentre[1]]} zoom={routeZoom} scrollWheelZoom={false}>
+            <MapContainer  style={{width:'100%',height:'100%'}} center={[routeCentre[0],routeCentre[1]]} zoom={routeZoom} scrollWheelZoom={false}>
                 <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Legend map={map} />
+                <Legend/>
                 (
-                    <Marker position={props.selectedDataPoint}>
-                    <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
+                    <Marker position={props.selectedDataPoint} icon={iconStart}>
+                   
                     </Marker>
                 )
                     
                     {/* <Marker position={props.pointData[0].latlon[0]} icon={iconStart}/>
                     <Marker position={props.pointData[props.pointData.length-1].latlon[props.pointData[props.pointData.length-1].latlon.length-1]} icon={iconFinish}/> */}
                                 
-                    {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {(item.classification == props.windDirection ? 'red': 'grey')} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
+                    {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {setLineColor(props.windDirection,item.classification)} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
         
                     
         </MapContainer>
