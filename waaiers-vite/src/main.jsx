@@ -16,6 +16,7 @@ import Login from './Login.jsx'
 import UploadRoute from './upload route/UploadRoute.jsx'
 import AdminPanel from './AdminPanel.jsx'
 import Home from './Home/Home.jsx'
+import About from './about/About.jsx'
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "admin",
         element: <AdminPanel/>,
+      },
+      {
+        path: "about",
+        element: <About/>,
       },
       { path: "*", element: <Home/> },
       

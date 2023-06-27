@@ -3,7 +3,7 @@ import './App.css';
 import { Outlet } from 'react-router-dom';
 
 import Navbar from './navbar/Navbar.jsx';
-
+import Footer from './footer/Footer.jsx';
 
 
 
@@ -16,6 +16,7 @@ function App()
     <div className="App">
       <Navbar/>
       <Outlet/>
+      <Footer/>
     </div>
   );
 }

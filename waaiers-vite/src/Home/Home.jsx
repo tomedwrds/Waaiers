@@ -2,7 +2,9 @@ import UpcomingRaces from '../UpcomingRaces'
 import MainMapPage from '../map/MainMapPage'
 import './home.css'
 
-const Home = () =>{
+const Home = () => 
+{
+  
     return(
       <div className='container'>
         <div className='titleContainer'>

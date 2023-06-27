@@ -5,7 +5,7 @@ const Loading = () => {
         <div className = "loadingBody">
             <div classNAme = "loadingImage">
                 <img width={240} src={gif}/>
-                <h2 className='loadingText'>Loading...</h2>
+                <h2 className='loadingText'>Wind Map Loading...</h2>
             </div>
         </div>
     )

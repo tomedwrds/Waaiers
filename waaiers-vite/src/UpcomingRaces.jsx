@@ -34,7 +34,7 @@ const UpcomingRaces = () =>
     
     //All the routes are then mapped to a component
     return(
-        <div>
+        <div style={{flex:'1'}}>
 
             <h1>Upcoming Races</h1>
             

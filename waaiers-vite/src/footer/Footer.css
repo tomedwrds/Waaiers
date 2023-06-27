@@ -1,0 +1,32 @@
+.footerContainer {
+    background-color: #00121c;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    box-shadow: 2px 2px 2px 2px rgba(9, 9, 9, 0.23); 
+   
+
+}
+
+.footerCopyRight{
+    margin-left: 5px;
+}
+
+.footerLinks{
+    flex:1;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+}
+
+.footerText{
+    color:white;
+    font-weight: 500;
+   
+  
+}
+
+.footerIcon {
+    color:white;
+    padding: 0px 10px 0px 10px;
+}
