@@ -35,11 +35,9 @@ const data = {
 };
 
 const styles = {
-    // bgColor: 'white',
-    titleTextColor: "blue",
-    //rowTitleColor: "blue",
-    // rowContentColor: 'grey',
-    // arrowColor: "red",
+    rowTitleColor: "#00121c",
+    rowContentColor: '#00121c',
+    arrowColor: "#00121c",
 };
 
 const config = {

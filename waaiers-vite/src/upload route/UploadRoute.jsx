@@ -4,6 +4,21 @@ import getUserAccessStatus from './getUserData';
 import addRoute from './addRoute';
 import { useNavigate } from "react-router-dom";
 import './UploadRoute.css'
+import GPXUploadFailModal from './GPXUploadFailModal';
+
+
+
+
+//Helper function that checks if GPX file is in valid format or not
+async function addRouteHelper(routeData,routeGpxData,userAdmin,navigate,setDisplayErrorModal)
+{
+    try{
+        await addRoute(routeData,routeGpxData,userAdmin,navigate)
+    }
+    catch(err) {
+        setDisplayErrorModal(true)
+    }
+}
 
 
 function UploadRoute() 
@@ -53,11 +68,14 @@ function UploadRoute()
     //An empty route data object is defined that is immutability updated to add all propeties of the route
     //This object is in the format of that required for the insert of route query
     const[routeData,setRouteData] = useState({route_name:null,route_date:null,route_time:null})
-    
+     
+    //Display error modal hooks
+    const [displayErrorModal,setDisplayErrorModal] = useState(false);
    
     return (
         <div className='input-container'>
             <h1>Upload a Route</h1>
+            {displayErrorModal && <GPXUploadFailModal setOpenModal={setDisplayErrorModal} />}
             <div className='input-form'>
                 
                 <div className='input-item'>
@@ -76,21 +94,11 @@ function UploadRoute()
                     <label>Route File (.gpx)</label>
                     <input type="file" accept='.gpx' onChange={changeHandler}/>
                 </div>
-                <button onClick={()=>addRoute(routeData,routeGpxData,userAdmin,navigate)}>View Route</button>
+                <button onClick={()=>addRouteHelper(routeData,routeGpxData,userAdmin,navigate,setDisplayErrorModal)}>View Route</button>
+               
+              
             </div>
-            
-           
-            
-            
-            
-          
-            
-           
-      
-    
-        </div>
-    
-     
+        </div> 
   );
 }
 
