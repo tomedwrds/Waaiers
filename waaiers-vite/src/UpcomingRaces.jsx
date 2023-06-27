@@ -29,9 +29,15 @@ const UpcomingRaces = () =>
         loadRouteData();
     },[])
 
+    //Check if user on home page if so needs to be styled diffrently. This can be done by adding a prefix to the classname for the diffrently styled ones
+    let styleSuffix=""
+    if(window.location.pathname == '/') //home
+    {
+        styleSuffix="-home"
+    }
     
 
-    
+
     //All the routes are then mapped to a component
     return(
         <div style={{flex:'1'}}>
@@ -42,7 +48,7 @@ const UpcomingRaces = () =>
                 if(item.route_visible)
                 {
                     return(
-                        <UpcomingRacesTab key = {id} routeData={item} />
+                        <UpcomingRacesTab key = {id} routeData={item} styleSuffix = {styleSuffix} />
                     )
                 }
                 

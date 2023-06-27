@@ -120,7 +120,6 @@ const MainMapPage = () => {
             //Redirect the user if the end up on invalid page
             if(window.location.pathname == '/race')
             {
-                console.log('as')
                 navigate('/races');
             }
             else

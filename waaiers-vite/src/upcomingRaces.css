@@ -1,12 +1,9 @@
 .race-tab{
     display: flex;
- 
     border-top: 2px solid;
     border-color: black;
     margin: 0px 20px;
     align-items: center;
-
-  
 }
 
 .race-name {
@@ -14,8 +11,7 @@
     justify-content: left;
     text-align: left;
     font-size: 20px;
-   
-   
+
 }
 
 .race-tab button{
@@ -27,14 +23,69 @@
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.race-tab-left{
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    display: flex;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 h3 {
     justify-content: left;
 }
 
-.race-date {
-    
- 
+.race-tab-home{
+    display: flex;
+    border-top: 2px solid;
+    border-color: black;
+    margin: 0px 20px;
+    align-items: center;
+}
 
+
+.race-name-home {
+    justify-content: left;
+    text-align: left;
+    font-size: 20px;
+    margin-bottom: 0px;
+    margin-top: 10px;
+}
+
+.race-date-home {
+  
+    justify-content: left;
+    text-align: left;
+    font-size: 14px;
+    color: #5A5A5A;
+    font-weight: 400;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.race-tab-home button{
+    margin: 20px;
+    background-color: white;
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 600;
+    
+}
+.race-tab-home:hover button{
+    color:#8b0000;
+    
+}
+
+.race-tab-left-home{
+    flex:1;
+
+    text-align: left;
 }
