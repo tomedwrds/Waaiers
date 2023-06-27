@@ -138,7 +138,7 @@ function Navbar() {
                 <Link className = "links-text" to="load">Try Yourself</Link>
               </li>
               <li>
-                <Link className = "links-text" to="about">About</Link>
+                <Link className = "links-text" to="about">FAQ</Link>
               </li>
               <li>
                 <Link  onClick = {()=>handleLogInOut()}className = "links-text" >{userSignedIn ? 'Log Out':'Sign In'}</Link>
