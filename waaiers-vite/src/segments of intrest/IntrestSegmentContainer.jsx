@@ -42,7 +42,7 @@ const IntrestSegmentContainer = (props) =>
             return(
                 <div style={{marginTop:'120px',marginBottom:'120px'}}>  
                     <h2 style={{marginBottom:'0px'}}> The Wind is Calm </h2>
-                    <p style={{marginTop:'5px',color:'grey'}}>No {props.windDirection }wind segments of intrest for this race</p>
+                    <p style={{marginTop:'5px',color:'grey'}}>No {(props.windDirection != 'all' ? props.windDirection:'') }wind segments of intrest for this race</p>
                 </div>
             )
         }

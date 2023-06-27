@@ -20,7 +20,7 @@ const UpcomingRacesTab = (props)=>
                 <p className={"race-date"+props.styleSuffix}>{routeData.route_date[2]}/{routeData.route_date[1]}</p>
             </div>
             <div>
-                <button onClick={()=>loadRoutePointData()}>{props.styleSuffix == "-home" ? <i class="fa-solid fa-map"></i> : <p>Wind Map</p> }</button>
+                <button onClick={()=>loadRoutePointData()}>{props.styleSuffix == "-home" ? <i className="fa-solid fa-map"></i> : <p>Wind Map</p> }</button>
             </div>
         </div>
     )
