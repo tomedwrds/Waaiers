@@ -17,6 +17,7 @@
     flex-direction: column;
     padding: 12px;
     font-size: 11px;
+    color: #00121c;
 }
 
 .modalContainer .title {

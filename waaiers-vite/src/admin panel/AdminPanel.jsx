@@ -1,6 +1,6 @@
 import { useEffect,useState } from "react";
-import getUserAccessStatus from "./upload route/getUserData";
-import supabase from "./supabase/supabase";
+import getUserAccessStatus from "../upload route/getUserData";
+import supabase from "../supabase/supabase";
 import AdminRaceTab from "./AdminRaceTab";
 
 

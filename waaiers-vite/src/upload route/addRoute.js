@@ -28,13 +28,16 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
             //The inserted row is returned and from that we can retrieve the id of the route which can then be used as a common key
             const route_id = routeInsertQuery.data[0].id
 
+          
+           
             //Next the weather data is inserted we first need to add in the id of the route to function as a forgein key
             weatherData.map((data,id)=>{
                 data.route_id = route_id,
-                data.weather_windspeed = windSpeed[id],
-                data.weather_winddir   = windDirection[id],
-                data.weather_windgust = windSpeedGust[id]})
+                data.weather_windspeed = apiWeatherData[id].weather_windspeed,
+                data.weather_winddir   = apiWeatherData[id].weather_winddir,
+                data.weather_windgust = apiWeatherData[id].weather_windgust})
         
+            
             //Finally insert the route weather data
             const weatherInsertQuery = await supabase.from('Weather').insert(weatherData).select();
 
@@ -52,6 +55,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
         //In this case the user is routed to main map page, however the data must be formatted for the route generation algorithm in the same way the data will be when quereid from the database
         else
         {
+            
             
             //The weather data must be added to every point. in the case of the sql query a join would be used instead a map is used here
             pointData.map((data)=>{{

@@ -16,6 +16,7 @@ async function addRouteHelper(routeData,routeGpxData,userAdmin,navigate,setDispl
         await addRoute(routeData,routeGpxData,userAdmin,navigate)
     }
     catch(err) {
+        console.log(err)
         setDisplayErrorModal(true)
     }
 }

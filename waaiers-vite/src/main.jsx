@@ -14,7 +14,7 @@ import MainMapPage from './map/MainMapPage.jsx'
 
 import Login from './Login.jsx'
 import UploadRoute from './upload route/UploadRoute.jsx'
-import AdminPanel from './AdminPanel.jsx'
+import AdminPanel from './admin panel/AdminPanel.jsx'
 import Home from './Home/Home.jsx'
 import About from './about/About.jsx'
 
