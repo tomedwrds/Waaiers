@@ -33,8 +33,21 @@
     display: table-row;
 }
 
+.input-item button{
+    background-color: transparent;
+    border-color: transparent;
+    padding: 0px;
+    margin: 0px;
+    color:blue;
+    text-decoration: underline;
+    font-weight: 600;
+}
 
 
+.input-item button:hover{
+   color: purple;
+   cursor: pointer;
+}
 
 .input-form{
  

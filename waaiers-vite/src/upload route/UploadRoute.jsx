@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import getUserAccessStatus from './getUserData';
 import addRoute from './addRoute';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import './UploadRoute.css'
 import GPXUploadFailModal from './GPXUploadFailModal';
+import GPXInfoModal from './GPXInfoModal';
 
 
 
@@ -72,11 +73,15 @@ function UploadRoute()
      
     //Display error modal hooks
     const [displayErrorModal,setDisplayErrorModal] = useState(false);
+
+    //Display gpx info modal hooks
+    const [displayGPXInfo,setDisplaGPXInfo] = useState(false);
    
     return (
         <div className='input-container'>
             <h1>Upload a Route</h1>
             {displayErrorModal && <GPXUploadFailModal setOpenModal={setDisplayErrorModal} />}
+            {displayGPXInfo && <GPXInfoModal setOpenModal={setDisplaGPXInfo} />}
             <div className='input-form'>
                 
                 <div className='input-item'>
@@ -92,7 +97,7 @@ function UploadRoute()
                     <input type ="time" onChange={(e)=>setRouteData({...routeData, route_time: e.target.value})}/>
                 </div>
                 <div className='input-item'>
-                    <label>Route File (.gpx)</label>
+                    <label>Route File (.gpx) (<button onClick={()=>setDisplaGPXInfo(true)}>?</button>)</label>
                     <input type="file" accept='.gpx' onChange={changeHandler}/>
                 </div>
                 <button onClick={()=>addRouteHelper(routeData,routeGpxData,userAdmin,navigate,setDisplayErrorModal)}>View Route</button>

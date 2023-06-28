@@ -33,8 +33,8 @@ const MainMapPage = () => {
 
     //Set up the map paramters for the generation of Segments
     const [segmentParameters,setSegmentParameters] = useState({
-        minWindSpeed: 5,
-        maxWindSpeed: 25,
+        minWindSpeed: 10,
+        maxWindSpeed: 30,
         minSegmentLength: 1000,
         maxSegmentLength: 10000,
         windAngleGolden: 75,

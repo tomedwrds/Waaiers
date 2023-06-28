@@ -109,8 +109,8 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
               let segmentDifficulty = 0;
 
               //1 point is avalaible for each of length, wind speed and wind direction, it is taken based on how well it does in comparison to mind and max values
-              segmentDifficulty += Math.min((currentLineSegment.kmEnd-currentLineSegment.kmStart)/maxSegmentLength,1)
-              segmentDifficulty += Math.min((average(currentLineSegment.segmentWindSpeed))/maxWindSpeed,1)
+              segmentDifficulty += Math.min((currentLineSegment.kmEnd-currentLineSegment.kmStart)/maxSegmentLength,1)*0.5
+              segmentDifficulty += Math.min((average(currentLineSegment.segmentWindSpeed))/maxWindSpeed,1)*1.5
 
               //Finding how far of the wind angle is a bit harder this is depedent on the direction
               //We first find distance betwee avg angle of segment and ideal angle. Then we divide by size of zone to determine how much it fills then -1. Repeated for other side in the case of cross wind
