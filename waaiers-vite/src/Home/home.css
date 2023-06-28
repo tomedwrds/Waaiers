@@ -6,6 +6,14 @@
 
 .nextRaceContainer{
     flex:3;
+    
+}
+.nextRaceContainer h1 {
+    border-bottom: 2px solid black;
+    margin-bottom: 0px;
+    margin-left:20px;
+    margin-right:20px;
+    padding-bottom: 21px;
 }
 
 .upcomingRacesContainer{
@@ -16,6 +24,7 @@
     flex:1;
     display: flex;
     flex-direction: row;
+    
 }
 
 

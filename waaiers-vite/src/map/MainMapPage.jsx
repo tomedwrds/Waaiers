@@ -12,6 +12,7 @@ import './MainMapPage.css'
 
 import MapProfile from './MapProfile';
 import Loading from './Loading';
+import getIntrestRace from './getIntrestRace';
 
 
 const MainMapPage = () => {
@@ -124,7 +125,7 @@ const MainMapPage = () => {
             }
             else
             {
-                const route_id =  (window.location.pathname == '/'  ? 60 : window.location.pathname.split('/')[2]);
+                const route_id =  (window.location.pathname == '/'  ? await getIntrestRace() : window.location.pathname.split('/')[2]);
                 const database_data = await fetchRouteData(route_id);
                 
                 point_data = database_data.point_data
@@ -132,6 +133,9 @@ const MainMapPage = () => {
             }
            
         }
+
+        
+
         
         //Fetches the weather data on page load
         generateMapData(point_data,setPositions,setSegments,segmentParameters);
@@ -146,52 +150,74 @@ const MainMapPage = () => {
 
     
    
-    //Dont attempt to render anything until the route data has loaded
+    //The page can redner in one of 3 states the first is a locked dispaly screen caused when the race is more than 3 days away
+    // The second is the normal map and the third is a loading page
+    
+
+    
     if(routeData != null)
     {
-        return(
-        <div className = "body">  
-            <div className='mainMapHeader'>
-                <h2>{routeData.route_name}</h2>
-                    <div className='segmentIntrestSort'>
-                        <p>Wind Direction:</p>
-                        <select className='segmentIntrestSelect' onChange={(e)=>setWindDir(e.target.value)}>
-                            <option value="all">All</option>
-                            <option value="cross">Cross</option>
-                            <option value="head">Head</option>
-                            <option value="tail">Tail</option>
-                        </select>
+        if(routeData.route_visible == 1)
+        {
+            return(
+                <div className = "body-locked">  
+                    <div className='mainMapHeader'>
+                        <h2>{routeData.route_name}</h2>
                     </div>
-            </div>
-           
-            <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} selectedDataPoint ={selectedDataPoint} />
-            
-
-            <div className='segmentIntrestHeader'>
-                <h2>Route Wind Profile</h2>
-                
-                
-            </div>
-
-            <MapProfile pointData = {positions} setSelectedDatapoint = {setSelectedDatapoint}/>
-           
-            <div className='segmentIntrestHeader'>
-                <h2>Segments of Intrest</h2>
-                <div className='segmentIntrestSort'>
-                    <p>Sort by:</p>
-                    <select className='segmentIntrestSelect' onChange={(e)=>setSegmentSort(e.target.value)}>
-                        <option value="stars">Stars</option>
-                        <option value="order">Order</option>
-                    </select>
+                    <div style={{marginTop:'120px',marginBottom:'120px'}}>  
+                    <h2 style={{marginBottom:'0px'}}>Check back Later</h2>
+                    <p style={{marginTop:'5px',color:'grey'}}>Waaiers wind maps release five days before a race starts</p>
                 </div>
-                
-            </div>
+                </div>
 
-
+            )
+        }
+        else{
+            return(
+                <div className = "body">  
+                    <div className='mainMapHeader'>
+                        <h2>{routeData.route_name}</h2>
+                            <div className='segmentIntrestSort'>
+                                <p>Wind Direction:</p>
+                                <select className='segmentIntrestSelect' onChange={(e)=>setWindDir(e.target.value)}>
+                                    <option value="all">All</option>
+                                    <option value="cross">Cross</option>
+                                    <option value="head">Head</option>
+                                    <option value="tail">Tail</option>
+                                </select>
+                            </div>
+                    </div>
+                   
+                    <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} selectedDataPoint ={selectedDataPoint} />
+                    
+        
+                    <div className='segmentIntrestHeader'>
+                        <h2>Route Wind Profile</h2>  
+                        
+                    </div>
+        
+                    <MapProfile pointData = {positions} setSelectedDatapoint = {setSelectedDatapoint}/>
+                   
+                    <div className='segmentIntrestHeader'>
+                        <h2>Segments of Intrest</h2>
+                        <div className='segmentIntrestSort'>
+                            <p>Sort by:</p>
+                            <select className='segmentIntrestSelect' onChange={(e)=>setSegmentSort(e.target.value)}>
+                                <option value="stars">Stars</option>
+                                <option value="order">Order</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+        
+        
+                    
+                    <IntrestSegmentContainer data = {segments} sortOrder = {segmentsSort} windDirection = {windDir} />
+                </div>
+                )
             
-            <IntrestSegmentContainer data = {segments} sortOrder = {segmentsSort} windDirection = {windDir} />
-        </div>
-        )
+        }
+        
     }
     else{
         return(
