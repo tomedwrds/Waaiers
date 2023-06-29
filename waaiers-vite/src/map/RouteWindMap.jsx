@@ -12,11 +12,11 @@ function setLineColor(displayedWindDir,segmentWindDir)
         if(segmentWindDir == 'cross') return 'yellow'
         if(segmentWindDir == 'tail') return 'red'
         if(segmentWindDir == 'head') return 'blue'
-        return '#808080'
+        return 'white'
     }
     else
     {
-        return '#808080'
+        return 'white'
     }
 }
 

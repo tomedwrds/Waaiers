@@ -4,7 +4,6 @@ const average = array => array.reduce((a, b) => a + b) / array.length;
 function setLineColor(classifcation)
 {
   let angle = (average(classifcation.segmentWindAngle) + 360) % 360
-  console.log(angle)
   if((angle < 105 && angle > 45) || (angle < 315 && angle > 255) )
   {
     return 'red'

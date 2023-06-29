@@ -13,13 +13,31 @@ import GPXInfoModal from './GPXInfoModal';
 //Helper function that checks if GPX file is in valid format or not
 async function addRouteHelper(routeData,routeGpxData,userAdmin,navigate,setDisplayErrorModal)
 {
-    try{
-        await addRoute(routeData,routeGpxData,userAdmin,navigate)
+    //Before adding route we want to check if the date given is to far away. If its to far away no weather data exists causing an error. Therefore we want to check that its not more than 2 weeks ahead.
+    //User may not have defined date in that case check later on catches this
+    if(routeData.route_date != null)
+    {
+        const current_date = new Date()
+        const route_date =  new Date(routeData.route_date) 
+
+        //Get time gives time in ms we can convert this diffrence to days
+        const daysBetween = (route_date.getTime() - current_date.getTime()) / (1000 * 3600 * 24);
+        if(daysBetween > 14)
+        {
+            alert('Date given is to far away. Date must be withn two weeks of current date.')
+        }
+        else
+        {
+            try{
+                await addRoute(routeData,routeGpxData,userAdmin,navigate)
+            }
+            catch(err) {
+                console.log(err)
+                setDisplayErrorModal(true)
+            }
+        }
     }
-    catch(err) {
-        console.log(err)
-        setDisplayErrorModal(true)
-    }
+    
 }
 
 

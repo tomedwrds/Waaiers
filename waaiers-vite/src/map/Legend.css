@@ -20,3 +20,12 @@
   height: 10px;
   margin-right: 5px;
 }
+
+
+.legend-color-white {
+  display: inline-block;
+  width: 20px;
+  height: 10px;
+  margin-right: 5px;
+  border: black 1px solid;
+}

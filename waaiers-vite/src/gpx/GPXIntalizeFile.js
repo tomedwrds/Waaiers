@@ -72,7 +72,7 @@ function GPXIntalizeFile (gpxData)
         
     
     } 
-    console.log(gpxPoints)
+   
     
     return [gpxPoints,weatherAPIData]
 }

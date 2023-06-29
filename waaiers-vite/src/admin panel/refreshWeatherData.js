@@ -3,7 +3,6 @@ import fetchWeatherData from "../weatherAPI/fetchWeatherData";
 
 async function refreshWeatherData (route_data)
 {
-    console.log('ksa')
     const route_id = route_data.id;
     const route_date = route_data.route_date;
     const route_time = route_data.route_time.substr(0,route_data.route_time.length-3);
@@ -22,13 +21,12 @@ async function refreshWeatherData (route_data)
 
     //Update the database
     formattedUpdatedWeatherData.forEach((item)=> (updateWeatherDataQuery(item)));
-    console.log(formattedUpdatedWeatherData)
+   
 }
 
 async function updateWeatherDataQuery(item)
 {
     const queryReturn = await supabase.from('Weather').update({weather_windspeed:item.weather_windspeed,weather_winddir: item.weather_winddir, weather_windgust: item.weather_windgust}).eq('id',item.id);
-    console.log(queryReturn)
 }
 
 

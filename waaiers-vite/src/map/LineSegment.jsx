@@ -19,7 +19,7 @@ const LineSegment = (props)=>
         weight={4}   
         eventHandlers={{
           click: () => {
-            if(props.linecolor != '#808080')
+            if(props.linecolor != 'white')
              { setDisplayPopup(true)}
         },
        

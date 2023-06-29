@@ -15,7 +15,7 @@ async function getIntrestRace()
         return Number(a.route_date[1]) - Number(b.route_date[1]) || Number(a.route_date[2]) - Number(b.route_date[2]);
     });
 
-    console.log(data)
+   
     //Then return the first race out of this array ie one that occurs first
     return data[0].id
 }

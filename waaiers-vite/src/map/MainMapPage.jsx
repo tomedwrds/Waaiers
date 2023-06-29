@@ -129,19 +129,29 @@ const MainMapPage = () => {
                 //This is done by getting all the route ids and comparing them with this value to see if its in the list
 
                 //Due to limitation in supabase at this point in time we have to query for both route visible value 1 and 2 as they are both valid and cant be queries at same time.
-                const routeQuery1 = await supabase.from('Routes').select('*').eq('route_visible',1);
-                const routeQuery2 = await supabase.from('Routes').select('*').eq('route_visible',2);
+                //Route visible 1 means route is displayed but locked but 2 means route is dispalyed
+                const routeQueryLocked = await supabase.from('Routes').select('*').eq('route_visible',1);
+                const routeQueryDisplayed = await supabase.from('Routes').select('*').eq('route_visible',2);
                 
-                //Combine these arrays to get all routes
-                const validRoutes = routeQuery2.data.concat(routeQuery1.data)
+                const validRoutesLocked = routeQueryLocked.data;
+                const validRoutesDisplayed = routeQueryDisplayed.data;
                 
-                //Checl if the route in url is in this valid list
-                let isRouteValid = false;
-                validRoutes.map(((item)=>{if(item.id==raceIDURL) isRouteValid = true;}))
+                //Check if the route in url is in this valid list of locked routes or displayed routes
+                let isRouteLocked = false;
+                validRoutesLocked.map(((item)=>{if(item.id==raceIDURL) isRouteLocked = item.route_name;}))
+
+                let isRouteDisplayed = false;
+                validRoutesDisplayed.map(((item)=>{if(item.id==raceIDURL) isRouteDisplayed = true;}))
                 
-                if(isRouteValid)
+                if(isRouteDisplayed)
                 {
+                    //If this case we want to see the id to display to that of url
                     race_id = raceIDURL
+                }
+                else if (isRouteLocked)
+                {
+                    //In case it is locked we need to spoof the route data so it renders the locked page
+                    setRouteData({route_name:isRouteLocked,route_visible:1})
                 }
                 else
                 {
@@ -215,7 +225,7 @@ const MainMapPage = () => {
                     </div>
                     <div style={{marginTop:'120px',marginBottom:'120px'}}>  
                     <h2 style={{marginBottom:'0px'}}>Check back Later</h2>
-                    <p style={{marginTop:'5px',color:'grey'}}>Waaiers wind maps release five days before a race starts</p>
+                    <p style={{marginTop:'5px',color:'grey'}}>Waaiers wind maps release seven days before a race starts</p>
                 </div>
                 </div>
 
