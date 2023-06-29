@@ -3,7 +3,7 @@ import "./GPXUploadFailModal.css";
 const GPXUploadFailModal = ({ setOpenModal }) => {
   return (
     <div className="modalBackground">
-      <div className="modalContainer">
+      <div className="modalContainerFail">
         <div className ="modalTitleClose">
             <div className="title">
                 <h1>GPX File Error</h1>

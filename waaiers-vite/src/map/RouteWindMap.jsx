@@ -23,9 +23,10 @@ function setLineColor(displayedWindDir,segmentWindDir)
 
 
 const RouteWindMap = (props) => {
-    if(props.pointData != null)
+    if(props.positionData != null)
     {
-        const routeCentre = props.pointData[0].latlon[props.routeData.route_center_point]
+        const routeCentre = [props.pointData[props.routeData.route_center_point].point_lat,props.pointData[props.routeData.route_center_point].point_lon]
+       
         const routeZoom = props.routeData.route_zoom
     
         const iconStart = L.divIcon({
@@ -40,6 +41,7 @@ const RouteWindMap = (props) => {
             className: 'finishIcon'
         });
        
+        //The position data has to be converted back into
 
   
         return(
@@ -62,7 +64,7 @@ const RouteWindMap = (props) => {
                     {/* <Marker position={props.pointData[0].latlon[0]} icon={iconStart}/>
                     <Marker position={props.pointData[props.pointData.length-1].latlon[props.pointData[props.pointData.length-1].latlon.length-1]} icon={iconFinish}/> */}
                                 
-                    {props.pointData.map((item)=> <LineSegment key = {item.id} linecolor = {setLineColor(props.windDirection,item.classification)} latlon = {item.latlon} segmentData = {props.pointData[item.id]}/>)}
+                    {props.positionData.map((item)=> <LineSegment key = {item.id} linecolor = {setLineColor(props.windDirection,item.classification)} latlon = {item.latlon} segmentData = {props.positionData[item.id]}/>)}
         
                     
         </MapContainer>

@@ -21,6 +21,7 @@ const MainMapPage = () => {
 
     //Create the postion and segments state hook
     const [positions,setPositions] = useState(null);
+    const [points,setPoints] = useState(null);
     const [segments,setSegments] = useState(null);
     const [routeData, setRouteData] = useState(null);
     const [selectedDataPoint,setSelectedDatapoint] = useState([0,0])
@@ -114,34 +115,82 @@ const MainMapPage = () => {
         }
         else
         {
-            //Get the route id from the url
-            //If its home page and its showing latest race then dont split
-            
+            //When the user loads a page the URL stores information about what route to load. However the home page is also the root path so therefore the user can end up on this page with junk in their url.
+            //Thus it must be determined wether the race in the pages url is valid by checking it against a list of urls
 
-            //Redirect the user if the end up on invalid page
-            if(window.location.pathname == '/race')
+            //First set the rouute id value to default value of 0
+            let race_id = 0;
+            //The route id is stored after the race therefore it makes the 3rd part of url. ie waaiers.xyz/race/10
+            const raceIDURL = window.location.pathname.split('/')[2];
+            //The first check is if raceId is defined. Some urls may be invalid and of form waaiers.xyz/asfaf and therefore their is no 3rd part.
+            if(raceIDURL != undefined)
             {
-                navigate('/races');
+                //Now that we know the race ID is defined we must check if it is a valid id ie the route should actaully be viewable
+                //This is done by getting all the route ids and comparing them with this value to see if its in the list
+
+                //Due to limitation in supabase at this point in time we have to query for both route visible value 1 and 2 as they are both valid and cant be queries at same time.
+                const routeQuery1 = await supabase.from('Routes').select('*').eq('route_visible',1);
+                const routeQuery2 = await supabase.from('Routes').select('*').eq('route_visible',2);
+                
+                //Combine these arrays to get all routes
+                const validRoutes = routeQuery2.data.concat(routeQuery1.data)
+                
+                //Checl if the route in url is in this valid list
+                let isRouteValid = false;
+                validRoutes.map(((item)=>{if(item.id==raceIDURL) isRouteValid = true;}))
+                
+                if(isRouteValid)
+                {
+                    race_id = raceIDURL
+                }
+                else
+                {
+                    
+                    //If the race id in the url is not valid we wont to navigte to the homepage
+                    navigate('/');
+                   
+                }
             }
+            else if(window.location.pathname == '/')
+            {
+                //In this case we are on home page and want load the relavent race_id
+                race_id=await getIntrestRace();
+              
+            }   
             else
             {
-                const route_id =  (window.location.pathname == '/'  ? await getIntrestRace() : window.location.pathname.split('/')[2]);
-                const database_data = await fetchRouteData(route_id);
+                navigate('/');
+            }
+
+            //Check that race id is no longer default value
+            if(race_id != 0)
+            {
+                 //Finally get the data for that route
+                const database_data = await fetchRouteData(race_id);
+                    
                 
                 point_data = database_data.point_data
                 route_data = database_data.route_data
             }
+
            
         }
 
-        
 
-        
-        //Fetches the weather data on page load
-        generateMapData(point_data,setPositions,setSegments,segmentParameters);
+        //Check to make sure these functions dont run if invalid URL
+        if(point_data.length != 0 && route_data.length != 0)
+        {
+            //Store the point data for use in route cenering
+            setPoints(point_data)
 
-        //Also gets the route data
-        setRouteData(route_data);
+            
+            //Fetches the weather data on page load
+            generateMapData(point_data,setPositions,setSegments,segmentParameters);
+
+            //Also gets the route data
+            setRouteData(route_data);
+        }
+        
     }
 
     useEffect(() => {
@@ -188,7 +237,7 @@ const MainMapPage = () => {
                             </div>
                     </div>
                    
-                    <RouteWindMap pointData = {positions} routeData = {routeData} windDirection = {windDir} selectedDataPoint ={selectedDataPoint} />
+                    <RouteWindMap pointData = {points} positionData = {positions} routeData = {routeData} windDirection = {windDir} selectedDataPoint ={selectedDataPoint} />
                     
         
                     <div className='segmentIntrestHeader'>

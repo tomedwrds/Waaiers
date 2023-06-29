@@ -6,7 +6,7 @@
   align-items: center;
 }
 
-.modalContainer {
+.modalContainerFail {
     margin-top: 160px;
     width: 500px;
     height: 165px;
@@ -20,7 +20,7 @@
     color: #00121c;
 }
 
-.modalContainer .title {
+.modalContainerFail .title {
   display: inline-block;
   text-align: center;
   margin-top: 0px;
