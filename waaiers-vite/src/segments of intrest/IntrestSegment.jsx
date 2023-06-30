@@ -1,8 +1,8 @@
-import { MapContainer,TileLayer,Polyline } from 'react-leaflet';
+import { MapContainer,TileLayer,Polyline,Marker } from 'react-leaflet';
 import average from "../generalpurposefunctions/average";
 import './IntrestSegment.css';
 import IntrestSegmentStars from './IntrestSegmentStars';
-
+import arrow from './arrow.png'
 
 
 
@@ -12,12 +12,26 @@ const IntrestSegment = (props) =>
     const avgWindSpeed = average(segmentData.segmentWindSpeed)
     const avgWindGust = average(segmentData.segmentWindGust)
     const avgWindDir = average(segmentData.segmentWindAngle)
+    const avgWindDirNonRelative = average(segmentData.segmentWindAngleNonRelative)
     const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
     const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
     const segmentDifficulty = segmentData.segmentDifficulty;
     const lineLatLonData = segmentData.latlon.map((item)=>[item[0],item[1]])
     const windDir = segmentData.classification== undefined ? 'No wind' : segmentData.classification.charAt(0).toUpperCase() + segmentData.classification.slice(1) + 'wind'
 
+
+
+    const iconStart = L.divIcon({
+      html: '<i class="fa-solid fa-play"></i>',
+      iconSize: [16, 16],
+      className: 'startIcon'
+    });
+
+    const iconFinish = L.divIcon({
+        html: ' <i class="fa-solid fa-flag-checkered"></i>',
+        iconSize: [20, 20],
+        className: 'finishIcon'
+    });
     return(
      
       <div className = "intrestSegment">
@@ -31,15 +45,25 @@ const IntrestSegment = (props) =>
          
         
           <p className ="intrestSegment-header-windspeed">Wind Speed: {Math.round(avgWindSpeed)}kmph | Wind Gusts: {Math.round(avgWindGust)}kmph</p>
-          <p className ="intrestSegment-header-windir" >Wind Direction: {windDir}</p>
+          
         </div>
         
           <div id="map" >
-          <MapContainer  style={{width:'100%',height:'100%'}} doubleClickZoom = {false}  zoomControl = {true} center={lineLatLonData[Math.round(lineLatLonData.length/2)]} zoom={12} scrollWheelZoom={false} dragging = {false}>
+          <MapContainer className='intrestSegmentMap' doubleClickZoom = {false}  zoomControl = {true} center={lineLatLonData[Math.round(lineLatLonData.length/2)]} zoom={12} scrollWheelZoom={false} dragging = {false}>
               <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              <Marker position={lineLatLonData[0]} icon={iconStart}/>
+              <Marker position={lineLatLonData[lineLatLonData.length-1]} icon={iconFinish}/>
+             
+    
+                <div className='intrestSegmentMapLegend'>
+                <p className ="intrestSegment-header-windir" ><strong>{windDir}</strong></p>
+                  <img src ={arrow} style={{ transform: `rotate(${avgWindDirNonRelative+90}deg)`}}/>
+                  <p>Wind</p>
+                  <p>Direction</p>
+                </div>
+            
               <Polyline
                 pathOptions={{ fillColor: 'red', color: 'black' }}
                 positions={lineLatLonData}

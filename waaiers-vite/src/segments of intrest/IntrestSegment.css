@@ -73,3 +73,50 @@
     padding: 0px;
 
   }
+
+  .intrestSegmentMap{
+    width:100%;
+    height: 100%;
+  }
+
+  .intrestSegmentMapLegend{
+ 
+  
+    position: relative;
+    z-index: 1000;
+    width: 50px;
+    left: 170px
+  }
+
+
+  .intrestSegmentMapLegend img{
+    border-radius: 100px;
+  }
+  .intrestSegmentMapLegend p{
+    color: black;
+    margin: 0;
+  }
+
+  .intrestSegmentMapLegend p {
+    font-size: 10px;
+  }
+
+  .intrestSegmentMapLegend{
+    background-color: white;
+    border-radius: 10px;
+    border-left: black 2px solid;
+    border-bottom: black 2px solid;
+    padding: 5px;
+    opacity: 0.9;
+    font-weight: 600;
+  }
+
+  .intrestSegmentMap .startIcon {
+    color:green;
+    font-size: 12px;
+  }
+
+  .intrestSegmentMap .finishIcon {
+    color:red;
+    font-size: 12px;
+  }

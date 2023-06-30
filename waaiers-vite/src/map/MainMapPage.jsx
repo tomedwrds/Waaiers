@@ -258,7 +258,7 @@ const MainMapPage = () => {
                     <MapProfile pointData = {positions} setSelectedDatapoint = {setSelectedDatapoint}/>
                    
                     <div className='segmentIntrestHeader'>
-                        <h2>Segments of Intrest</h2>
+                        <h2>Segments of Interest</h2>
                         <div className='segmentIntrestSort'>
                             <p>Sort by:</p>
                             <select className='segmentIntrestSelect' onChange={(e)=>setSegmentSort(e.target.value)}>

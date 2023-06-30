@@ -10,7 +10,7 @@ const modelFAQ = {
             title: "How is the segment difficulty calculated?",
             content:
                 <div>
-                    <p>The calculation of segment difficulty is a twostep process. The first is determining whether a segment meets certain thresholds to determine whether we should care about the segment. Note that the ‘golden angle’ is the value in which the impact of the wind is strongest. For head winds and tail winds, it is the angle in which wind blows straight into or behind the rider respectively. For cross winds its impact is greatest when the wind is a cross tail wind and therefore the ‘golden angle’ is 75 degrees each side from behind the rider. The thresholds are as follows:</p>
+                    <p>The calculation of segment difficulty is a threestep process. The first is determining whether a segment meets certain thresholds to determine whether we should care about the segment. Note that the ‘golden angle’ is the value in which the impact of the wind is strongest. For head winds and tail winds, it is the angle in which wind blows straight into or behind the rider respectively. For cross winds its impact is greatest when the wind is a cross tail wind and therefore the ‘golden angle’ is 75 degrees each side from behind the rider. The thresholds are as follows:</p>
                     <ul>
                         <li>Wind Speed {`>`} 10kmph</li>
                         <li>Degrees from golden angle {`<`} 30°</li>
@@ -29,8 +29,13 @@ const modelFAQ = {
                         <li>Defrees from golden angle 0°</li>
                         <li>Segment length 10km</li>
                     </ul>
-                    <p>The stars awarded for each factor are then summed to get a total value. This value is then rounded to the nearest 0.5 to get the final amount of total stars.</p>
-                    <p>Feedback on this model is welcome as I believe it could be improved further.</p>
+                    <p>The stars awarded for each factor are then summed to get a total value. This value is then rounded to the nearest 0.5 and then the final step is carried out of maxing the value. </p>
+                    <p>This third step takes into account that head winds have very little bearing on a race whereas tailwinds have a slight impact, but cross winds are the most devestating. To reflect this a max star value is placed on each segment based on its wind direction. These max values ensure that the segments with the most stars will have the largest impact on the race. These max values are as follows.</p>
+                    <ul>
+                        <li>Cross wind 3 stars</li>
+                        <li>Tail wind 1.5 stars</li>
+                        <li>Head wind 1 star</li>
+                    </ul>
                 </div>,
         },
         {
@@ -44,6 +49,20 @@ const modelFAQ = {
             title: "Where is the weather data taken from?",
             content:
                 "The weather data used in Waaiers is taken from Open Meteo. Open Meteo was used as it has access to highly reliable weather data world wide and is free to use.",
+        },
+        {
+            title: "In simple terms how does Waaiers work?",
+            content:
+                "The process begins by a GPX file being uploaded. This GPX file consists of GPS points. A set of these GPS points – that are evenly distributed throughout the stages profile – are taken and sent to a weather API (in this case Open Meteo). Also sent to the weather API is the date and time of the race. The API then returns the wind data at that point at the given time. This data is then put through the Waaiers model (as described above) to generate the data for a stage. The data outputted from the model is then formatted to be rendered onto the interactive map and stage profile.",
+        },
+        {
+            title: "Is the weather data historic or based on upcoming weather forecasts?",
+            content:
+               <div>
+                <p>The data is based on upcoming weather forecasts. This approach was used as opposed to making use of historic models as it allows Waaiers to pick up certain weather events that aren’t normal ie very strong wind. </p>
+                <p>In the cases of pro races that Waaiers curates the weather data is updated every 12 hours to get the latest weather forecasting for the day of the race. On the day of the race these weather updates are done every hour.</p>
+               </div>,
+
         },
        
         

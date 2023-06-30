@@ -138,7 +138,7 @@ function Navbar() {
                 <Link className = "links-text" to="load">Try Yourself</Link>
               </li>
               <li>
-                <Link className = "links-text" to="about">FAQ</Link>
+                <Link className = "links-text" to="faq">FAQ</Link>
               </li>
               <li>
                 <Link  onClick = {()=>handleLogInOut()}className = "links-text" >{userSignedIn ? 'Log Out':'Sign In'}</Link>
@@ -159,7 +159,7 @@ function Navbar() {
                 <Link className = "popup-links-text" to="load">Try Yourself</Link>
               </li>
               <li>
-                  <Link className = "popup-links-text" to="about">FAQ</Link>
+                  <Link className = "popup-links-text" to="faq">FAQ</Link>
               </li>
               <li>
                 <Link onClick = {()=>handleLogInOut()} className = "popup-links-text" >{userSignedIn ? 'Log Out':'Sign In'}</Link>

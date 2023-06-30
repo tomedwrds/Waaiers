@@ -29,8 +29,14 @@ const RouteWindMap = (props) => {
        
         const routeZoom = props.routeData.route_zoom
     
-        const iconStart = L.divIcon({
+        const iconCursor = L.divIcon({
             html: '<i class="fa-solid fa-circle"></i>',
+            iconSize: [16, 16],
+            className: 'cursorIcon'
+        });
+
+        const iconStart = L.divIcon({
+            html: '<i class="fa-solid fa-play"></i>',
             iconSize: [16, 16],
             className: 'startIcon'
         });
@@ -42,7 +48,7 @@ const RouteWindMap = (props) => {
         });
        
         //The position data has to be converted back into
-
+    
   
         return(
             
@@ -56,13 +62,13 @@ const RouteWindMap = (props) => {
                 />
                 <Legend/>
                 (
-                    <Marker position={props.selectedDataPoint} icon={iconStart}>
+                    <Marker position={props.selectedDataPoint} icon={iconCursor}>
                    
                     </Marker>
                 )
-                    
-                    {/* <Marker position={props.pointData[0].latlon[0]} icon={iconStart}/>
-                    <Marker position={props.pointData[props.pointData.length-1].latlon[props.pointData[props.pointData.length-1].latlon.length-1]} icon={iconFinish}/> */}
+                     
+                    <Marker position={[props.pointData[0].point_lat,props.pointData[0].point_lon]} icon={iconStart}/>
+                    <Marker position={[props.pointData[props.pointData.length-1].point_lat,props.pointData[props.pointData.length-1].point_lon]} icon={iconFinish}/>
                                 
                     {props.positionData.map((item)=> <LineSegment key = {item.id} linecolor = {setLineColor(props.windDirection,item.classification)} latlon = {item.latlon} segmentData = {props.positionData[item.id]}/>)}
         

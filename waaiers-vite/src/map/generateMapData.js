@@ -43,7 +43,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
       if(positions.length == 0)
       {
         //In case of first segment an inital item must be added
-        positions.push({id: 0, latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
+        positions.push({id: 0, latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]],kmStart: 0, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection], segmentWindAngleNonRelative:  [gpxPoints[i].weather_winddir], segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
   
       } 
       else
@@ -91,7 +91,8 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
   
             //Next wind direction
             const segmentWindDir = (average(currentLineSegment.segmentWindAngle) + 360) % 360 
-            const segmentWindDCross = (segmentWindDir < (windAngleGolden+windAngleZone) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210));
+          
+            const segmentWindDCross = (segmentWindDir < (windAngleGolden+windAngleZone+45) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210-45));
             const segmentWindHead = (segmentWindDir >= windAngleGolden+windAngleZone && segmentWindDir <= (windAngleGolden-windAngleZone+210));
             const segmentWindTail =  (segmentWindDir <= (windAngleGolden-windAngleZone) || segmentWindDir >= (windAngleGolden+windAngleZone+210))
             
@@ -120,6 +121,9 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
                 
                 //Also set color and classification
                 currentLineSegment.classification = 'cross';
+
+                 //Max stars of cross wind is 3
+                 segmentDifficulty = Math.min(segmentDifficulty, 3)
               }
               else if(segmentWindHead)
               {
@@ -128,12 +132,18 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
                 
                 //Also set color and classification
                 currentLineSegment.classification = 'head';
+
+                 
+                //Max stars of tail wind is 1
+                segmentDifficulty = Math.min(segmentDifficulty, 1)
               }
               else if(segmentWindTail)
               {
                 //Some variables are hardcoded here and should be changed in the future
                 segmentDifficulty +=  Math.max( 1-Math.abs(average(currentLineSegment.segmentWindAngle))/45,1-Math.abs(average(currentLineSegment.segmentWindAngle)-360)/45)
                 
+                //Max stars of tail wind is 1.5
+                segmentDifficulty = Math.min(segmentDifficulty, 1.5)
                 //Also set color and classification
                 currentLineSegment.classification = 'tail';
               }
@@ -148,14 +158,15 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
           }
           
   
-          positions.push({id: positions.length,  latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]],kmStart: gpxPoints[i].point_distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
+          positions.push({id: positions.length,  latlon: [[gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]],kmStart: gpxPoints[i].point_distance_start, kmEnd: 0,segmentWindAngle: [windRouteRelativeDirection],segmentWindAngleNonRelative:  [gpxPoints[i].weather_winddir],segmentWindSpeed: [gpxPoints[i].weather_windspeed],segmentWindGust: [gpxPoints[i].weather_windgust]})
         }
         else
         {
           currentLineSegment.latlon.push([gpxPoints[i].point_lat,gpxPoints[i].point_lon,gpxPoints[i].point_elev,gpxPoints[i].point_distance_start,gpxPoints[i].point_distance_end]);
           currentLineSegment.segmentWindSpeed.push(gpxPoints[i].weather_windspeed)
           currentLineSegment.segmentWindAngle.push(windRouteRelativeDirection);
-          currentLineSegment.segmentWindGust.push(gpxPoints[i].weather_windgust)
+          currentLineSegment.segmentWindGust.push(gpxPoints[i].weather_windgust);
+          currentLineSegment.segmentWindAngleNonRelative.push( gpxPoints[i].weather_winddir)
         }
       }
     }

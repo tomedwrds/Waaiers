@@ -12,7 +12,7 @@ const Home = () =>
         </div>
         <div className='mainContentContainer'>
           <div className='nextRaceContainer'>
-            <h1>Waaiers Race of Intrest</h1>
+            <h1>Waaiers Race of Interest</h1>
           <MainMapPage/>
           </div>
           <div className='upcomingRacesContainer'>
