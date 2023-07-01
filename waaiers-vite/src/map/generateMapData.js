@@ -4,7 +4,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
 {
     let positions = [];
  
-    const kmInterval = 15;
+    const kmInterval = 5;
   
   
     //Segment related constants and data
@@ -92,7 +92,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
             //Next wind direction
             const segmentWindDir = (average(currentLineSegment.segmentWindAngle) + 360) % 360 
           
-            const segmentWindDCross = (segmentWindDir < (windAngleGolden+windAngleZone+45) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210-45));
+            const segmentWindDCross = (segmentWindDir < (windAngleGolden+windAngleZone) && segmentWindDir > (windAngleGolden-windAngleZone)) || (segmentWindDir < (windAngleGolden+windAngleZone+210) && segmentWindDir > (windAngleGolden-windAngleZone+210));
             const segmentWindHead = (segmentWindDir >= windAngleGolden+windAngleZone && segmentWindDir <= (windAngleGolden-windAngleZone+210));
             const segmentWindTail =  (segmentWindDir <= (windAngleGolden-windAngleZone) || segmentWindDir >= (windAngleGolden+windAngleZone+210))
             
@@ -123,7 +123,7 @@ function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
                 currentLineSegment.classification = 'cross';
 
                  //Max stars of cross wind is 3
-                 segmentDifficulty = Math.min(segmentDifficulty, 3)
+                 segmentDifficulty = Math.min(segmentDifficulty*1.2, 3)
               }
               else if(segmentWindHead)
               {

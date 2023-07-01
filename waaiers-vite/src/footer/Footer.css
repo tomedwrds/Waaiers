@@ -10,13 +10,14 @@
 
 .footerCopyRight{
     margin-left: 5px;
+    display: inline-flex;
 }
 
 .footerLinks{
     flex:1;
     display: flex;
     justify-content: flex-end;
-    margin-right: 10px;
+
 }
 
 .footerText{
@@ -30,3 +31,44 @@
     color:white;
     padding: 0px 10px 0px 10px;
 }
+
+.buyButton {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    color: #ffffff;
+  
+    border-radius: 5px 0px 0px 5px;
+    border: 1px solid transparent;
+    padding: 0.5rem;
+    font-size: 1rem;
+    box-shadow: 0px 1px 2px rgba(190, 190, 190, 0.5);
+    border: white 1px solid;
+    background-color: white;
+    color: #00121c;
+    font-weight: 600;
+
+  }
+  .buyButton:hover,
+  .buyButton:active,
+  .buyButton:focus {
+    text-decoration: underline;
+    box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5);
+    opacity: 0.85;
+    color: blue;
+  }
+  
+  .coffeeImage {
+    height: 2vh;
+    box-shadow: none;
+    border: none;
+    vertical-align: middle;
+    color: white;
+    
+  }
+  
+  .coffeeButtonText {
+    margin-left: 15px;
+    font-size: 0.8rem;
+    vertical-align: middle;
+  }
