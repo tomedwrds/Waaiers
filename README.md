@@ -1,7 +1,7 @@
 
 <p align="center"> <img src="https://user-images.githubusercontent.com/60488797/233480144-a4b45516-dcf2-480a-ba42-b1421b7ccf1b.jpg"  width="400" height="200"> </p>
 
-Wind is one of the most defening factors in a bike race. It can turn boring flat routes, into wild unpredictable and entertaining races.
+Wind is one of the most defining factors in a bike race. It can turn boring flat routes, into wild unpredictable and entertaining races.
 The most devestating wind in a race is the crosswind. Crosswinds rip races apart, causing Waaiers to form as riders spread across the road in an attempt to hide from the wind.
 
 Waaiers is being developed as a predicative wind anaylsis tool, that analyses wind speed and direction, and applies that to the terrain of the race to determine were the impacts of the wind are the largest and Waaiers should form.
