@@ -1,6 +1,7 @@
 import supabase from "../supabase/supabase";
 import GPXIntalizeFile from '../gpx/GPXIntalizeFile';
 import fetchWeatherData from '../weatherAPI/fetchWeatherData';
+import { v4 as uuidv4 } from 'uuid';
 
 
 async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
@@ -14,17 +15,42 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
         
 
         //The wind direction / speech gets fetched from the api
-        const apiWeatherData = await fetchWeatherData(weatherData,routeData.route_time,routeData.route_date);
+        const apiWeatherData = []// await fetchWeatherData(weatherData,routeData.route_time,routeData.route_date);
     
 
 
         //CASE 1: User is an admin and is uploading the gpx file to be viewed by the public in this case it has to be stored in a database 
-        if(userAdmin)
+        if(true)
         {
             
             //Insert the route data into the database
             const routeInsertQuery = await supabase.from('Routes').insert(routeData).select();
-            
+           
+           try {
+            let response = await fetch("https://localhost:7276/api/RouteItems", {
+                method: "POST",
+                body: JSON.stringify({
+                //   id: uuidv4(),
+                //   name:  routeData.route_name,
+                //   isDisplayed: false,
+                //   raceDateTime: routeData.route_date
+                
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "name": "string",
+                    "isDisplayed": true,
+                    "raceDateTime": "2025-01-15T07:35:11.662Z"
+                  
+                }),
+                headers: {
+                    "Content-type": "text/plain"
+                  }
+              });
+              console.log(response)
+           } catch(e) {
+            console.log(e)
+           }
+
+
             //The inserted row is returned and from that we can retrieve the id of the route which can then be used as a common key
             const route_id = routeInsertQuery.data[0].id
 

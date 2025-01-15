@@ -29,7 +29,7 @@ namespace backend.Controllers
 
         // GET: api/RouteItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RouteItem>> GetRouteItem(long id)
+        public async Task<ActionResult<RouteItem>> GetRouteItem(Guid id)
         {
             var routeItem = await _context.RouteItems.FindAsync(id);
 
@@ -68,7 +68,7 @@ namespace backend.Controllers
 
         // DELETE: api/RouteItems/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRouteItem(long id)
+        public async Task<IActionResult> DeleteRouteItem(Guid id)
         {
             var routeItem = await _context.RouteItems.FindAsync(id);
             if (routeItem == null)
@@ -82,7 +82,7 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        private bool RouteItemExists(long id)
+        private bool RouteItemExists(Guid id)
         {
             return _context.RouteItems.Any(e => e.Id == id);
         }
