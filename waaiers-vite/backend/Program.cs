@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<backend.Models.RouteContext>(opt =>
     opt.UseInMemoryDatabase("RouteList"));
+builder.Services.AddDbContext<backend.Models.PointContext>(opt =>
+    opt.UseInMemoryDatabase("PointList"));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

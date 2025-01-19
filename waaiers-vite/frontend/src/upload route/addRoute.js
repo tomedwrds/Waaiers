@@ -25,37 +25,26 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
             
             //Insert the route data into the database
             const routeInsertQuery = await supabase.from('Routes').insert(routeData).select();
-           
-           try {
-            let response = await fetch("https://localhost:7276/api/RouteItems", {
-                method: "POST",
-                body: JSON.stringify({
-                //   id: uuidv4(),
-                //   name:  routeData.route_name,
-                //   isDisplayed: false,
-                //   raceDateTime: routeData.route_date
-                
-                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                    "name": "string",
-                    "isDisplayed": true,
-                    "raceDateTime": "2025-01-15T07:35:11.662Z"
-                  
-                }),
-                headers: {
-                    "Content-type": "text/plain"
-                  }
-              });
-              console.log(response)
+            let combineDateTime = new Date(Date.parse(routeData.route_date + ' ' + routeData.route_time));
+            const routeId = uuidv4()
+            try {
+                await fetch("https://localhost:7276/api/RouteItems", {
+                    method: "POST",
+                    body: JSON.stringify({
+                    id: routeId,
+                    name:  routeData.route_name,
+                    isDisplayed: false,
+                    raceDateTime: combineDateTime
+                    }),
+                    headers: {
+                        "Content-type": "application/json"
+                    }
+                });
            } catch(e) {
-            console.log(e)
+                console.error(e)
            }
 
 
-            //The inserted row is returned and from that we can retrieve the id of the route which can then be used as a common key
-            const route_id = routeInsertQuery.data[0].id
-
-          
-           
             //Next the weather data is inserted we first need to add in the id of the route to function as a forgein key
             weatherData.map((data,id)=>{
                 data.route_id = route_id,
