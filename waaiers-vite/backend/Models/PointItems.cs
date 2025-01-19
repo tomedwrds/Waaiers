@@ -7,11 +7,16 @@ public class PointItem
     public required int Elevation { get; set; }
     public required float Latitude { get; set; }
     public required float Longitude { get; set; }
+    public required float DistanceStart { get; set; }
+    public required float DistanceEnd { get; set; }
+    public required float Direction { get; set; }
+    public required Guid WeatherID { get; set; }
 
 }
 
-public class PointItems
+public class PostRequestPoints 
 {
-    public required List<PointItem> Points { get; set; }
-
+    public object Ele { get; set; }
+    public float Lat { get; set; }
+    public float Lon { get; set; }
 }

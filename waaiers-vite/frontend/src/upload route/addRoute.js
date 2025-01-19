@@ -2,6 +2,7 @@ import supabase from "../supabase/supabase";
 import GPXIntalizeFile from '../gpx/GPXIntalizeFile';
 import fetchWeatherData from '../weatherAPI/fetchWeatherData';
 import { v4 as uuidv4 } from 'uuid';
+import { XMLParser } from 'fast-xml-parser';
 
 
 async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
@@ -25,21 +26,36 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
             
             //Insert the route data into the database
             const routeInsertQuery = await supabase.from('Routes').insert(routeData).select();
+            
+            
             let combineDateTime = new Date(Date.parse(routeData.route_date + ' ' + routeData.route_time));
+            const options = {
+                ignoreAttributes : false,
+                attributeNamePrefix: "",
+                parseAttributeValue: true
+            };
+            const gpxParser = new XMLParser(options);
+            const gpx = gpxParser.parse(routeGpxData);
+            const parsedPoints = gpx.gpx.trk.trkseg.trkpt;
+
             const routeId = uuidv4()
             try {
                 await fetch("https://localhost:7276/api/RouteItems", {
                     method: "POST",
                     body: JSON.stringify({
-                    id: routeId,
-                    name:  routeData.route_name,
-                    isDisplayed: false,
-                    raceDateTime: combineDateTime
+                        route: {
+                            id: routeId,
+                            name:  routeData.route_name,
+                            isDisplayed: false,
+                            raceDateTime: combineDateTime
+                        },
+                        points: parsedPoints
                     }),
                     headers: {
                         "Content-type": "application/json"
                     }
                 });
+                
            } catch(e) {
                 console.error(e)
            }

@@ -23,7 +23,6 @@ function GPXIntalizeFile (gpxData)
 
     let gpxPoints = [];
     const parsedPoints = gpx.gpx.trk.trkseg.trkpt;
-    console.log(parsedPoints)
     
     let distance = 0;
 

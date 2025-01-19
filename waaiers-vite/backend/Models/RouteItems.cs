@@ -1,5 +1,12 @@
 namespace backend.Models;
 
+public class PostRequestRoute
+{
+    public required RouteItem Route { get; set; }
+    public required List<PostRequestPoints> Points { get; set; }
+
+}
+
 public class RouteItem
 {
     public required Guid Id { get; set; }
