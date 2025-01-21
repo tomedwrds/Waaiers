@@ -44,7 +44,6 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
                     method: "POST",
                     body: JSON.stringify({
                         route: {
-                            id: routeId,
                             name:  routeData.route_name,
                             isDisplayed: false,
                             raceDateTime: combineDateTime

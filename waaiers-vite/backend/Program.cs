@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
+using Supabase;
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,17 @@ builder.Services.AddCors(options =>
                           policy.WithOrigins("http://localhost:5173").AllowAnyHeader();
                       });
 });
+
+//Supabase
+var url = "http://127.0.0.1:54321";
+var key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+var options = new SupabaseOptions
+      {
+        AutoRefreshToken = true,
+        AutoConnectRealtime = true
+      };
+builder.Services.AddSingleton(provider => new Supabase.Client(url, key, options));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

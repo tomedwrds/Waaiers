@@ -2,7 +2,7 @@ using backend.Models;
 
 namespace backend.Services {
     public static class PointService {
-        public static void ProcessPoints(List<PostRequestPoints> points, backend.Models.PointContext pointContext)  {
+        async public static void ProcessPoints(List<PostRequestPoints> points, backend.Models.PointContext pointContext, Supabase.Client supabaseClient)  {
             float distance = 0;
             int kmInterval = 5;
 
@@ -26,6 +26,7 @@ namespace backend.Services {
                         Direction = pointDirectionToNextPoint,
                         WeatherID = Guid.NewGuid()
                     };
+
                     pointContext.Add(point);
                 }
 
