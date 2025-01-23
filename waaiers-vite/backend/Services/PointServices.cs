@@ -1,11 +1,17 @@
 using backend.Models;
-
+using backend.Interfaces;
 namespace backend.Services {
-    public static class PointService {
-        async public static void ProcessPoints(List<PostRequestPoints> points, backend.Models.PointContext pointContext, Supabase.Client supabaseClient)  {
+    public class PointService : IPointService {
+        private readonly Supabase.Client _supabaseClient;
+        public PointService(Supabase.Client supabaseClient)
+        {
+            _supabaseClient = supabaseClient;
+
+        }
+        async public Task<float> ProcessPoints(List<PostRequestPoints> points)  {
             float distance = 0;
             int kmInterval = 5;
-
+            var pointsToInsert = new List<PointModel>();
             for(int i = 0; i < points.Count-1; i++) {
                 //check for point duplication
     	        int elevtation;
@@ -16,7 +22,7 @@ namespace backend.Services {
                     float pointDirectionToNextPoint = BearingBetweenPoints(points[i].Lat, points[i+1].Lat, points[i].Lon, points[i+1].Lon);
                     
                     //weather stuff todo here
-                    PointItem point = new PointItem { 
+                    var point = new PointModel { 
                         Id = Guid.NewGuid(),
                         Latitude = points[i].Lat, 
                         Longitude = points[i].Lon,
@@ -24,16 +30,19 @@ namespace backend.Services {
                         DistanceStart = pointDistance,
                         DistanceEnd = distance,
                         Direction = pointDirectionToNextPoint,
-                        WeatherID = Guid.NewGuid()
+                        //WeatherID = Guid.NewGuid()
                     };
+                    pointsToInsert.Add(point);
 
-                    pointContext.Add(point);
                 }
+                
 
             }
+            await _supabaseClient.From<PointModel>().Insert(pointsToInsert);
+            return distance;
         }
 
-        private static float DistanceBetweenPoints(float lat1, float lat2, float lon1, float lon2) {
+        public float DistanceBetweenPoints(float lat1, float lat2, float lon1, float lon2) {
             float earthRadius = 6371000; 
             float theta1 = lat1 * (float) Math.PI/180; // φ, λ in radians
             float theta2 = lat2 * (float) Math.PI/180;
@@ -48,7 +57,7 @@ namespace backend.Services {
             float d = earthRadius * c; // in metres
             return d; 
         }
-        private static float BearingBetweenPoints(float lat1, float lat2, float lon1, float lon2) { 
+        public float BearingBetweenPoints(float lat1, float lat2, float lon1, float lon2) { 
             float y = (float) Math.Sin(lon2-lon1) * (float) Math.Cos(lat2);
             float x = (float) Math.Cos(lat1) * (float) Math.Sin(lat2) -
                         (float) Math.Sin(lat1) * (float) Math.Cos(lat2) * (float) Math.Cos(lon2-lon1);

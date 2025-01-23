@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using Supabase;
+using backend.Interfaces;
+using backend.Services;
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +31,7 @@ var options = new SupabaseOptions
         AutoConnectRealtime = true
       };
 builder.Services.AddSingleton(provider => new Supabase.Client(url, key, options));
-
+builder.Services.AddScoped<IPointService, PointService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

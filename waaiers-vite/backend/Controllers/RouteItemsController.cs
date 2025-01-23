@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
-using backend.Services;
+using backend.Interfaces;
 using Supabase;
 using Azure;
 
@@ -17,11 +17,13 @@ namespace backend.Controllers
     public class RouteItemsController : ControllerBase
     {
         private readonly Supabase.Client _supabaseClient;
+        private readonly Interfaces.IPointService _pointService;
 
 
-        public RouteItemsController(Supabase.Client supabaseClient)
+        public RouteItemsController(Client supabaseClient, IPointService pointService)
         {
             _supabaseClient = supabaseClient;
+            _pointService = pointService;
 
         }
 
@@ -76,7 +78,7 @@ namespace backend.Controllers
                 Date = request.Date,
             };
             var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
-            float routeDistance = 0; //PointService.ProcessPoints(request.Points, _contextPoints, _supabaseClient);
+            float routeDistance = await _pointService.ProcessPoints(request.Points);
             var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, routeDistance).Update();
             var response = new ResponseRoute {
                 RouteName = request.Name,
