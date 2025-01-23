@@ -43,11 +43,8 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
                 await fetch("https://localhost:7276/api/RouteItems", {
                     method: "POST",
                     body: JSON.stringify({
-                        route: {
-                            name:  routeData.route_name,
-                            isDisplayed: false,
-                            raceDateTime: combineDateTime
-                        },
+                        name:  routeData.route_name,
+                        date: combineDateTime,
                         points: parsedPoints
                     }),
                     headers: {

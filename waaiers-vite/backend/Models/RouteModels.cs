@@ -5,16 +5,18 @@ namespace backend.Models;
 
 public class PostRequestRoute
 {
-    public required RouteItem Route { get; set; }
+    public required string Name { get; set; }
+    public required DateTime Date { get; set; }
     public required List<PostRequestPoints> Points { get; set; }
 }
 
-public class RouteItem
+public class ResponseRoute
 {
     public required Guid Id { get; set; }
-    public required string Name { get; set; }
-    public required bool IsDisplayed { get; set; }
-    public required DateTime RaceDateTime { get; set; }
+    public required string RouteName { get; set; }
+    public required bool Displayed { get; set; }
+    public required DateTime Date { get; set; }
+    public required float Distance { get; set; }
 
 }
 
@@ -30,6 +32,8 @@ public class RouteModel : BaseModel
     public bool Displayed { get; set; }
     [Column("date")]
     public DateTime Date { get; set; }
+    [Column("distance")]
+    public float Distance { get; set; }
 
 }
 
@@ -37,6 +41,6 @@ public class RouteModel : BaseModel
 
 public class RouteStausUpdate
 {
-    public required long Id { get; set; }
+    public required Guid Id { get; set; }
     public required bool IsDisplayed { get; set; }
 }

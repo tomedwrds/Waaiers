@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using backend.Models;
 using backend.Services;
 using Supabase;
+using Azure;
 
 namespace backend.Controllers
 {
@@ -15,40 +16,52 @@ namespace backend.Controllers
     [ApiController]
     public class RouteItemsController : ControllerBase
     {
-        private readonly backend.Models.RouteContext _contextRoutes;
-        private readonly backend.Models.PointContext _contextPoints;
         private readonly Supabase.Client _supabaseClient;
 
 
-        public RouteItemsController(backend.Models.RouteContext contextRoutes, backend.Models.PointContext pointContext, Supabase.Client supabaseClient)
+        public RouteItemsController(Supabase.Client supabaseClient)
         {
-            _contextRoutes = contextRoutes;
-            _contextPoints = pointContext;
             _supabaseClient = supabaseClient;
 
         }
 
         // GET: api/RouteItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RouteItem>>> GetRouteItems()
+        public async Task<ActionResult<IEnumerable<ResponseRoute>>> GetRouteItems()
         {
             var routes = await _supabaseClient.From<RouteModel>().Get();
-            Console.WriteLine(routes.Models);
-            return await _contextRoutes.RouteItems.ToListAsync();
+            //parse supabase data into response format
+            List<ResponseRoute> responses = [];
+            foreach(RouteModel response in routes.Models) {
+                var newResponse = new ResponseRoute {
+                    RouteName = response.Name,
+                    Date = response.Date,
+                    Distance = response.Distance,
+                    Id = response.Id,
+                    Displayed = response.Displayed
+                };
+                responses.Add(newResponse);
+            }
+            return responses;
         }
 
         // GET: api/RouteItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RouteItem>> GetRouteItem(Guid id)
+        public async Task<ActionResult<ResponseRoute>> GetRoute(Guid id)
         {
-            var routeItem = await _contextRoutes.RouteItems.FindAsync(id);
-
-            if (routeItem == null)
+            var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
+             if (route.Model == null)
             {
                 return NotFound();
             }
-
-            return routeItem;
+            var newResponse = new ResponseRoute {
+                    RouteName = route.Model.Name,
+                    Date = route.Model.Date,
+                    Distance = route.Model.Distance,
+                    Id = route.Model.Id,
+                    Displayed = route.Model.Displayed
+                };
+            return newResponse;
         }
 
         
@@ -56,44 +69,58 @@ namespace backend.Controllers
         // POST: api/RouteItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RouteItem>> PostRouteItem(PostRequestRoute request)
+        public async Task<ActionResult<ResponseRoute>> PostRouteItem(PostRequestRoute request)
         {
-            var routeItem = request.Route;
-            _contextRoutes.RouteItems.Add(routeItem);
             var model = new RouteModel {
-                Name = routeItem.Name,
-                Date = routeItem.RaceDateTime,
-                Displayed = routeItem.IsDisplayed,
+                Name = request.Name,
+                Date = request.Date,
             };
-            var response = await _supabaseClient.From<RouteItem>().Insert(model);
-            routeItem.Id = response.Model.Id;
-            PointService.ProcessPoints(request.Points, _contextPoints, _supabaseClient);
-            return CreatedAtAction("GetRouteItem", new { id = routeItem.Id }, routeItem);
+            var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
+            float routeDistance = 0; //PointService.ProcessPoints(request.Points, _contextPoints, _supabaseClient);
+            var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, routeDistance).Update();
+            var response = new ResponseRoute {
+                RouteName = request.Name,
+                Date = request.Date,
+                Distance = routeDistance,
+                Id = supabaseResponse.Model.Id,
+                Displayed = false
+            };
+            
+            return CreatedAtAction("GetRoute", new { id = response.Id }, response);
         }
 
         // POST: api/RouteItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("updatestatus")]
-        public async Task<ActionResult<RouteItem>> PostRouteStatusUpdate(RouteStausUpdate routeItem)
+        public async Task<ActionResult<ResponseRoute>> PostRouteStatusUpdate(RouteStausUpdate request)
         {
-            //TODO
-            //_context.RouteItems.Add(routeItem);
-            //await _context.SaveChangesAsync();
-
-            return NoContent();
-
+            
+            var supabaseResponse = await _supabaseClient.From<RouteModel>().Where(x => x.Id == request.Id).Set(x => x.Displayed, request.IsDisplayed).Update();
+            if(supabaseResponse.Model == null) {
+                return NotFound();
+            } else {
+                var response = new ResponseRoute {
+                    RouteName = supabaseResponse.Model.Name,
+                    Date = supabaseResponse.Model.Date,
+                    Distance = supabaseResponse.Model.Distance,
+                    Id = supabaseResponse.Model.Id,
+                    Displayed = supabaseResponse.Model.Displayed
+                };
+                return CreatedAtAction("GetRoute", new { id = response }, supabaseResponse.Model);
+            }
         }
 
         // DELETE: api/RouteItems/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRouteItem(Guid id)
         {
-            return NoContent();
-        }
-
-        private bool RouteItemExists(Guid id)
-        {
-            return _contextRoutes.RouteItems.Any(e => e.Id == id);
+            var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
+            if (route.Model == null)
+            {
+                return NotFound();
+            } 
+            await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Delete();
+            return StatusCode(200);
         }
     }
 }
