@@ -78,7 +78,7 @@ namespace backend.Controllers
                 Date = request.Date,
             };
             var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
-            float routeDistance = await _pointService.ProcessPoints(request.Points);
+            float routeDistance = await _pointService.ProcessPoints(request.Points, request.Date, supabaseResponse.Model.Id);
             var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, routeDistance).Update();
             var response = new ResponseRoute {
                 RouteName = request.Name,

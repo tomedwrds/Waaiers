@@ -10,18 +10,22 @@ public class PointModel : BaseModel
 {
     [PrimaryKey("id")]
     public Guid Id { get; set; }
+    [Column("route_id")]
+    public Guid RouteId { get; set; }
     [Column("elevation")]
     public int Elevation { get; set; }
     [Column("latitude")]
     public float Latitude { get; set; }
     [Column("longitude")]
     public float Longitude { get; set; }
-    [Column("distancestart")]
+    [Column("distance_start")]
     public float DistanceStart { get; set; }
-    [Column("distanceend")]
+    [Column("distance_end")]
     public float DistanceEnd { get; set; }
     [Column("direction")]
     public float Direction { get; set; }
+    [Column("weather_id")]
+    public Guid WeatherId { get; set; }
 
 }
 
