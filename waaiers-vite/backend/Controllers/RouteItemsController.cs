@@ -78,17 +78,21 @@ namespace backend.Controllers
                 Date = request.Date,
             };
             var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
-            float routeDistance = await _pointService.ProcessPoints(request.Points, request.Date, supabaseResponse.Model.Id);
-            var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, routeDistance).Update();
-            var response = new ResponseRoute {
-                RouteName = request.Name,
-                Date = request.Date,
-                Distance = routeDistance,
-                Id = supabaseResponse.Model.Id,
-                Displayed = false
-            };
-            
-            return CreatedAtAction("GetRoute", new { id = response.Id }, response);
+            if(supabaseResponse.Model != null) {
+                float routeDistance = await _pointService.ProcessPoints(request.Points, request.Date, supabaseResponse.Model.Id);
+                 var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, routeDistance).Update();
+                var response = new ResponseRoute {
+                    RouteName = request.Name,
+                    Date = request.Date,
+                    Distance = routeDistance,
+                    Id = supabaseResponse.Model.Id,
+                    Displayed = false
+                };
+                
+                return CreatedAtAction("GetRoute", new { id = response.Id }, response);
+            }
+            return NotFound();
+           
         }
 
         // POST: api/RouteItems
@@ -99,7 +103,7 @@ namespace backend.Controllers
             
             var supabaseResponse = await _supabaseClient.From<RouteModel>().Where(x => x.Id == request.Id).Set(x => x.Displayed, request.IsDisplayed).Update();
             if(supabaseResponse.Model == null) {
-                return NotFound();
+                return StatusCode(500);
             } else {
                 var response = new ResponseRoute {
                     RouteName = supabaseResponse.Model.Name,

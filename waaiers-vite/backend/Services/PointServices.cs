@@ -27,17 +27,15 @@ namespace backend.Services {
                     float pointDistance = distance;
                     distance += DistanceBetweenPoints(points[i].Lat, points[i+1].Lat, points[i].Lon, points[i+1].Lon);
                     float pointDirectionToNextPoint = BearingBetweenPoints(points[i].Lat, points[i+1].Lat, points[i].Lon, points[i+1].Lon);
-                    
-                    if(pointDistance <= interval_length*weatherIDs.Count && distance >= interval_length*interval_length*weatherIDs.Count && Math.Floor(distance/interval_length) == weatherIDs.Count) {
+                    if(pointDistance <= interval_length*weatherIDs.Count && distance >= interval_length*weatherIDs.Count) {
+
                         var formattedDate = routeDate.Date.ToString("yyyy-MM-dd");
-                        
                         var requestString = String.Format("https://api.open-meteo.com/v1/forecast?latitude={0}&longitude={1}&hourly=windspeed_10m,winddirection_10m,windgusts_10m&start_date={2}&end_date={2}&timezone=auto", points[i].Lat, points[i].Lon, formattedDate);
                         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestString);
                         var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
                         if (httpResponseMessage.IsSuccessStatusCode) {
-                            var repsonseJSONString = await httpRequestMessage.Content.ReadAsStringAsync();
-                            var weatherData = JsonSerializer.Deserialize<OpenMeteoResponseFormat>(repsonseJSONString);
-
+                            var repsonseJSONString = await httpResponseMessage.Content.ReadAsStreamAsync();
+                            var weatherData = await JsonSerializer.DeserializeAsync<OpenMeteoResponseFormat>(repsonseJSONString);
                             var dateHour = Int32.Parse(routeDate.Date.ToString("HH"));
                             var weather = new WeatherModel {
                                 RouteId = routeID,
@@ -47,7 +45,6 @@ namespace backend.Services {
                                 WindSpeedGust = weatherData.hourly.windgusts_10m[dateHour],
                                 WindDirection = weatherData.hourly.winddirection_10m[dateHour]
                             };
-                            
                             var supabaseResponse = await _supabaseClient.From<WeatherModel>().Insert(weather);
                             weatherIDs.Add(supabaseResponse.Model.Id); 
                         }
@@ -61,7 +58,8 @@ namespace backend.Services {
                         DistanceStart = pointDistance,
                         DistanceEnd = distance,
                         Direction = pointDirectionToNextPoint,
-                        WeatherId = weatherIDs[weatherIDs.Count-1]
+                        WeatherId = weatherIDs[weatherIDs.Count-1],
+                        RouteId = routeID
                     };
                     pointsToInsert.Add(point);
 
