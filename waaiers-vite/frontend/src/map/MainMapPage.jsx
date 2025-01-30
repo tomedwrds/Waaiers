@@ -157,7 +157,7 @@ const MainMapPage = () => {
                 {
                     
                     //If the race id in the url is not valid we wont to navigte to the homepage
-                    navigate('/');
+                    //dDEBUG navigate('/');
                    
                 }
             }

@@ -5,6 +5,6 @@ create table
     name character varying null,
     distance float default 0.0,
     date timestamp without time zone null,
-    displayed boolean default false,
+    displayed boolean default true,
     constraint routes_pkey primary key (id)
   ) tablespace pg_default;

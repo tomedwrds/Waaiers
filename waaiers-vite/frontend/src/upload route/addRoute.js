@@ -18,7 +18,7 @@ async function addRoute(routeData,routeGpxData,userAdmin,navigate) {
 
         const routeId = uuidv4()
         try {
-            await fetch("https://localhost:7276/api/RouteItems", {
+            await fetch("https://localhost:7276/api/Route", {
                 method: "POST",
                 body: JSON.stringify({
                     name:  routeData.route_name,

@@ -11,13 +11,13 @@ const UpcomingRacesTab = (props)=>
         //Finally navigate to the page to display it
         navigate('/race/'+routeData.id );
     }
-
+    console.log(routeData)
     
     return(
         <div className={"race-tab"+props.styleSuffix}>
             <div className={"race-tab-left"+props.styleSuffix}>
-                <p className = {"race-name"+props.styleSuffix}>{routeData.route_name}</p>
-                <p className={"race-date"+props.styleSuffix}>{routeData.route_date[2]}/{routeData.route_date[1]}</p>
+                <p className = {"race-name"+props.styleSuffix}>{routeData.routeName}</p>
+                <p className={"race-date"+props.styleSuffix}>{ (new Date(routeData.date)).toLocaleString()}</p>
             </div>
             <div>
                 <button onClick={()=>loadRoutePointData()}>{props.styleSuffix == "-home" ? <i className="fa-solid fa-map"></i> : <p>Wind Map</p> }</button>

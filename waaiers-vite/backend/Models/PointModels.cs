@@ -35,3 +35,10 @@ public class PostRequestPoints
     public float Lat { get; set; }
     public float Lon { get; set; }
 }
+
+
+public class Segments
+{
+    public Guid Id { get; set; }
+
+}

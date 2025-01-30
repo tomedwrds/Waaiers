@@ -9,18 +9,20 @@ using backend.Models;
 using backend.Interfaces;
 using Supabase;
 using Azure;
+using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RouteItemsController : ControllerBase
+    public class RouteController : ControllerBase
     {
         private readonly Supabase.Client _supabaseClient;
         private readonly Interfaces.IPointService _pointService;
 
 
-        public RouteItemsController(Client supabaseClient, IPointService pointService)
+        public RouteController(Client supabaseClient, IPointService pointService)
         {
             _supabaseClient = supabaseClient;
             _pointService = pointService;
@@ -127,6 +129,31 @@ namespace backend.Controllers
             } 
             await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Delete();
             return StatusCode(200);
+        }
+
+        // GET: api/RouteItems/display/{id}
+        [HttpGet("segments/{id}")]
+        public async Task<ActionResult<bool>> GetRouteSegments (Guid id)
+        {
+            var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
+            if (route.Model == null)
+            {
+                return NotFound();
+            }
+            var rpcRequest = new SegmentPointsRPCRequest {
+                route = id
+            };
+            var data = await _supabaseClient.Rpc("get_points_weather",rpcRequest);
+            var weatherPointData = JsonConvert.DeserializeObject<List<SegmentPointsRPCResponse>>(data.Content);
+            
+            // var newResponse = new ResponseRoute {
+            //         RouteName = route.Model.Name,
+            //         Date = route.Model.Date,
+            //         Distance = route.Model.Distance,
+            //         Id = route.Model.Id,
+            //         Displayed = route.Model.Displayed
+            //     };
+            return false;
         }
     }
 }
