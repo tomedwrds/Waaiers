@@ -6,7 +6,7 @@ namespace backend.Services {
 
         public List<ReturnedSegment> GenerateSegments(List<SegmentPointsRPCResponse> weatherPoints)  {
             //CONSTANTS
-            var segmentSensitivity = 40;
+            var segmentSensitivity = 50;
             
             var segments = new List<ReturnedSegment>();
             var initalPoint = new SegmentPoints {
@@ -56,11 +56,9 @@ namespace backend.Services {
                     
                 } else {
                     var segmentLength = segmentKmEnd - segmentKmStart;
-                    var segmentDifficulty = 0;
+                    var segmentDifficulty = 1;
 
-                    if(segmentLength > 1000) {
-                        segmentDifficulty = 0;
-                    }
+                   
 
                     if(segmentDifficulty > 0) {
                         //flush the merged segments

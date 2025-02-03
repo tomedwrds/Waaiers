@@ -1,4 +1,3 @@
-import average from "../generalpurposefunctions/average";
 
 function generateMapData(gpxPoints,setPositions,setSegments,segmentParameters)
 {

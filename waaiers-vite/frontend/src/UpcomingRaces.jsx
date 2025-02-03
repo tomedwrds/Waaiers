@@ -16,13 +16,11 @@ const UpcomingRaces = () =>
                   throw new Error(`Response status: ${response.status}`);
                 }
                 const data = await response.json()
-                console.log(data)
                 data.sort(function (a, b) {   
                     return new Date(a.date) - new Date(b.date);
                 });
                
                 setAllRouteData(data);
-                console.log(data)
 
             } catch (error) {
                 console.error(error.message);

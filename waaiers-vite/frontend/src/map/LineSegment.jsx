@@ -6,8 +6,8 @@ import SegmentInfo from "./SegmentInfo";
 
 const LineSegment = (props)=>
 {
-  
-    const lineLatLonData = props.latlon.map((item)=>[item[0],item[1]])
+
+    const lineLatLonData = props.segmentData.points.map((item)=>[item.latitude ,item.longitude])
     const [displayPopup,setDisplayPopup] = useState(false)
     return(
         <div>
@@ -15,7 +15,7 @@ const LineSegment = (props)=>
         
         pathOptions={{ fillColor: 'red', color: props.linecolor }}
         positions={lineLatLonData}
-        children={(displayPopup? <Popup style = {{backgroundColor:'blue'}} ><SegmentInfo segmentData={props.segmentData}/></Popup>:[])}   
+        // children={(displayPopup? <Popup style = {{backgroundColor:'blue'}} ><SegmentInfo segmentData={props.segmentData}/></Popup>:[])}   
         weight={4}   
         eventHandlers={{
           click: () => {

@@ -1,4 +1,3 @@
-import average from "../generalpurposefunctions/average"
 import IntrestSegmentStars from "../segments of intrest/IntrestSegmentStars"
  
 const SegmentInfo = (props) =>

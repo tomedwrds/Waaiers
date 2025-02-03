@@ -1,5 +1,4 @@
 import { MapContainer,TileLayer,Polyline,Marker } from 'react-leaflet';
-import average from "../generalpurposefunctions/average";
 import './IntrestSegment.css';
 import IntrestSegmentStars from './IntrestSegmentStars';
 import arrow from './arrow.png'
@@ -9,14 +8,13 @@ import arrow from './arrow.png'
 const IntrestSegment = (props) =>
 {
     const segmentData = props.data
-    const avgWindSpeed = average(segmentData.segmentWindSpeed)
-    const avgWindGust = average(segmentData.segmentWindGust)
-    const avgWindDir = average(segmentData.segmentWindAngle)
-    const avgWindDirNonRelative = average(segmentData.segmentWindAngleNonRelative)
-    const kmStart = ((segmentData.kmStart)/1000).toFixed(1)
-    const kmEnd = ((segmentData.kmEnd)/1000).toFixed(1)
-    const segmentDifficulty = segmentData.segmentDifficulty;
-    const lineLatLonData = segmentData.latlon.map((item)=>[item[0],item[1]])
+    const avgWindSpeed = segmentData.windSpeed
+    const avgWindGust = segmentData.windSpeedGust
+    const avgWindDirNonRelative = segmentData.windDirection
+    const kmStart = ((segmentData.distanceStart)/1000).toFixed(1)
+    const kmEnd = ((segmentData.distanceEnd)/1000).toFixed(1)
+    const segmentDifficulty = segmentData.difficulty;
+    const lineLatLonData = segmentData.points.map((item)=>[item.latitude,item.longitude])
     const windDir = segmentData.classification== undefined ? 'No wind' : segmentData.classification.charAt(0).toUpperCase() + segmentData.classification.slice(1) + 'wind'
 
 
