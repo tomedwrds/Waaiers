@@ -32,6 +32,8 @@ var options = new SupabaseOptions
       };
 builder.Services.AddSingleton(provider => new Supabase.Client(url, key, options));
 builder.Services.AddScoped<IPointService, PointService>();
+builder.Services.AddScoped<ISegmentService, SegmentService>();
+
 builder.Services.AddHttpClient();
 
 var app = builder.Build();

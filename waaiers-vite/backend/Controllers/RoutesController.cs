@@ -20,12 +20,14 @@ namespace backend.Controllers
     {
         private readonly Supabase.Client _supabaseClient;
         private readonly Interfaces.IPointService _pointService;
+        private readonly Interfaces.ISegmentService _segmentService;
 
 
-        public RouteController(Client supabaseClient, IPointService pointService)
+        public RouteController(Client supabaseClient, IPointService pointService, ISegmentService segmentService)
         {
             _supabaseClient = supabaseClient;
             _pointService = pointService;
+            _segmentService = segmentService;
 
         }
 
@@ -133,27 +135,29 @@ namespace backend.Controllers
 
         // GET: api/RouteItems/display/{id}
         [HttpGet("segments/{id}")]
-        public async Task<ActionResult<bool>> GetRouteSegments (Guid id)
+        public async Task<ActionResult<IEnumerable<ReturnedSegment>>> GetRouteSegments (Guid id)
         {
             var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
             if (route.Model == null)
             {
                 return NotFound();
             }
-            var rpcRequest = new SegmentPointsRPCRequest {
-                route = id
-            };
-            var data = await _supabaseClient.Rpc("get_points_weather",rpcRequest);
-            var weatherPointData = JsonConvert.DeserializeObject<List<SegmentPointsRPCResponse>>(data.Content);
-            
-            // var newResponse = new ResponseRoute {
-            //         RouteName = route.Model.Name,
-            //         Date = route.Model.Date,
-            //         Distance = route.Model.Distance,
-            //         Id = route.Model.Id,
-            //         Displayed = route.Model.Displayed
-            //     };
-            return false;
+            List<SegmentPointsRPCResponse> weatherPointDataReturned;
+            var weatherPointsData = new List<SegmentPointsRPCResponse>();
+            var index = 0;
+            do {
+                var rpcRequest = new SegmentPointsRPCRequest {
+                    route = id,
+                    index_offset = index
+                };
+                var data = await _supabaseClient.Rpc("get_points_weather",rpcRequest);
+                weatherPointDataReturned = JsonConvert.DeserializeObject<List<SegmentPointsRPCResponse>>(data.Content);
+                weatherPointsData.AddRange(weatherPointDataReturned);
+                index += 1000;
+            } while(weatherPointDataReturned.Count == 1000);
+            Console.WriteLine(weatherPointsData.Count);
+           
+            return _segmentService.GenerateSegments(weatherPointsData);
         }
     }
 }
