@@ -25,15 +25,7 @@ const MainMapPage = () => {
     const [segmentsSort,setSegmentSort] = useState("stars")
     const [windDir,setWindDir] = useState("all")
 
-    // //Set up the map paramters for the generation of Segments
-    // const [segmentParameters,setSegmentParameters] = useState({
-    //     minWindSpeed: 10,
-    //     maxWindSpeed: 30,
-    //     minSegmentLength: 1000,
-    //     maxSegmentLength: 10000,
-    //     windAngleGolden: 75,
-    //     windAngleZone: 30
-    // })
+  
 
     useEffect(() => {
         async function loadSegmentData() {
@@ -101,7 +93,7 @@ const MainMapPage = () => {
                             </div>
                     </div>
                    
-                    <RouteWindMap segmentData = {segments} windDirection = {windDir}  />
+                    <RouteWindMap segmentData = {segments} dispalyedWindDir = {windDir}  />
                     {/* selectedDataPoint ={selectedDataPoint} */}
         
                     <div className='segmentIntrestHeader'>
@@ -109,10 +101,9 @@ const MainMapPage = () => {
                         
                     </div>
                     
-                    { /*  <MapProfile segmentData = {segments} /> setSelectedDatapoint = {setSelectedDatapoint} */}
-                    {/* 
-                   
-                     */}
+                    {/* <MapProfile segmentData = {segments} />  */}
+                    {/* setSelectedDatapoint = {setSelectedDatapoint}  */}
+                    
                       <div className='segmentIntrestHeader'>
                          <h2>Segments of Interest</h2>
                          <div className='segmentIntrestSort'>

@@ -155,7 +155,6 @@ namespace backend.Controllers
                 weatherPointsData.AddRange(weatherPointDataReturned);
                 index += 1000;
             } while(weatherPointDataReturned.Count == 1000);
-            Console.WriteLine(weatherPointsData.Count);
            
             return _segmentService.GenerateSegments(weatherPointsData);
         }

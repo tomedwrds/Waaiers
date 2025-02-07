@@ -5,22 +5,6 @@ import { useEffect, useState } from 'react'
 import Legend from './Legend'
 
 
-function setLineColor(displayedWindDir,segmentWindDir)
-{
-    if(displayedWindDir == segmentWindDir || displayedWindDir == 'all')
-    {
-        if(segmentWindDir == 'cross') return 'yellow'
-        if(segmentWindDir == 'tail') return 'red'
-        if(segmentWindDir == 'head') return 'blue'
-        return 'white'
-    }
-    else
-    {
-        return 'white'
-    }
-}
-
-
 
 const RouteWindMap = (props) => {
     
@@ -45,7 +29,6 @@ const RouteWindMap = (props) => {
     });
     
 
-
     return(
         
         <div id="mainMap">
@@ -62,10 +45,10 @@ const RouteWindMap = (props) => {
                 
             )
                     
-                {/* <Marker position={[props.pointData[0].point_lat,props.pointData[0].point_lon]} icon={iconStart}/> */}
-                {/* <Marker position={[props.pointData[props.pointData.length-1].point_lat,props.pointData[props.pointData.length-1].point_lon]} icon={iconFinish}/> */}
+                <Marker position={[props.segmentData[0].points[0].latitude,props.segmentData[0].points[0].longitude]} icon={iconStart}/> 
+                <Marker position={[props.segmentData[props.segmentData.length-1].points[props.segmentData[props.segmentData.length-1].points.length-1].latitude,props.segmentData[props.segmentData.length-1].points[props.segmentData[props.segmentData.length-1].points.length-1].longitude]} icon={iconFinish}/>
                             
-                {props.segmentData.map((item, id)=> <LineSegment key = {id} linecolor = {"#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")} segmentData={item}/>)}
+                {props.segmentData.map((item, id)=> <LineSegment key = {id} dispalyedWindDir = {props.dispalyedWindDir} segmentData ={item}/>)}
     
                 
     </MapContainer>

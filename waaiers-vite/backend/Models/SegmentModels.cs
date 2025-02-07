@@ -28,7 +28,9 @@ public class ReturnedSegment {
     public float WindDirection { get; set; }
     public float WindSpeed { get; set; }
     public float WindSpeedGust { get; set; }
-    public int Difficulty { get; set; }
+    public double Difficulty { get; set; }
+    public string Classification { get; set; }
+
 }
 
 public class SegmentPoints {

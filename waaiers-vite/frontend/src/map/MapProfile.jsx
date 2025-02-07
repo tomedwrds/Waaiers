@@ -8,8 +8,8 @@ const MulticolorAreaChart = ({ data, extractColor,pointData,setSelectedDatapoint
     
   //Set up vars that are used to display the axis
   const kmEnd = Math.round(data[data.length-1].x/1000)*1000
-  let maxElevation = 0;
-  pointData.forEach((item)=>{if(item[2] > maxElevation) maxElevation=item[2]})
+  let maxElevation = 2000;
+ 
     
   const dataSets = [];
   
@@ -146,11 +146,10 @@ const MapProfile = (props) => {
 
   //The segment data must be taken and destructured into point data to make the stage profile
   
-  const segmentData = props.pointData;
 
   //Point data is retrieved
   let pointData = [];
-  segmentData.forEach((segment,id)=>pointData.push(...segment.latlon.map(((point)=>[...point,segmentData[id].classification,segmentData[id].segmentDifficulty, (segmentData[id].kmStart/1000).toFixed(1) + 'km - ' + (segmentData[id].kmEnd/1000).toFixed(1) +'km']))))
+  props.segmentData.forEach((segment,id)=>pointData.push(...segment.latlon.map(((point)=>[...point,segmentData[id].classification,segmentData[id].segmentDifficulty, (segmentData[id].kmStart/1000).toFixed(1) + 'km - ' + (segmentData[id].kmEnd/1000).toFixed(1) +'km']))))
  
  
   //Then is is formatted for the graph

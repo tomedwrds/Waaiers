@@ -6,7 +6,13 @@ namespace backend.Services {
 
         public List<ReturnedSegment> GenerateSegments(List<SegmentPointsRPCResponse> weatherPoints)  {
             //CONSTANTS
-            var segmentSensitivity = 50;
+            var segmentSensitivity = 60;
+            var windAngleGolden = 75;
+            var windAngleZone = 30;
+            var minWindSpeed = 10;
+            var maxWindSpeed = 30;
+            var minSegmentLength = 750;
+            var maxSegmentLength = 10000;
             
             var segments = new List<ReturnedSegment>();
             var initalPoint = new SegmentPoints {
@@ -55,31 +61,55 @@ namespace backend.Services {
 
                     
                 } else {
+                    var segmentDifficulty = -1d;
+                    var segmentClassification = "none";
                     var segmentLength = segmentKmEnd - segmentKmStart;
-                    var segmentDifficulty = 1;
+                    if(segmentLength > minSegmentLength) {
+                        segmentDifficulty = 0;
 
-                   
 
-                    if(segmentDifficulty > 0) {
-                        //flush the merged segments
-                        if(mergedSegment.Points.Count > 0) {
-                            segments.Add(mergedSegment);
-                            mergedSegment.Points = [];
+                        var segmentWindCross = (avgRelativeWind < (windAngleGolden+windAngleZone) && avgRelativeWind > (windAngleGolden-windAngleZone)) || (avgRelativeWind < (windAngleGolden+windAngleZone+210) && avgRelativeWind > (windAngleGolden-windAngleZone+210));
+                        
+                        var segmentWindHead = avgRelativeWind >= windAngleGolden+windAngleZone && avgRelativeWind <= (windAngleGolden-windAngleZone+210);
+                        if(segmentWindHead) {
+                            segmentClassification = "head";
                         }
+                        var segmentWindTail =  avgRelativeWind <= (windAngleGolden-windAngleZone) || avgRelativeWind >= (windAngleGolden+windAngleZone+210);
+                        if(segmentWindTail) {
+                            segmentClassification = "tail";
+                        }
+                        if ((segmentWindCross | segmentWindHead | segmentWindTail) && (currentSegmentWindSpeed.Average() > minWindSpeed)) {
+                            segmentDifficulty += Math.Min(segmentLength/maxSegmentLength,1)*0.5;
+                            segmentDifficulty += Math.Min(currentSegmentWindSpeed.Average()/maxWindSpeed,1)*1.5;
+                            if(segmentWindCross) { 
+                                segmentClassification = "cross";
+                                segmentDifficulty += Math.Max( 1-Math.Abs(avgRelativeWind-windAngleGolden)/windAngleZone,1-Math.Abs(avgRelativeWind-(windAngleGolden+210))/windAngleZone);
+                                segmentDifficulty = Math.Min(segmentDifficulty*1.2, 3);
+                            } else if(segmentWindHead) {
+                                segmentClassification = "head";
+                                segmentDifficulty +=  1-Math.Abs(avgRelativeWind-180)/75;
+                                segmentDifficulty = Math.Min(segmentDifficulty, 1);
+                            } else {
+                                segmentClassification = "tail";
+                                segmentDifficulty +=  Math.Max( 1-Math.Abs(avgRelativeWind)/45,1-Math.Abs(avgRelativeWind-360)/45);
+                                segmentDifficulty = Math.Min(segmentDifficulty, 1.5);
+                            }
 
-                        var newSegment = new ReturnedSegment {
-                            Points = currentPoints,
-                            DistanceStart = segmentKmStart,
-                            DistanceEnd = segmentKmEnd,
-                            WindDirection = currentSegmentWindAngle.Average(),
-                            WindSpeed = currentSegmentWindSpeed.Average(),
-                            WindSpeedGust = currentSegmentWindSpeedGust.Average(),
-                            Difficulty = segmentDifficulty
-                        };
-                        segments.Add(newSegment);
-                    } else {
-                        mergedSegment.Points.AddRange(currentPoints);
+
+                        }
                     }
+                    var newSegment = new ReturnedSegment {
+                        Points = currentPoints,
+                        DistanceStart = segmentKmStart,
+                        DistanceEnd = segmentKmEnd,
+                        WindDirection = currentSegmentWindAngle.Average(),
+                        WindSpeed = currentSegmentWindSpeed.Average(),
+                        WindSpeedGust = currentSegmentWindSpeedGust.Average(),
+                        Difficulty = segmentDifficulty,
+                        Classification = segmentClassification
+                    };
+                    segments.Add(newSegment);
+                    
                     
 
                     //Start new segment
@@ -99,7 +129,6 @@ namespace backend.Services {
             
 
             }
-            Console.WriteLine(segments.Count);
             return segments;
 
         }
