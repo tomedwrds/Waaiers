@@ -74,8 +74,8 @@ namespace backend.Controllers
 
         // POST: api/RouteItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<ResponseRoute>> PostRouteItem(PostRequestRoute request)
+        [HttpPost("Generate/Upload")]
+        public async Task<ActionResult<ResponseRoute>> GenerateUploadRoute(PostRequestRoute request)
         {
             var model = new RouteModel {
                 Name = request.Name,
@@ -108,6 +108,40 @@ namespace backend.Controllers
                 return CreatedAtAction("GetRoute", new { id = response.Id }, response);
             }
             return NotFound();
+           
+        }
+
+        [HttpPost("Generate/View")]
+        public async Task<IEnumerable<ReturnedSegment>> GenerateViewRoute (PostRequestRoute request)
+        {
+            var model = new RouteModel {
+                Name = request.Name,
+                Date = request.Date,
+            };
+            var processedPointData = _pointService.ProcessPoints(request.Points, Guid.NewGuid());
+            var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date);
+            
+            var segmentPoints = new List<SegmentPointsRPCResponse>();
+            var weatherPointIndex = 0;
+            foreach(var point in processedPointData.points) {
+                if(weatherPoints[weatherPointIndex].Id != point.WeatherId) {
+                    weatherPointIndex += 1;
+                }
+                var weatherPoint = weatherPoints[weatherPointIndex];
+                var segmentPoint = new SegmentPointsRPCResponse {
+                    latitude = point.Latitude,
+                    longitude = point.Longitude,
+                    direction = point.Direction,
+                    distance_end = point.DistanceEnd,
+                    distance_start = point.DistanceStart,
+                    wind_direction = weatherPoint.WindDirection,
+                    wind_speed = weatherPoint.WindSpeed,
+                    wind_speed_gust = weatherPoint.WindSpeedGust
+                };
+                segmentPoints.Add(segmentPoint);
+            }
+
+            return _segmentService.GenerateSegments(segmentPoints);
            
         }
 

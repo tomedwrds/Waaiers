@@ -21,7 +21,6 @@ const MainMapPage = () => {
 
     const [segments,setSegments] = useState(null);
     const [routeData,setRouteData] = useState(null);
-    //const [selectedDataPoint,setSelectedDatapoint] = useState([0,0])
     const [segmentsSort,setSegmentSort] = useState("stars")
     const [windDir,setWindDir] = useState("all")
 
@@ -30,46 +29,52 @@ const MainMapPage = () => {
     useEffect(() => {
         async function loadSegmentData() {
             let routeID = window.location.pathname.split('/')[2];
-            try {
-                const response = await fetch("https://localhost:7276/api/Route/" + routeID)
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
+            if (routeID == "view") {
+                let segments = JSON.parse(window.localStorage.getItem("userGenerateRoute"))
+                if(segments) {
+                    setSegments(segments)
+                    setRouteData({name: window.localStorage.getItem("name")})
                 }
-                const data = await response.json()
-                setRouteData(data)
-
-            } catch {
+            } else {
                 try {
-                    const response = await fetch("https://localhost:7276/api/Route/")
+                    const response = await fetch("https://localhost:7276/api/Route/" + routeID)
                     if (!response.ok) {
                         throw new Error(`Response status: ${response.status}`);
                     }
-                    const routes = await response.json()
-                    const validRoutes = routes.filter(route => route.displayed == true)
-                    validRoutes.sort((a,b) => {
-                        return new Date(b.date) - new Date(a.date);
-                      });
-                    routeID = validRoutes[0].id
-                    setRouteData(validRoutes[0])
-                } catch(error) {
-
-                    //todo proper error handling for if load fails
+                    const data = await response.json()
+    
+                } catch {
+                    try {
+                        const response = await fetch("https://localhost:7276/api/Route/")
+                        if (!response.ok) {
+                            throw new Error(`Response status: ${response.status}`);
+                        }
+                        const routes = await response.json()
+                        const validRoutes = routes.filter(route => route.displayed == true)
+                        validRoutes.sort((a,b) => {
+                            return new Date(b.date) - new Date(a.date);
+                          });
+                        routeID = validRoutes[0].id
+                        setRouteData(validRoutes[0])
+                    } catch(error) {
+    
+                        //todo proper error handling for if load fails
+                        console.error(error.message);
+    
+                    }
+                }
+    
+                try {
+                    const response = await fetch("https://localhost:7276/api/Route/segments/" + routeID)
+                    if (!response.ok) {
+                        throw new Error(`Response status: ${response.status}`);
+                    }
+                    const data = await response.json()
+                    setSegments(data)
+                } catch (error) {
                     console.error(error.message);
-
                 }
             }
-
-            try {
-                const response = await fetch("https://localhost:7276/api/Route/segments/" + routeID)
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
-                }
-                const data = await response.json()
-                setSegments(data)
-            } catch (error) {
-                console.error(error.message);
-            }
-
             
         }
         loadSegmentData()
