@@ -8,6 +8,7 @@ public class PostRequestRoute
     public required string Name { get; set; }
     public required DateTime Date { get; set; }
     public required List<PostRequestPoints> Points { get; set; }
+    public required bool SaveRoute { get; set; }
 }
 
 public class ResponseRoute

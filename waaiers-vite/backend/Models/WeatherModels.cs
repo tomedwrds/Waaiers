@@ -8,7 +8,7 @@ namespace backend.Models;
 
 public class WeatherModel : BaseModel
 {
-    [PrimaryKey("id")]
+    [PrimaryKey("id", true)]
     public Guid Id { get; set; }
     [Column("route_id")]
     public Guid RouteId { get; set; }

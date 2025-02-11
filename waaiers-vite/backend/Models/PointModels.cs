@@ -36,9 +36,10 @@ public class PostRequestPoints
     public float Lon { get; set; }
 }
 
-
-public class Segments
+public class ProcessedPointData
 {
-    public Guid Id { get; set; }
+    public List<PointModel> points;
+    public List<WeatherModel> weatherPoints;
+    public float routeDistance;
 
 }

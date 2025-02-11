@@ -12,44 +12,28 @@ namespace backend.Services {
             _httpClientFactory = httpClientFactory;
 
         }
-        async public Task<float> ProcessPoints(List<PostRequestPoints> points, DateTime routeDate, Guid routeID)  {
+        public ProcessedPointData ProcessPoints(List<PostRequestPoints> points, Guid routeID)  {
             float distance = 0;
             int interval_length = 5000;
-            var pointsToInsert = new List<PointModel>();
-            var weatherIDs = new List<Guid>();
-            var httpClient = _httpClientFactory.CreateClient();
+            var routePoints = new List<PointModel>();
+            var weatherPoints = new List<WeatherModel>();
 
             for(int i = 0; i < points.Count-1; i++) {
-                //check for point duplication
     	        int elevtation;
                 if (Int32.TryParse(points[i].Ele.ToString(), out elevtation)  && (points[i].Lat != points[i+1].Lat) && (points[i].Lon != points[i+1].Lon)) {
                     
                     float pointDistance = distance;
                     distance += DistanceBetweenPoints(points[i].Lat, points[i+1].Lat, points[i].Lon, points[i+1].Lon);
                     float pointDirectionToNextPoint = BearingBetweenPoints(points[i].Lat, points[i+1].Lat, points[i].Lon, points[i+1].Lon);
-                    if(pointDistance <= interval_length*weatherIDs.Count && distance >= interval_length*weatherIDs.Count) {
-
-                        var formattedDate = routeDate.Date.ToString("yyyy-MM-dd");
-                        var requestString = String.Format("https://api.open-meteo.com/v1/forecast?latitude={0}&longitude={1}&hourly=windspeed_10m,winddirection_10m,windgusts_10m&start_date={2}&end_date={2}&timezone=auto", points[i].Lat, points[i].Lon, formattedDate);
-                        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestString);
-                        var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-                        if (httpResponseMessage.IsSuccessStatusCode) {
-                            var repsonseJSONString = await httpResponseMessage.Content.ReadAsStreamAsync();
-                            var weatherData = await JsonSerializer.DeserializeAsync<OpenMeteoResponseFormat>(repsonseJSONString);
-                            var dateHour = Int32.Parse(routeDate.Date.ToString("HH"));
-                            var weather = new WeatherModel {
-                                RouteId = routeID,
-                                Latitude = points[i].Lat, 
-                                Longitude = points[i].Lon,
-                                WindSpeed = weatherData.hourly.windspeed_10m[dateHour],
-                                WindSpeedGust = weatherData.hourly.windgusts_10m[dateHour],
-                                WindDirection = weatherData.hourly.winddirection_10m[dateHour]
-                            };
-                            var supabaseResponse = await _supabaseClient.From<WeatherModel>().Insert(weather);
-                            weatherIDs.Add(supabaseResponse.Model.Id); 
-                        }
-                        
-                        
+                    if(pointDistance <= interval_length*weatherPoints.Count && distance >= interval_length*weatherPoints.Count) {
+                        var weather = new WeatherModel {
+                            RouteId = routeID,
+                            Latitude = points[i].Lat, 
+                            Longitude = points[i].Lon,
+                            Id = Guid.NewGuid()
+                            
+                        };
+                        weatherPoints.Add(weather); 
                     }
                     var point = new PointModel { 
                         Latitude = points[i].Lat, 
@@ -58,19 +42,51 @@ namespace backend.Services {
                         DistanceStart = pointDistance,
                         DistanceEnd = distance,
                         Direction = pointDirectionToNextPoint,
-                        WeatherId = weatherIDs[weatherIDs.Count-1],
+                        WeatherId = weatherPoints[weatherPoints.Count-1].Id,
                         RouteId = routeID
                     };
-                    pointsToInsert.Add(point);
+                    routePoints.Add(point);
 
                 }
-                
-
+            
             }
-            await _supabaseClient.From<PointModel>().Insert(pointsToInsert);
-            return distance;
+            var output = new ProcessedPointData {
+                points = routePoints,
+                weatherPoints = weatherPoints,
+                routeDistance = distance
+            };
+            return output;
         }
 
+        async public Task<List<WeatherModel>> FetchWeatherAtPoints(List<WeatherModel> weatherPoints, DateTime routeDate)  {
+            var formattedDate = routeDate.Date.ToString("yyyy-MM-dd");
+            var updatedWeatherPoints = new List<WeatherModel>();
+            var httpClient = _httpClientFactory.CreateClient();
+
+            foreach(WeatherModel point in weatherPoints ) {
+                var requestString = String.Format("https://api.open-meteo.com/v1/forecast?latitude={0}&longitude={1}&hourly=windspeed_10m,winddirection_10m,windgusts_10m&start_date={2}&end_date={2}&timezone=auto", point.Latitude, point.Longitude, formattedDate);
+                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestString);
+                var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+                if (httpResponseMessage.IsSuccessStatusCode) {
+                    var repsonseJSONString = await httpResponseMessage.Content.ReadAsStreamAsync();
+                    var weatherData = await JsonSerializer.DeserializeAsync<OpenMeteoResponseFormat>(repsonseJSONString);
+                    var dateHour = Int32.Parse(routeDate.Date.ToString("HH"));
+                    var weather = new WeatherModel {
+                        RouteId = point.RouteId,
+                        Latitude = point.Latitude, 
+                        Longitude = point.Longitude,
+                        Id = point.Id,
+                        WindSpeed = weatherData.hourly.windspeed_10m[dateHour],
+                        WindSpeedGust = weatherData.hourly.windgusts_10m[dateHour],
+                        WindDirection = weatherData.hourly.winddirection_10m[dateHour]
+                    };
+                    updatedWeatherPoints.Add(weather); 
+                }
+            }
+            return updatedWeatherPoints;
+                
+
+        }
         public float DistanceBetweenPoints(float lat1, float lat2, float lon1, float lon2) {
             float earthRadius = 6371000; 
             float theta1 = lat1 * (float) Math.PI/180; // φ, λ in radians

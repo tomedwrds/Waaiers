@@ -83,15 +83,27 @@ namespace backend.Controllers
             };
             var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
             if(supabaseResponse.Model != null) {
-                float routeDistance = await _pointService.ProcessPoints(request.Points, request.Date, supabaseResponse.Model.Id);
-                 var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, routeDistance).Update();
+                //get proccessed points
+                var processedPointData = _pointService.ProcessPoints(request.Points, supabaseResponse.Model.Id);
+                
+                //set route distance
+                var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, processedPointData.routeDistance).Update();
+                
+                //get weather
+                var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date);
+                
+                await _supabaseClient.From<WeatherModel>().Insert(weatherPoints);
+                await _supabaseClient.From<PointModel>().Insert(processedPointData.points);
+
                 var response = new ResponseRoute {
                     RouteName = request.Name,
                     Date = request.Date,
-                    Distance = routeDistance,
+                    Distance = processedPointData.routeDistance,
                     Id = supabaseResponse.Model.Id,
                     Displayed = false
                 };
+
+
                 
                 return CreatedAtAction("GetRoute", new { id = response.Id }, response);
             }

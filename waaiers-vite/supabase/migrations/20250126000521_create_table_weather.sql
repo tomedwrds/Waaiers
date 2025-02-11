@@ -1,6 +1,6 @@
 create table
   public."Weather" (
-    id uuid not null default gen_random_uuid (),
+    id uuid null,
     created_at timestamp with time zone not null default now(),
     wind_direction real null,
     wind_speed real null,

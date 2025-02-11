@@ -3,9 +3,8 @@ using backend.Models;
 namespace backend.Interfaces {
     public interface IPointService
     {
-        Task<float> ProcessPoints(List<PostRequestPoints> points, DateTime routeData, Guid routeID);
-        float DistanceBetweenPoints(float lat1, float lat2, float lon1, float lon2);
-        float BearingBetweenPoints(float lat1, float lat2, float lon1, float lon2);
+        ProcessedPointData ProcessPoints(List<PostRequestPoints> points, Guid routeID);
+        Task<List<WeatherModel>> FetchWeatherAtPoints(List<WeatherModel> weatherPoints, DateTime routeDate);
     }
 }
 
