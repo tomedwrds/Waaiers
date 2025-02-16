@@ -36,12 +36,14 @@ const MainMapPage = () => {
                     setRouteData({name: window.localStorage.getItem("name")})
                 }
             } else {
+
                 try {
                     const response = await fetch("https://localhost:7276/api/Route/" + routeID)
                     if (!response.ok) {
                         throw new Error(`Response status: ${response.status}`);
                     }
                     const data = await response.json()
+                    setRouteData(data)
     
                 } catch {
                     try {
@@ -122,7 +124,7 @@ const MainMapPage = () => {
                         
                     </div>
                     
-                    {/* <MapProfile segmentData = {segments} />  */}
+                    <MapProfile segments = {segments} routeData = {routeData}/> 
                     {/* setSelectedDatapoint = {setSelectedDatapoint}  */}
                     
                       <div className='segmentIntrestHeader'>

@@ -69,7 +69,7 @@ function UploadRoute()
             let combineDateTime = new Date(Date.parse(routeData.route_date + ' ' + routeData.route_time));
 
             try {
-                if(userAdmin) {
+                if(true) {
                     await fetch("https://localhost:7276/api/Route/Generate/Upload", {
                         method: "POST",
                         body: JSON.stringify({

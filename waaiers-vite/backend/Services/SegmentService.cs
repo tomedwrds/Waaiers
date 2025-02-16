@@ -1,6 +1,7 @@
 using backend.Models;
 using backend.Interfaces;
 using System.Text.Json;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.PointsToAnalysis;
 namespace backend.Services {
     public class SegmentService : ISegmentService {
 
@@ -41,18 +42,18 @@ namespace backend.Services {
             };
             
 
-            for(var i = 0; i < weatherPoints.Count/2; i ++) {
+            for(var i = 0; i < weatherPoints.Count; i ++) {
                 var currentPoint = weatherPoints[i];
                 var windAngleRider = getWindDirRelative(currentPoint.direction, currentPoint.wind_direction);
                 var avgRelativeWind = currentSegmentWindRelative.Average();
                 
-                if(windAngleRider >= avgRelativeWind - segmentSensitivity && windAngleRider <= avgRelativeWind + segmentSensitivity) {
+                if(windAngleRider >= avgRelativeWind - segmentSensitivity && windAngleRider <= avgRelativeWind + segmentSensitivity && i != weatherPoints.Count-1 ) { 
                     currentSegmentWindSpeed.Add(currentPoint.wind_speed);
                     currentSegmentWindSpeedGust.Add(currentPoint.wind_speed_gust);
                     currentSegmentWindAngle.Add(currentPoint.wind_direction);
                     currentSegmentWindRelative.Add(windAngleRider);
                     segmentKmEnd = currentPoint.distance_end;
-                        var newPoint = new SegmentPoints {
+                    var newPoint = new SegmentPoints {
                         Elevation = currentPoint.elevation,
                         Latitude = currentPoint.latitude,
                         Longitude = currentPoint.longitude
@@ -98,6 +99,24 @@ namespace backend.Services {
 
                         }
                     }
+
+                    var meterePerPoint  = segmentLength/currentPoints.Count;
+                    var ratioRequired = meterePerPoint/200;
+
+                    if(ratioRequired < 1) {
+                        var nthKeep = Math.Round(1/ratioRequired);
+
+                        var filteredPoints = new List<SegmentPoints>();
+                        filteredPoints.Add(currentPoints[0]);
+                        for(int j = 1; j < currentPoints.Count-1; j ++) {
+                            if(j % nthKeep == 0) {
+                                filteredPoints.Add(currentPoints[j]);
+                            }
+                        }
+                        filteredPoints.Add(currentPoints[currentPoints.Count-1]);
+                        currentPoints = filteredPoints;
+                    }
+
                     var newSegment = new ReturnedSegment {
                         Points = currentPoints,
                         DistanceStart = segmentKmStart,

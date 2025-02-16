@@ -58,21 +58,30 @@ namespace backend.Services {
             return output;
         }
 
-        async public Task<List<WeatherModel>> FetchWeatherAtPoints(List<WeatherModel> weatherPoints, DateTime routeDate)  {
+        async public Task<List<WeatherModel>> FetchWeatherAtPoints(List<WeatherModel> weatherPoints, DateTime routeDate, Guid routeID)  {
             var formattedDate = routeDate.Date.ToString("yyyy-MM-dd");
             var updatedWeatherPoints = new List<WeatherModel>();
             var httpClient = _httpClientFactory.CreateClient();
+            var latPoints = new List<float>();
+            var lonPoints = new List<float>();
 
             foreach(WeatherModel point in weatherPoints ) {
-                var requestString = String.Format("https://api.open-meteo.com/v1/forecast?latitude={0}&longitude={1}&hourly=windspeed_10m,winddirection_10m,windgusts_10m&start_date={2}&end_date={2}&timezone=auto", point.Latitude, point.Longitude, formattedDate);
-                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestString);
-                var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-                if (httpResponseMessage.IsSuccessStatusCode) {
-                    var repsonseJSONString = await httpResponseMessage.Content.ReadAsStreamAsync();
-                    var weatherData = await JsonSerializer.DeserializeAsync<OpenMeteoResponseFormat>(repsonseJSONString);
+                latPoints.Add(point.Latitude);
+                lonPoints.Add(point.Longitude);
+            }
+            var requestString = String.Format("https://api.open-meteo.com/v1/forecast?latitude={0}&longitude={1}&hourly=windspeed_10m,winddirection_10m,windgusts_10m&start_date={2}&end_date={2}&timezone=auto", String.Join(",", latPoints), String.Join(",", lonPoints), formattedDate);
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestString);
+            var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+            if (httpResponseMessage.IsSuccessStatusCode) {
+                var repsonseJSONString = await httpResponseMessage.Content.ReadAsStreamAsync();
+                var weatherDataPoints = await JsonSerializer.DeserializeAsync<List<OpenMeteoResponseFormat>>(repsonseJSONString);
+
+                for(int i = 0; i < weatherPoints.Count; i++) {
+                    var point = weatherPoints[i];
+                    var weatherData = weatherDataPoints[i];
                     var dateHour = Int32.Parse(routeDate.Date.ToString("HH"));
                     var weather = new WeatherModel {
-                        RouteId = point.RouteId,
+                        RouteId = routeID,
                         Latitude = point.Latitude, 
                         Longitude = point.Longitude,
                         Id = point.Id,
@@ -84,9 +93,9 @@ namespace backend.Services {
                 }
             }
             return updatedWeatherPoints;
-                
-
         }
+            
+        
         public float DistanceBetweenPoints(float lat1, float lat2, float lon1, float lon2) {
             float earthRadius = 6371000; 
             float theta1 = lat1 * (float) Math.PI/180; // φ, λ in radians

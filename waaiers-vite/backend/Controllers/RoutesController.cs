@@ -90,8 +90,7 @@ namespace backend.Controllers
                 var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, processedPointData.routeDistance).Update();
                 
                 //get weather
-                var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date);
-                
+                var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date, supabaseResponse.Model.Id);
                 await _supabaseClient.From<WeatherModel>().Insert(weatherPoints);
                 await _supabaseClient.From<PointModel>().Insert(processedPointData.points);
 
@@ -118,8 +117,9 @@ namespace backend.Controllers
                 Name = request.Name,
                 Date = request.Date,
             };
-            var processedPointData = _pointService.ProcessPoints(request.Points, Guid.NewGuid());
-            var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date);
+            var routeId = Guid.NewGuid();
+            var processedPointData = _pointService.ProcessPoints(request.Points, routeId);
+            var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date, routeId);
             
             var segmentPoints = new List<SegmentPointsRPCResponse>();
             var weatherPointIndex = 0;
@@ -147,7 +147,7 @@ namespace backend.Controllers
 
         // POST: api/RouteItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("updatestatus")]
+        [HttpPost("Update/Display")]
         public async Task<ActionResult<ResponseRoute>> PostRouteStatusUpdate(RouteStausUpdate request)
         {
             
@@ -180,7 +180,7 @@ namespace backend.Controllers
         }
 
         // GET: api/RouteItems/display/{id}
-        [HttpGet("segments/{id}")]
+        [HttpGet("Segments/{id}")]
         public async Task<ActionResult<IEnumerable<ReturnedSegment>>> GetRouteSegments (Guid id)
         {
             var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
@@ -203,6 +203,38 @@ namespace backend.Controllers
             } while(weatherPointDataReturned.Count == 1000);
            
             return _segmentService.GenerateSegments(weatherPointsData);
+        }
+
+        // GET: api/Route/update/{id}
+        [HttpPost("Update/Weather")]
+        public async Task<ActionResult<IEnumerable<ReturnedSegment>>> UpdateRouteSegments (Guid id)
+        {
+            var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
+            if (route.Model == null)
+            {
+                return NotFound();
+            }
+            var weatherPoints = new List<WeatherModel>();
+            var index = 0;
+            do {
+                var rpcRequest = new SegmentPointsRPCRequest {
+                    route = id,
+                    index_offset = index
+                };
+                var data = await _supabaseClient.From<WeatherModel>().Where(x => x.RouteId == id).Range(index).Get(); 
+                var weatherPointDataReturned = JsonConvert.DeserializeObject<List<WeatherModel>>(data.Content);
+                weatherPoints.AddRange(weatherPointDataReturned);
+                index += 1000;
+            } while(weatherPoints.Count % 1000 == 0);
+
+            var updatedWeatherPoints = await _pointService.FetchWeatherAtPoints(weatherPoints, route.Model.Date, id);
+
+            var response = await _supabaseClient.From<WeatherModel>().Upsert(updatedWeatherPoints);
+            if(response.ResponseMessage.IsSuccessStatusCode) {
+                return StatusCode(200);
+            }
+            return StatusCode(400);
+           
         }
     }
 }
