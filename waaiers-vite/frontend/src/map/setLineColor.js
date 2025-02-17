@@ -1,36 +1,10 @@
-
-const average = array => array.reduce((a, b) => a + b) / array.length;
-
-function setLineColor(classifcation)
+export function setLineColor(displayedWindDir,segmentWindDir)
 {
-  let angle = (average(classifcation.segmentWindAngle) + 360) % 360
-  if((angle < 105 && angle > 45) || (angle < 315 && angle > 255) )
-  {
-    return 'red'
-  }
-  else
-  {
-    return 'black'
-  }
-
-
-  return "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0').toUpperCase();
-  if(classifcation == "Tailwind")
-  {
-    return 'black';
-  } else if(classifcation == "Headwind")
-  {
-    return 'green';
-  } else if(classifcation == "Cross Tailwind")
-  {
-    return 'blue';
-  } else if(classifcation == "Cross Headwind")
-  {
-    return 'black';
-  } else
-  {
-    return 'black';
-  }
+    if(displayedWindDir == segmentWindDir || displayedWindDir == 'all')
+    {
+        if(segmentWindDir == 'cross') return 'yellow'
+        if(segmentWindDir == 'tail') return 'red'
+        if(segmentWindDir == 'head') return 'blue'
+    }
+    return 'white'
 }
-
-export default setLineColor;

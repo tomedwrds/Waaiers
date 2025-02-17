@@ -2,11 +2,11 @@ import Chart from "react-apexcharts";
 
 import { renderToString } from 'react-dom/server';
 import MapProfileToolTip from "./MapProfileToolTip";
+import { setLineColor } from "./setLineColor";
 
 
 const MapProfile = ({ segments, routeData }) => {
   const distanceEnd = routeData.distance
-  console.log(distanceEnd)
   let maxElevation = 2000;
   let seriesData = []
   segments.forEach(segment => {
@@ -22,15 +22,7 @@ const MapProfile = ({ segments, routeData }) => {
       data: segmentPoints
     })
   })
-  console.log(segments)
 
-  
-  
-
-
-
-
-  
   const options = {
     chart: {
       type: "area",
@@ -41,7 +33,7 @@ const MapProfile = ({ segments, routeData }) => {
         enabled: false
       },
       zoom: {
-          enabled:false
+          enabled:true
         },
       // events: {
       //     mouseMove: function(event, chartContext, config) {
@@ -62,18 +54,12 @@ const MapProfile = ({ segments, routeData }) => {
       //     }}
     },
     
-    // tooltip: {
-    //   custom: function({series, seriesIndex, dataPointIndex, w}) {
-       
-    //       return renderToString(<MapProfileToolTip name ={dataSets[seriesIndex].name} winddir = {dataSets[seriesIndex].windir} difficulty= {dataSets[seriesIndex].difficulty}/>)
-    //     },
-        
-   
-      
-      
-    // },
-    
-    
+    tooltip: {
+      custom: function({series, seriesIndex, dataPointIndex, w}) {
+        console.log(segments[seriesIndex])
+          return renderToString(<MapProfileToolTip data = {segments[seriesIndex]}/>)
+        },
+    },
     legend: {
       show: false
     },
@@ -87,17 +73,16 @@ const MapProfile = ({ segments, routeData }) => {
       width: 2
     },
     fill: {
-      colors: [(series) => "black"],
+      colors: [(series) => setLineColor("all", segments[series.seriesIndex].classification)],
       type: "gradient",
       gradient: {
         stops: [100]
       }
     },
     xaxis: {
-      
       type: "numeric",
       min: 0,
-      max:distanceEnd,
+      max: Math.round(distanceEnd) + "km",
       labels: {
         formatter: (val) => {if (val == distanceEnd) {return distanceEnd/1000 +'km'} else  return Math.ceil(val/20000)*20 + 'km'}
       },

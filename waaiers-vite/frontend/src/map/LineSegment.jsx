@@ -1,17 +1,7 @@
 import { useState } from "react";
 import { Marker, Polyline,Popup } from "react-leaflet";
 import SegmentInfo from "./SegmentInfo";
-
-function setLineColor(displayedWindDir,segmentWindDir)
-{
-    if(displayedWindDir == segmentWindDir || displayedWindDir == 'all')
-    {
-        if(segmentWindDir == 'cross') return 'yellow'
-        if(segmentWindDir == 'tail') return 'red'
-        if(segmentWindDir == 'head') return 'blue'
-    }
-    return 'white'
-}
+import { setLineColor } from "./setLineColor";
 
 const LineSegment = (props)=>
 {

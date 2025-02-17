@@ -98,8 +98,7 @@ namespace backend.Services {
 
 
                         }
-                    }
-
+                    } 
                     var meterePerPoint  = segmentLength/currentPoints.Count;
                     var ratioRequired = meterePerPoint/200;
 
