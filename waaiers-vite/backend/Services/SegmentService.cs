@@ -98,37 +98,41 @@ namespace backend.Services {
 
 
                         }
-                    } 
-                    var meterePerPoint  = segmentLength/currentPoints.Count;
-                    var ratioRequired = meterePerPoint/200;
+                        if(mergedSegment.Points.Count > 0) {
+                            mergedSegment.Points = filterPoints(mergedSegment.Points,mergedSegment.DistanceEnd-mergedSegment.DistanceStart);
+                            segments.Add(mergedSegment);
+                            mergedSegment = new ReturnedSegment {
+                                Points = new List<SegmentPoints>(),
+                                DistanceStart = 0,
+                                DistanceEnd = 0,
+                                WindDirection = 0,
+                                WindSpeed = 0,
+                                WindSpeedGust = 0,
+                                Difficulty = 0
+                            };
 
-                    if(ratioRequired < 1) {
-                        var nthKeep = Math.Round(1/ratioRequired);
-
-                        var filteredPoints = new List<SegmentPoints>();
-                        filteredPoints.Add(currentPoints[0]);
-                        for(int j = 1; j < currentPoints.Count-1; j ++) {
-                            if(j % nthKeep == 0) {
-                                filteredPoints.Add(currentPoints[j]);
-                            }
                         }
-                        filteredPoints.Add(currentPoints[currentPoints.Count-1]);
-                        currentPoints = filteredPoints;
-                    }
+                        
+                        
+                        var newSegment = new ReturnedSegment {
+                            Points = filterPoints(currentPoints, segmentLength),
+                            DistanceStart = segmentKmStart,
+                            DistanceEnd = segmentKmEnd,
+                            WindDirection = currentSegmentWindAngle.Average(),
+                            WindSpeed = currentSegmentWindSpeed.Average(),
+                            WindSpeedGust = currentSegmentWindSpeedGust.Average(),
+                            Difficulty = segmentDifficulty,
+                            Classification = segmentClassification
+                        };
+                        segments.Add(newSegment);
 
-                    var newSegment = new ReturnedSegment {
-                        Points = currentPoints,
-                        DistanceStart = segmentKmStart,
-                        DistanceEnd = segmentKmEnd,
-                        WindDirection = currentSegmentWindAngle.Average(),
-                        WindSpeed = currentSegmentWindSpeed.Average(),
-                        WindSpeedGust = currentSegmentWindSpeedGust.Average(),
-                        Difficulty = segmentDifficulty,
-                        Classification = segmentClassification
-                    };
-                    segments.Add(newSegment);
-                    
-                    
+                    } else {
+                        if (mergedSegment.Points.Count == 0) {
+                            mergedSegment.DistanceStart = segmentKmStart;
+                        }
+                        mergedSegment.Points.AddRange(currentPoints);
+                        mergedSegment.DistanceEnd = segmentKmEnd;
+                    }
 
                     //Start new segment
                     var newPoint = new SegmentPoints {
@@ -143,6 +147,7 @@ namespace backend.Services {
                     currentSegmentWindRelative = [getWindDirRelative(currentPoint.direction, currentPoint.wind_direction)];
                     segmentKmStart = currentPoint.distance_start;
                     segmentKmEnd = currentPoint.distance_end;
+                    
                 }
             
 
@@ -151,12 +156,31 @@ namespace backend.Services {
 
         }
         public float getWindDirRelative(float pointDir, float windDir) {
-        var windDirRiderRelative = (windDir + 180) % 360;
-        var windAngleRider = pointDir - windDirRiderRelative;
-        if(windAngleRider < 0) {
-            windAngleRider += 360;
+            var windDirRiderRelative = (windDir + 180) % 360;
+            var windAngleRider = pointDir - windDirRiderRelative;
+            if(windAngleRider < 0) {
+                windAngleRider += 360;
+            }
+            return windAngleRider;
         }
-        return windAngleRider;
-    }
+        public List<SegmentPoints> filterPoints(List<SegmentPoints> points, float segmentLength) {
+            var meterePerPoint  = (segmentLength)/points.Count;
+            var ratioRequired = meterePerPoint/200;
+
+            if(ratioRequired < 1) {
+                var nthKeep = Math.Round(1/ratioRequired);
+
+                var filteredPoints = new List<SegmentPoints>();
+                filteredPoints.Add(points[0]);
+                for(int j = 1; j < points.Count-1; j ++) {
+                    if(j % nthKeep == 0) {
+                        filteredPoints.Add(points[j]);
+                    }
+                }
+                filteredPoints.Add(points[points.Count-1]);
+                return filteredPoints;
+            }
+            return points;
+        }
     }
 }
