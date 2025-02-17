@@ -3,6 +3,9 @@ using backend.Models;
 using Supabase;
 using backend.Interfaces;
 using backend.Services;
+using DotNetEnv;
+
+DotNetEnv.Env.Load();
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,14 +26,13 @@ builder.Services.AddCors(options =>
 });
 
 //Supabase
-var url = "http://127.0.0.1:54321";
-var key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 var options = new SupabaseOptions
       {
         AutoRefreshToken = true,
         AutoConnectRealtime = true
       };
-builder.Services.AddSingleton(provider => new Supabase.Client(url, key, options));
+Console.WriteLine(Environment.GetEnvironmentVariable("SUPABASE_URL") + Environment.GetEnvironmentVariable("SUPABASE_KEY"));
+builder.Services.AddSingleton(provider => new Supabase.Client(Environment.GetEnvironmentVariable("SUPABASE_URL"), Environment.GetEnvironmentVariable("SUPABASE_KEY"), options));
 builder.Services.AddScoped<IPointService, PointService>();
 builder.Services.AddScoped<ISegmentService, SegmentService>();
 
