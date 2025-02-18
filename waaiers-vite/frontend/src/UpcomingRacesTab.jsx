@@ -11,7 +11,6 @@ const UpcomingRacesTab = (props)=>
         //Finally navigate to the page to display it
         navigate('/race/'+routeData.id );
     }
-    console.log(routeData)
     
     return(
         <div className={"race-tab"+props.styleSuffix}>

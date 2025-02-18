@@ -101,7 +101,7 @@ namespace backend.Controllers
                         Date = request.Date,
                         Distance = processedPointData.routeDistance,
                         Id = supabaseResponse.Model.Id,
-                        Displayed = false
+                        Displayed = 0
                     };
                 }
                 return [];
@@ -155,7 +155,7 @@ namespace backend.Controllers
                         Id = supabaseResponse.Model.Id,
                         Displayed = supabaseResponse.Model.Displayed
                     };
-                    return CreatedAtAction("GetRoute", new { id = response }, supabaseResponse.Model);
+                    return Ok();
                 }
             }
             return Unauthorized();
@@ -186,6 +186,9 @@ namespace backend.Controllers
             if (route.Model == null)
             {
                 return UnprocessableEntity();
+            }
+            if(route.Model.Displayed == 0) {
+                return Unauthorized();
             }
             List<SegmentPointsRPCResponse> weatherPointDataReturned;
             var weatherPointsData = new List<SegmentPointsRPCResponse>();

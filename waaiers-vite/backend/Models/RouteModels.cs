@@ -14,7 +14,7 @@ public class ResponseRoute
 {
     public required Guid Id { get; set; }
     public required string RouteName { get; set; }
-    public required bool Displayed { get; set; }
+    public required int Displayed { get; set; }
     public required DateTime Date { get; set; }
     public required float Distance { get; set; }
 
@@ -29,7 +29,7 @@ public class RouteModel : BaseModel
     [Column("name")]
     public string Name { get; set; }
     [Column("displayed")]
-    public bool Displayed { get; set; }
+    public int Displayed { get; set; }
     [Column("date")]
     public DateTime Date { get; set; }
     [Column("distance")]

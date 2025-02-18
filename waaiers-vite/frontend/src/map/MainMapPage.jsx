@@ -47,22 +47,23 @@ const MainMapPage = () => {
     
                 } catch {
                     try {
+                        //If route not valid choose next to occur one
                         const response = await fetch("https://localhost:7276/api/Route/")
                         if (!response.ok) {
                             throw new Error(`Response status: ${response.status}`);
                         }
                         const routes = await response.json()
-                        const validRoutes = routes.filter(route => route.displayed == true)
+
+                        const validRoutes = routes.filter(route => route.displayed != 0)
                         validRoutes.sort((a,b) => {
                             return new Date(b.date) - new Date(a.date);
                           });
                         routeID = validRoutes[0].id
+
                         setRouteData(validRoutes[0])
                     } catch(error) {
-    
                         //todo proper error handling for if load fails
                         console.error(error.message);
-    
                     }
                 }
     
@@ -85,7 +86,7 @@ const MainMapPage = () => {
 
     if(segments != null && routeData != null)
     {
-        if(false)
+        if(routeData.displayed == 1)
         {
             return(
                 <div className = "body-locked">  
