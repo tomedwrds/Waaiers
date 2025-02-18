@@ -7,20 +7,15 @@ import { useEffect, useState,useRef } from "react";
 import supabase from "../supabase/supabase"
 
 function Navbar() {
-    //State hook stores wether the popdown menu is expanded
     const [isNavExpanded, setIsNavExpanded] = useState(false);
     const [userSignedIn,setUserSignedIn] = useState(null);
 
-  
-
-    //USER LOGIN / OUT
-    //Below are a range of async functions that handle session getting login and sign out
     async function getSession()
     {
         const { data, error } = await supabase.auth.getSession();
-
         if(data.session)
         {
+            document.cookie = "uuid="+data.session.user.id+"; SameSite=None; Secure";
             setUserSignedIn(true)
         }
         else
@@ -32,7 +27,10 @@ function Navbar() {
     async function googleLogin()
     {
         const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google'
+            provider: 'google',
+            options: {
+              redirectTo: window.location.href,
+            },
         })
 
        
@@ -41,15 +39,14 @@ function Navbar() {
     async function signOutUser()
     {
         const { data, error } = await supabase.auth.signOut()
-        //Update sign out status if user succesfully signed out
         if(!error)
         {
           setUserSignedIn(false);
+          document.cookie="uuid=;"
         }
         
     }
 
-    //This function is called by the navbar and then is used too update log in out status
     function handleLogInOut()
     {
       if(userSignedIn)
@@ -63,15 +60,11 @@ function Navbar() {
       
     }
 
-
-    //On page load check if there is an active session
     useEffect(()=>{
         getSession();
-
     },[])
 
    
-    // call useFfect adding an event listener. The return ensures it is cleared up
     useEffect(() => {
       window.addEventListener('resize', handleWindowSizeChange);
       return () => {
@@ -79,19 +72,10 @@ function Navbar() {
       };
   }, []);
   
-    //Code that triggeres on every resize, to check that navbar isnt rendering when it shouldnt
     const handleWindowSizeChange = () => {
         if(window.innerWidth > 768) setIsNavExpanded(false)
        
     };
-
-    
-    
-    
-    
-
-
-
     return (
       <nav className="navigation">
         <div className='top-navbar'>

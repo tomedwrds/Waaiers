@@ -11,6 +11,7 @@ using Supabase;
 using Azure;
 using System.Text.Json;
 using Newtonsoft.Json;
+using Microsoft.Net.Http.Headers;
 
 namespace backend.Controllers
 {
@@ -74,77 +75,69 @@ namespace backend.Controllers
 
         // POST: api/RouteItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("Generate/Upload")]
-        public async Task<ActionResult<ResponseRoute>> GenerateUploadRoute(PostRequestRoute request)
+        [HttpPost("Generate")]
+        public async Task<IEnumerable<ReturnedSegment>> GenerateUploadRoute(PostRequestRoute request)
         {
-            var model = new RouteModel {
-                Name = request.Name,
-                Date = request.Date,
-            };
-            var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
-            if(supabaseResponse.Model != null) {
-                //get proccessed points
-                var processedPointData = _pointService.ProcessPoints(request.Points, supabaseResponse.Model.Id);
-                
-                //set route distance
-                var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, processedPointData.routeDistance).Update();
-                
-                //get weather
-                var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date, supabaseResponse.Model.Id);
-                await _supabaseClient.From<WeatherModel>().Insert(weatherPoints);
-                await _supabaseClient.From<PointModel>().Insert(processedPointData.points);
-
-                var response = new ResponseRoute {
-                    RouteName = request.Name,
+            if(await checkUserAdmin(Request.Cookies["uuid"])) {
+                    var model = new RouteModel {
+                    Name = request.Name,
                     Date = request.Date,
-                    Distance = processedPointData.routeDistance,
-                    Id = supabaseResponse.Model.Id,
-                    Displayed = false
                 };
+                var supabaseResponse = await _supabaseClient.From<RouteModel>().Insert(model);
+                if(supabaseResponse.Model != null) {
+                    //get proccessed points
+                    var processedPointData = _pointService.ProcessPoints(request.Points, supabaseResponse.Model.Id);
+                    
+                    //set route distance
+                    var update = await _supabaseClient.From<RouteModel>().Where(x => x.Id == supabaseResponse.Model.Id).Set(x => x.Distance, processedPointData.routeDistance).Update();
+                    
+                    //get weather
+                    var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date, supabaseResponse.Model.Id);
+                    await _supabaseClient.From<WeatherModel>().Insert(weatherPoints);
+                    await _supabaseClient.From<PointModel>().Insert(processedPointData.points);
 
-
-                
-                return CreatedAtAction("GetRoute", new { id = response.Id }, response);
-            }
-            return NotFound();
-           
-        }
-
-        [HttpPost("Generate/View")]
-        public async Task<IEnumerable<ReturnedSegment>> GenerateViewRoute (PostRequestRoute request)
-        {
-            var model = new RouteModel {
-                Name = request.Name,
-                Date = request.Date,
-            };
-            var routeId = Guid.NewGuid();
-            var processedPointData = _pointService.ProcessPoints(request.Points, routeId);
-            var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date, routeId);
-            
-            var segmentPoints = new List<SegmentPointsRPCResponse>();
-            var weatherPointIndex = 0;
-            foreach(var point in processedPointData.points) {
-                if(weatherPoints[weatherPointIndex].Id != point.WeatherId) {
-                    weatherPointIndex += 1;
+                    var response = new ResponseRoute {
+                        RouteName = request.Name,
+                        Date = request.Date,
+                        Distance = processedPointData.routeDistance,
+                        Id = supabaseResponse.Model.Id,
+                        Displayed = false
+                    };
                 }
-                var weatherPoint = weatherPoints[weatherPointIndex];
-                var segmentPoint = new SegmentPointsRPCResponse {
-                    latitude = point.Latitude,
-                    longitude = point.Longitude,
-                    direction = point.Direction,
-                    distance_end = point.DistanceEnd,
-                    distance_start = point.DistanceStart,
-                    wind_direction = weatherPoint.WindDirection,
-                    wind_speed = weatherPoint.WindSpeed,
-                    wind_speed_gust = weatherPoint.WindSpeedGust
+                return [];
+            } else {
+                var model = new RouteModel {
+                    Name = request.Name,
+                    Date = request.Date,
                 };
-                segmentPoints.Add(segmentPoint);
-            }
+                var routeId = Guid.NewGuid();
+                var processedPointData = _pointService.ProcessPoints(request.Points, routeId);
+                var weatherPoints = await _pointService.FetchWeatherAtPoints(processedPointData.weatherPoints, request.Date, routeId);
+                
+                var segmentPoints = new List<SegmentPointsRPCResponse>();
+                var weatherPointIndex = 0;
+                foreach(var point in processedPointData.points) {
+                    if(weatherPoints[weatherPointIndex].Id != point.WeatherId) {
+                        weatherPointIndex += 1;
+                    }
+                    var weatherPoint = weatherPoints[weatherPointIndex];
+                    var segmentPoint = new SegmentPointsRPCResponse {
+                        latitude = point.Latitude,
+                        longitude = point.Longitude,
+                        direction = point.Direction,
+                        distance_end = point.DistanceEnd,
+                        distance_start = point.DistanceStart,
+                        wind_direction = weatherPoint.WindDirection,
+                        wind_speed = weatherPoint.WindSpeed,
+                        wind_speed_gust = weatherPoint.WindSpeedGust
+                    };
+                    segmentPoints.Add(segmentPoint);
+                    }
 
-            return _segmentService.GenerateSegments(segmentPoints);
+                    return _segmentService.GenerateSegments(segmentPoints);
+                }
            
         }
-
         // POST: api/RouteItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("Update/Display")]
@@ -235,6 +228,16 @@ namespace backend.Controllers
             }
             return StatusCode(400);
            
+        }
+        public async Task<bool> checkUserAdmin(string cookie) {
+            if(cookie != null) {
+                var authID = new Guid(cookie);
+                var response = await _supabaseClient.From<AdminModel>().Where(x => x.Uuid == authID).Get();
+                if(response.Model != null) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

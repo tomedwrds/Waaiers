@@ -69,35 +69,28 @@ function UploadRoute()
             let combineDateTime = new Date(Date.parse(routeData.route_date + ' ' + routeData.route_time));
 
             try {
-                if(true) {
-                    await fetch("https://localhost:7276/api/Route/Generate/Upload", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            name:  routeData.route_name,
-                            date: combineDateTime,
-                            points: parsedPoints,
-                        }),
-                        headers: {
-                            "Content-type": "application/json"
-                        }
-                    });
-                } else {
-                    const resp = await fetch("https://localhost:7276/api/Route/Generate/View", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            name:  routeData.route_name,
-                            date: combineDateTime,
-                            points: parsedPoints,
-                        }),
-                        headers: {
-                            "Content-type": "application/json"
-                        }
-                    });
-                    const segments = await resp.json()
+                
+                const resp = await fetch("https://localhost:7276/api/Route/Generate", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        name:  routeData.route_name,
+                        date: combineDateTime,
+                        points: parsedPoints,
+                    }),
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    credentials: "include"
+                });
+            
+                    
+                const segments = await resp.json()
+                if (segments.length > 0) {
                     window.localStorage.setItem("userGenerateRoute", JSON.stringify(segments))
                     window.localStorage.setItem("userGenerateName", routeData.route_name)
                     navigate('/race/view' );
                 }
+               
                 
                 
             } catch(e) {
