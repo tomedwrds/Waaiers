@@ -12,14 +12,7 @@ function UploadRoute()
     const navigate = useNavigate();
 
     const[routeData,setRouteData] = useState({route_name:null,route_date:null,route_time:null})
-    const[errorModal, setErrorModal] = useState({error_name: "", error_desc: ""})
-    const[userAdmin,setUserAdmin] = useState(false)
-
-    useEffect(()=>{
-        getUserAccessStatus(setUserAdmin);
-    },[])
-
-    
+    const[errorModal, setErrorModal] = useState({error_name: "", error_desc: ""})    
     const readFile = (e) => {
         try {
             const file = e.target.files[0];
