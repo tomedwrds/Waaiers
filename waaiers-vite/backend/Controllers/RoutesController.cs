@@ -59,7 +59,7 @@ namespace backend.Controllers
             var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
              if (route.Model == null)
             {
-                return NotFound();
+                return UnprocessableEntity();
             }
             var newResponse = new ResponseRoute {
                     RouteName = route.Model.Name,
@@ -143,33 +143,39 @@ namespace backend.Controllers
         [HttpPost("Update/Display")]
         public async Task<ActionResult<ResponseRoute>> PostRouteStatusUpdate(RouteStausUpdate request)
         {
-            
-            var supabaseResponse = await _supabaseClient.From<RouteModel>().Where(x => x.Id == request.Id).Set(x => x.Displayed, request.IsDisplayed).Update();
-            if(supabaseResponse.Model == null) {
-                return StatusCode(500);
-            } else {
-                var response = new ResponseRoute {
-                    RouteName = supabaseResponse.Model.Name,
-                    Date = supabaseResponse.Model.Date,
-                    Distance = supabaseResponse.Model.Distance,
-                    Id = supabaseResponse.Model.Id,
-                    Displayed = supabaseResponse.Model.Displayed
-                };
-                return CreatedAtAction("GetRoute", new { id = response }, supabaseResponse.Model);
+            if(await checkUserAdmin(Request.Cookies["uuid"])) {
+                var supabaseResponse = await _supabaseClient.From<RouteModel>().Where(x => x.Id == request.Id).Set(x => x.Displayed, request.DisplayStatus).Update();
+                if(supabaseResponse.Model == null) {
+                    return StatusCode(500);
+                } else {
+                    var response = new ResponseRoute {
+                        RouteName = supabaseResponse.Model.Name,
+                        Date = supabaseResponse.Model.Date,
+                        Distance = supabaseResponse.Model.Distance,
+                        Id = supabaseResponse.Model.Id,
+                        Displayed = supabaseResponse.Model.Displayed
+                    };
+                    return CreatedAtAction("GetRoute", new { id = response }, supabaseResponse.Model);
+                }
             }
+            return Unauthorized();
+            
         }
 
         // DELETE: api/RouteItems/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRouteItem(Guid id)
         {
-            var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
-            if (route.Model == null)
-            {
-                return NotFound();
-            } 
-            await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Delete();
-            return StatusCode(200);
+            if(await checkUserAdmin(Request.Cookies["uuid"])) {
+                var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
+                if (route.Model == null)
+                {
+                    return UnprocessableEntity();
+                } 
+                await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Delete();
+                return Ok();
+            }
+            return Unauthorized();
         }
 
         // GET: api/RouteItems/display/{id}
@@ -179,7 +185,7 @@ namespace backend.Controllers
             var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
             if (route.Model == null)
             {
-                return NotFound();
+                return UnprocessableEntity();
             }
             List<SegmentPointsRPCResponse> weatherPointDataReturned;
             var weatherPointsData = new List<SegmentPointsRPCResponse>();
@@ -200,36 +206,39 @@ namespace backend.Controllers
 
         // GET: api/Route/update/{id}
         [HttpPost("Update/Weather")]
-        public async Task<ActionResult<IEnumerable<ReturnedSegment>>> UpdateRouteSegments (Guid id)
+        public async Task<ActionResult> UpdateRouteSegments (UpdateWeatherRequest request)
         {
-            var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == id).Get();
-            if (route.Model == null)
-            {
-                return NotFound();
-            }
-            var weatherPoints = new List<WeatherModel>();
-            var index = 0;
-            do {
-                var rpcRequest = new SegmentPointsRPCRequest {
-                    route = id,
-                    index_offset = index
-                };
-                var data = await _supabaseClient.From<WeatherModel>().Where(x => x.RouteId == id).Range(index).Get(); 
-                var weatherPointDataReturned = JsonConvert.DeserializeObject<List<WeatherModel>>(data.Content);
-                weatherPoints.AddRange(weatherPointDataReturned);
-                index += 1000;
-            } while(weatherPoints.Count % 1000 == 0);
+            if(await checkUserAdmin(Request.Cookies["uuid"])) {
+                var route = await _supabaseClient.From<RouteModel>().Where(x => x.Id == request.Id).Get();
+                if (route.Model == null)
+                {
+                    return UnprocessableEntity();
+                }
+                var weatherPoints = new List<WeatherModel>();
+                var index = 0;
+                do {
+                    var rpcRequest = new SegmentPointsRPCRequest {
+                        route = request.Id,
+                        index_offset = index
+                    };
+                    var data = await _supabaseClient.From<WeatherModel>().Where(x => x.RouteId == request.Id).Range(index).Get(); 
+                    var weatherPointDataReturned = JsonConvert.DeserializeObject<List<WeatherModel>>(data.Content);
+                    weatherPoints.AddRange(weatherPointDataReturned);
+                    index += 1000;
+                } while(weatherPoints.Count % 1000 == 0);
 
-            var updatedWeatherPoints = await _pointService.FetchWeatherAtPoints(weatherPoints, route.Model.Date, id);
+                var updatedWeatherPoints = await _pointService.FetchWeatherAtPoints(weatherPoints, route.Model.Date, request.Id);
 
-            var response = await _supabaseClient.From<WeatherModel>().Upsert(updatedWeatherPoints);
-            if(response.ResponseMessage.IsSuccessStatusCode) {
-                return StatusCode(200);
+                var response = await _supabaseClient.From<WeatherModel>().Upsert(updatedWeatherPoints);
+                if(response.ResponseMessage.IsSuccessStatusCode) {
+                    return Ok();
+                }
+                return StatusCode(500);
             }
-            return StatusCode(400);
+            return Unauthorized();
            
         }
-        public async Task<bool> checkUserAdmin(string cookie) {
+            private async Task<bool> checkUserAdmin(string cookie) {
             if(cookie != null) {
                 var authID = new Guid(cookie);
                 var response = await _supabaseClient.From<AdminModel>().Where(x => x.Uuid == authID).Get();
@@ -239,5 +248,7 @@ namespace backend.Controllers
             }
             return false;
         }
+        
     }
+    
 }

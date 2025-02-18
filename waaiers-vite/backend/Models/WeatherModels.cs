@@ -53,3 +53,7 @@ public class OpenMeteoHourly {
     public required List<float> windgusts_10m { get; set; } 
     
 }
+
+public class UpdateWeatherRequest {
+    public Guid Id { get; set; }
+}

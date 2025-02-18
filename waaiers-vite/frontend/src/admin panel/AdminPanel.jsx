@@ -5,40 +5,36 @@ import AdminRaceTab from "./AdminRaceTab";
 
 
 const AdminPanel = ()=>{
-    //GET USER ACCESS STATUS
-    //Certain features on this page such as updating weather / refreshing data are locked to admins only
-    const[userAdmin,setUserAdmin] = useState(false)
-    useEffect(()=>{
-        //Determines the user access status and wether there the admin
-        getUserAccessStatus(setUserAdmin);
-    },[])
-
-
      // On page load the data is retrieved from the data base and stored in a state hook
      const [allRouteData,setAllRouteData] = useState([]);
 
      useEffect(()=>{
          async function loadRouteData()
          {
-             const {data} = await supabase.from('Routes').select('*');
-             setAllRouteData(data);
+             try {
+                const response = await fetch("https://localhost:7276/api/Route");
+                if (!response.ok) {
+                  throw new Error(`Response status: ${response.status}`);
+                }
+                const data = await response.json()
+                data.sort(function (a, b) {   
+                    return new Date(a.date) - new Date(b.date);
+                });
+               
+                setAllRouteData(data);
+
+            } catch (error) {
+                console.error(error.message);
+            }
          }
          loadRouteData();
      },[])
 
-    if(userAdmin)
-    {
-        return(
-            allRouteData.map((item,index)=>{return(<AdminRaceTab key = {index} data ={item}/>)})
-        )
-    }
-    else
-    {
-        return(
-            <p>Access Denied</p>
-        )
-        
-    }
+    
+    return(
+        allRouteData.map((item,index)=>{return(<AdminRaceTab key = {index} data ={item}/>)})
+    )
+    
    
 }
 export default AdminPanel

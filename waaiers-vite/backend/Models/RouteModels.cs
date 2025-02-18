@@ -42,5 +42,5 @@ public class RouteModel : BaseModel
 public class RouteStausUpdate
 {
     public required Guid Id { get; set; }
-    public required bool IsDisplayed { get; set; }
+    public required int DisplayStatus { get; set; }
 }
