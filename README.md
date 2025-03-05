@@ -18,9 +18,10 @@ Waaiers will generate wind analysis for all races in the UCI World Tour and Pro 
 
 ## Tech Stack
 - React
-- Vite
+- asp.net C#
 - Supabase
 - PostgreSQL
+- Deployed to Hetzner cloud instance
 
 ## Current Progress
 - Setup external APIs to access weather data
