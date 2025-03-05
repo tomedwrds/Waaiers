@@ -1,7 +1,7 @@
 const AdminRaceTab = (props) =>{
     async function updateWeatherData() {
         try {   
-            const resp = await fetch("https://localhost:7276/api/Route/Update/Weather/", {
+            const resp = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/Update/Weather/", {
                 method: "POST",
                 body: JSON.stringify({
                     id: props.data.id
@@ -18,7 +18,7 @@ const AdminRaceTab = (props) =>{
 
     async function toggleWeatherDisplay(val) {
         try {   
-            const resp = await fetch("https://localhost:7276/api/Route/Update/Display/", {
+            const resp = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/Update/Display/", {
                 method: "POST",
                 body: JSON.stringify({
                     id: props.data.id,
@@ -36,7 +36,7 @@ const AdminRaceTab = (props) =>{
 
     async function deleteRoute() {
         try {   
-            const resp = await fetch("https://localhost:7276/api/Route/" + props.data.id, {
+            const resp = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/" + props.data.id, {
                 method: "DELETE",
                 headers: {
                     "Content-type": "application/json"

@@ -63,7 +63,7 @@ function UploadRoute()
 
             try {
                 
-                const resp = await fetch("https://localhost:7276/api/Route/Generate", {
+                const resp = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/Generate", {
                     method: "POST",
                     body: JSON.stringify({
                         name:  routeData.route_name,

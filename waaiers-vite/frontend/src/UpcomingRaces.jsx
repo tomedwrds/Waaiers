@@ -11,7 +11,7 @@ const UpcomingRaces = () =>
         async function loadRouteData()
         {
             try {
-                const response = await fetch("https://localhost:7276/api/Route", {credentials:"include"});
+                const response = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route", {credentials:"include"});
                 if (!response.ok) {
                   throw new Error(`Response status: ${response.status}`);
                 }
@@ -19,7 +19,6 @@ const UpcomingRaces = () =>
                 data.sort(function (a, b) {   
                     return new Date(a.date) - new Date(b.date);
                 });
-               
                 setAllRouteData(data);
 
             } catch (error) {
@@ -38,7 +37,6 @@ const UpcomingRaces = () =>
         styleSuffix="-home"
     }
     
-
 
     //All the routes are then mapped to a component
     return(

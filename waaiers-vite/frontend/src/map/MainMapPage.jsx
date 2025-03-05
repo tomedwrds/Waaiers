@@ -38,7 +38,7 @@ const MainMapPage = () => {
             } else {
 
                 try {
-                    const response = await fetch("https://localhost:7276/api/Route/" + routeID)
+                    const response = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/" + routeID)
                     if (!response.ok) {
                         throw new Error(`Response status: ${response.status}`);
                     }
@@ -48,7 +48,7 @@ const MainMapPage = () => {
                 } catch {
                     try {
                         //If route not valid choose next to occur one
-                        const response = await fetch("https://localhost:7276/api/Route/")
+                        const response = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/")
                         if (!response.ok) {
                             throw new Error(`Response status: ${response.status}`);
                         }
@@ -68,7 +68,7 @@ const MainMapPage = () => {
                 }
     
                 try {
-                    const response = await fetch("https://localhost:7276/api/Route/segments/" + routeID)
+                    const response = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route/segments/" + routeID)
                     if (!response.ok) {
                         throw new Error(`Response status: ${response.status}`);
                     }

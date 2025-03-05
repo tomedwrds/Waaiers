@@ -12,7 +12,7 @@ const AdminPanel = ()=>{
          async function loadRouteData()
          {
              try {
-                const response = await fetch("https://localhost:7276/api/Route");
+                const response = await fetch(import.meta.env.VITE_BASE_API_STRING + "/Route");
                 if (!response.ok) {
                   throw new Error(`Response status: ${response.status}`);
                 }
